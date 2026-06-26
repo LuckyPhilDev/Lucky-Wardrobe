@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("BetterWardrobe", "deDE", false, true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "deDE", false, true)
 -- German translation by Dathwada EU-Eredar
 if not L then return end
 
@@ -24,11 +24,11 @@ L.OM_GOLD = "|c00FFD200"
 L.ENDCOLOR = "|r"
 
 --_G["BINDING_NAME_" .. name
-_G["BINDING_HEADER_BETTERWARDROBE"] = addonName
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_PLAYERMODEL"] = "Spielermodell verwenden"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETMODEL"] = "Zielmodell verwenden"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETGEAR"] = "Rüstung vom Ziel verwenden"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "Anprobe umschalten"
+_G["BINDING_HEADER_LUCKYWARDROBE"] = addonName
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_PLAYERMODEL"] = "Spielermodell verwenden"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETMODEL"] = "Zielmodell verwenden"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETGEAR"] = "Rüstung vom Ziel verwenden"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "Anprobe umschalten"
 
 L["CLOTH"] = "Stoff"
 L["LEATHER"] = "Leder"
@@ -302,7 +302,7 @@ L["Remove from Collection List"] = "Von der Sammelliste entfernen"
 L["Toggle Hidden View"] = "Verstecken umschalten"
 
 --------------------------------------------------------------------------
------------------------------ BETTERWARDROBE -----------------------------
+----------------------------- LUCKYWARDROBE -----------------------------
 --------------------------------------------------------------------------
 
 L["Added missing appearances of: \124cffff7fff\124H%s:%s\124h[%s]\124h\124r"] = "Fehlende Vorlage hinzugefügt: \124cffff7fff\124H%s:%s\124h[%s]\124h\124r"

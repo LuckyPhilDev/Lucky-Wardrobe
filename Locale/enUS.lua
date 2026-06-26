@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("BetterWardrobe", "enUS", true, true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "enUS", true, true)
 
 if not L then return end
 
@@ -33,11 +33,11 @@ L.OM_GOLD = "|c00FFD200"
 L.ENDCOLOR = "|r"
 
 --_G["BINDING_NAME_" .. name
-_G["BINDING_HEADER_BETTERWARDROBE"] = addonName
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_PLAYERMODEL"] = "Use Player Model"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETMODEL"] = "Use Target Model"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETGEAR"] = "Use Target Gear"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "Toggle DressingRoom"
+_G["BINDING_HEADER_LUCKYWARDROBE"] = addonName
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_PLAYERMODEL"] = "Use Player Model"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETMODEL"] = "Use Target Model"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETGEAR"] = "Use Target Gear"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "Toggle DressingRoom"
 
 L["CLOTH"] = "Cloth"
 L["LEATHER"] = "Leather"
@@ -328,7 +328,7 @@ L["Remove from Collection List"] = true
 L["Toggle Hidden View"] = true
 
 --------------------------------------------------------------------------
------------------------------ BETTERWARDROBE -----------------------------
+----------------------------- LUCKYWARDROBE -----------------------------
 --------------------------------------------------------------------------
 
 L["Added missing appearances of: \124cffff7fff\124H%s:%s\124h[%s]\124h\124r"] = true

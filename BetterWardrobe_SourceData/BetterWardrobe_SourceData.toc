@@ -1,14 +1,14 @@
 ﻿## Interface: 120001
-## Title: BetterWardrobe_SourceData (@project-version@)
+## Title: Lucky Wardrobe Source Data (@project-version@)
 ## Version: @project-version@
 ## Author: SLOKnightfall
 ## Notes: 
 ## Category: Transmog
-## Group: BetterWardrobe
+## Group: LuckyWardrobe
 ## LoadOnDemand: 1
 ## DefaultState: enabled
 
-## IconTexture: Interface\AddOns\BetterWardrobe\Images\DerectoryIcon
+## IconTexture: Interface\AddOns\LuckyWardrobe\Images\DerectoryIcon
 
 #Data files
 Data\ColorData.lua

@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("BetterWardrobe", "zhTW", false, true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "zhTW", false, true)
 -- Traditional Chinese translation by 三皈依 TW-暗影之月
 if not L then return end
 
@@ -24,11 +24,11 @@ L.OM_GOLD = "|c00FFD200"
 L.ENDCOLOR = "|r"
 
 --_G["BINDING_NAME_" .. name
-_G["BINDING_HEADER_BETTERWARDROBE"] = addonName
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_PLAYERMODEL"] = "使用玩家模型" 
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETMODEL"] = "使用目標的模型"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TARGETGEAR"] =  "使用目標裝備"
-_G["BINDING_NAME_BETTERWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "切換試衣間"
+_G["BINDING_HEADER_LUCKYWARDROBE"] = addonName
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_PLAYERMODEL"] = "使用玩家模型" 
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETMODEL"] = "使用目標的模型"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETGEAR"] =  "使用目標裝備"
+_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "切換試衣間"
 
 L["CLOTH"] = "布甲"
 L["LEATHER"] = "皮甲"
@@ -296,7 +296,7 @@ L["Remove from Collection List"] = "從收藏清單移除"
 L["Toggle Hidden View"] = "切換隱藏是否顯示"
 
 --------------------------------------------------------------------------
------------------------------ BETTERWARDROBE -----------------------------
+----------------------------- LUCKYWARDROBE -----------------------------
 --------------------------------------------------------------------------
 
 L["Added missing appearances of: \124cffff7fff\124H%s:%s\124h[%s]\124h\124r"] = "新增了缺少的外觀：\124cffff7fff\124H%s:%s\124h[%s]\124h\124r"

@@ -111,50 +111,12 @@ end
 
 
 
-	--local PATRONS = {{},{title = 'Patrons', people = addon.Patrons},}
-
-local Patrons = {
-	name = "Patrons |TInterface/Addons/BetterWardrobe/Images/Patreon:12:12|t",
-	handler = optionHandler,
-	get = "Getter",
-	set = "Setter",
-	type = 'group',
-	childGroups = "tab",
-	inline = false,
-	args = {
-			Patronss_Label = {
-				order = 1,
-				name = function() return addonName .. ' is distributed for free and supported trough donations. A massive thank you to all the supporters on Patreon and Paypal who keep development alive. You can become a patron too at |cFFF96854patreon.com/SLOKnightfall|r.\n\n\n', 'https://www.patreon.com/SLOKnightfall' end,
-				type = "description",
-				width = "full",
-
-			},
-			Patronss_Header = {
-				order = 2,
-				name = "Patrons",
-				type = "header",
-				width = "full",
-			},
-			
-		},
-}
-	
-local function addPatrons()
-	for i, namex in ipairs(addon.Patrons) do
-		Patrons.args["name"..i] = {
-				order = i + 2,
-				name = namex,
-				type = "description",
-				width = ".3",
-			}
-	end
-end
 
 
 local screenWidth =  math.floor(UIParent:GetWidth())
 --ACE3 Options Constuctor
 local options = {
-	name = "BetterWardrobe",
+	name = "Lucky Wardrobe",
 	handler = optionHandler,
 	get = "Getter",
 	set = "Setter",
@@ -822,7 +784,7 @@ local options = {
 }
 local subTextFields={}
 local itemSub_options = {
-	name = "BetterWardrobe",
+	name = "Lucky Wardrobe",
 	type = 'group',
 	childGroups = "tab",
 	inline = false,
@@ -946,7 +908,7 @@ end
 
 
 local savedOutfits_options = {
-	name = "BetterWardrobe",
+	name = "Lucky Wardrobe",
 	type = 'group',
 	childGroups = "tab",
 	inline = false,
@@ -1102,8 +1064,8 @@ local DB_Defaults = {
 
 local firstRun = false
 local function UpdateDB()
-	local characterDB = BetterWardrobe_CharacterData
-	local listDB = BetterWardrobe_ListData
+	local characterDB = LuckyWardrobe_CharacterData
+	local listDB = LuckyWardrobe_ListData
 	local favoriteDB = listDB.favoritesDB or {}
 	local collectionDB = listDB.collectionListDB or {}
 	local hiddenDB = listDB.HiddenAppearanceDB or {}
@@ -1235,8 +1197,23 @@ addon.frame = f
 ---Ace based addon initilization
 function addon:OnInitialize()
 	local DB_Defaults = DB_Defaults
-	BetterWardrobe_ListData = BetterWardrobe_ListData or {}
-	local listDB = BetterWardrobe_ListData
+
+	-- One-time migration from BetterWardrobe. The old addon, if installed, loads
+	-- first via OptionalDeps, so its saved data is in memory here. Copy it into
+	-- our globals only when ours are still empty, then we own the data going forward.
+	local function migrate(newName, oldName)
+		if _G[newName] == nil and type(_G[oldName]) == "table" then
+			_G[newName] = CopyTable(_G[oldName])
+		end
+	end
+	migrate("LuckyWardrobe_Options", "BetterWardrobe_Options")
+	migrate("LuckyWardrobe_CharacterData", "BetterWardrobe_CharacterData")
+	migrate("LuckyWardrobe_SavedSetData", "BetterWardrobe_SavedSetData")
+	migrate("LuckyWardrobe_SubstituteItemData", "BetterWardrobe_SubstituteItemData")
+	migrate("LuckyWardrobe_ListData", "BetterWardrobe_ListData")
+
+	LuckyWardrobe_ListData = LuckyWardrobe_ListData or {}
+	local listDB = LuckyWardrobe_ListData
 	listDB.favoritesDB = listDB.favoritesDB or {}
 	listDB.collectionListDB = listDB.collectionListDB or {}
 	listDB.HiddenAppearanceDB = listDB.HiddenAppearanceDB or {}
@@ -1244,25 +1221,25 @@ function addon:OnInitialize()
 
 
 --Create all the profiled DB
-	self.db = LibStub("AceDB-3.0"):New("BetterWardrobe_Options", defaults, true)
+	self.db = LibStub("AceDB-3.0"):New("LuckyWardrobe_Options", defaults, true)
 	options.args.settings.args.options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	options.args.settings.args.options.name = L["Options Profiles"]
 	options.args.settings.args.options.order = 2
 
-	self.chardb = LibStub("AceDB-3.0"):New("BetterWardrobe_CharacterData", DB_Defaults.char_defaults)
+	self.chardb = LibStub("AceDB-3.0"):New("LuckyWardrobe_CharacterData", DB_Defaults.char_defaults)
 	--options.args.list_profiles.args.charprofiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.chardb)
 	--options.args.list_profiles.args.charprofiles.name = L["Profiles - Collection Settings"]
 
-	self.setdb = LibStub("AceDB-3.0"):New("BetterWardrobe_SavedSetData", DB_Defaults.savedsets_defaults)
-	self.itemsubdb = LibStub("AceDB-3.0"):New("BetterWardrobe_SubstituteItemData", DB_Defaults.itemsub_defaults, true)
+	self.setdb = LibStub("AceDB-3.0"):New("LuckyWardrobe_SavedSetData", DB_Defaults.savedsets_defaults)
+	self.itemsubdb = LibStub("AceDB-3.0"):New("LuckyWardrobe_SubstituteItemData", DB_Defaults.itemsub_defaults, true)
 	self.OutfitDB = LibStub("AceDB-3.0"):New(listDB.OutfitDB, DB_Defaults.charSavedOutfits_defaults)
 
 	self.favoritesDB =  LibStub("AceDB-3.0"):New(listDB.favoritesDB, DB_Defaults.list_defaults)
 	self.collectionListDB =  LibStub("AceDB-3.0"):New(listDB.collectionListDB, DB_Defaults.collectionList_defaults)
 	self.HiddenAppearanceDB =  LibStub("AceDB-3.0"):New(listDB.HiddenAppearanceDB, DB_Defaults.list_defaults)
-	self.char_savedOutfits = LibStub("AceDB-3.0"):New("BetterWardrobe_SavedOutfitData", charSavedOutfits_defaults, true)
+	self.char_savedOutfits = LibStub("AceDB-3.0"):New("LuckyWardrobe_SavedOutfitData", charSavedOutfits_defaults, true)
 
-	self.collectionCache = LibStub("AceDB-3.0"):New("BetterWardrobe_CollectionCache", collection_cache_defaults, true)
+	self.collectionCache = LibStub("AceDB-3.0"):New("LuckyWardrobe_CollectionCache", collection_cache_defaults, true)
 
 
 	local profile = self.setdb:GetCurrentProfile()
@@ -1292,20 +1269,13 @@ function addon:OnInitialize()
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, options)
 
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Patrons", Patrons)
-
-
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BetterWardrobe", "BetterWardrobe")
-	self.patrons = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Patrons", "Patrons |TInterface/Addons/BetterWardrobe/Images/Patreon:12:12|t","BetterWardrobe")
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, "Lucky Wardrobe")
 
 	self.db.RegisterCallback(addon, "OnProfileChanged", "RefreshConfig")
 	self.db.RegisterCallback(addon, "OnProfileCopied", "RefreshConfig")
 	self.collectionListDB.RegisterCallback(addon, "OnProfileChanged", "RefreshCollectionListData")
 	self.itemsubdb.RegisterCallback(addon, "OnProfileReset", "RefreshSubItemData")	
 
-	--local PATRONS = {{},{title = 'Patrons', people = addon.Patrons},}
-	--local Credits = LibStub('Sushi-3.1').CreditsGroup(self.optionsFrame, PATRONS, 'Patrons |TInterface/Addons/BetterWardrobe/Images/Patreon:12:12|t')
-	--Credits:SetSubtitle(addonName .. ' is distributed for free and supported trough donations. A massive thank you to all the supporters on Patreon and Paypal who keep development alive. You can become a patron too at |cFFF96854patreon.com/SLOKnightfall|r.', 'https://www.patreon.com/SLOKnightfall')
 	self.OutfitDB.char.lastTransmogOutfitIDSpec = {}
 
 	if firstRun then
@@ -1331,7 +1301,6 @@ function addon:OnEnable()
 		----addon.RefreshSubItemData()
 		----addon.RefreshOutfitData()
 	end)
-	----addPatrons()
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED", "EventHandler")
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED", "EventHandler")
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler")
@@ -1529,6 +1498,6 @@ f:SetSize(1, 1)
 f:Hide()
 addon.prisonFrame = f
 
-function BetterWardrobe_OnAddonCompartmentClick(addonName, buttonName, menuButtonFrame)
+function LuckyWardrobe_OnAddonCompartmentClick(addonName, buttonName, menuButtonFrame)
       ToggleCollectionsJournal(5)
  end

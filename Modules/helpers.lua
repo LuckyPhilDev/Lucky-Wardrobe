@@ -1,5 +1,5 @@
 function bo()
-BetterWardrobe_Temp = {}
+LuckyWardrobe_Temp = {}
 --print("clear")
 for index, colors in pairs(addon.VisualColors) do
 	local colorlist = ""
@@ -31,7 +31,7 @@ for index, colors in pairs(addon.VisualColors) do
 			end
 
 
-BetterWardrobe_Temp[index] = colorlist
+LuckyWardrobe_Temp[index] = colorlist
 end
 end
 
@@ -41,7 +41,7 @@ end
 	table.sort(data, function(a,b) return a<b end)
 end
 table.sort(Recolors, function(a,b) return a[1]<b[1] end)
-BetterWardrobe_Temp = Recolors
+LuckyWardrobe_Temp = Recolors
 
 
 

@@ -1,14 +1,12 @@
 ## Interface: 120001
-## Title: BetterWardrobe (@project-version@)
+## Title: Lucky Wardrobe (@project-version@)
 ## Version: @project-version@
-## Author: SLOKnightfall
-## Notes: 
-## OptionalDeps: MogMount,MogIt, CanIMogIt, LegionWardrobe, WardrobeEnhanced, Rarity, TransmogOutfits, ExtendedSets, ElvUI, PetTracker, PetTrackerJournal
-## SavedVariables: BetterWardrobe_Options, BetterWardrobe_CharacterData, BetterWardrobe_SavedSetData, BetterWardrobe_SubstituteItemData, BetterWardrobe_ListData, BetterWardrobe_Mogitdata, BetterWardrobe_Updates, BTT
-## X-Curse-Project-ID: 401253
-## X-Wago-ID: 0mKOzk6x
+## Author: Lucky Phil
+## Notes: Adds extra sets and functionality to the transmog and collection journal.
+## OptionalDeps: BetterWardrobe, MogMount,MogIt, CanIMogIt, LegionWardrobe, WardrobeEnhanced, Rarity, TransmogOutfits, ExtendedSets, ElvUI, PetTracker, PetTrackerJournal
+## SavedVariables: LuckyWardrobe_Options, LuckyWardrobe_CharacterData, LuckyWardrobe_SavedSetData, LuckyWardrobe_SubstituteItemData, LuckyWardrobe_ListData, BTT
 ## IconTexture: Interface\GossipFrame\transmogrifyGossipIcon.blp
-## AddonCompartmentFunc: BetterWardrobe_OnAddonCompartmentClick
+## AddonCompartmentFunc: LuckyWardrobe_OnAddonCompartmentClick
 
 #Libraries
 Libs\LibStub\LibStub.lua
@@ -51,9 +49,6 @@ Data\Leather.lua
 Data\Plate.lua
 Data\MISC.lua
 Data\SetOverrides.lua
-#@debug@
-Data\test.lua
-#@end-debug@
 
 Modules\Tooltips.lua
 
