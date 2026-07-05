@@ -1378,7 +1378,7 @@ function addon.Init:LoadModules()
 	end)
 
 	--addon.Init:LoadWardrobeModule()
-	
+
 
 	--[[
 	WardrobeFrame:HookScript("OnShow",  function() UpdateTransmogVendor() end)

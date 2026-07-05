@@ -2366,8 +2366,10 @@ function TransmogWardrobeSetsMixin:RefreshCollectionEntries()
 
 	local compareEntries = function(element1, element2)
 
-		if element1.favorite ~= element2.favorite then
-			return element1.favorite;
+		local favorite1 = element1.favorite and true or false;
+		local favorite2 = element2.favorite and true or false;
+		if favorite1 ~= favorite2 then
+			return favorite1;
 		end
 
 		local collected1 = element1.collected == element1.pieces

@@ -1083,7 +1083,6 @@ end
 
 
 function WardrobeSetsScrollFrameButtonMixin:OnClick(buttonName, down)
-
 	if BetterWardrobeCollectionFrame.selectedCollectionTab == 4 then
 		if ( buttonName == "LeftButton" ) then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -1139,12 +1138,14 @@ function WardrobeSetsScrollFrameButtonMixin:OnClick(buttonName, down)
 				end
 
 				rootDescription:CreateButton(text, function()
-					--addon.C_TransmogSets.SetIsFavorite(targetSetID, not favorite);
-					--addon.C_TransmogSets.SetIsFavorite(baseSetID, not favorite);
-
-
+					if type == "extraset" then
+						addon.favoritesDB.profile.extraset[baseSetID] = (not favorite) or nil;
+						addon.RefreshLists();
+					else
+						-- Blizzard sets fire TRANSMOG_SETS_UPDATE_FAVORITE, which refreshes the list.
+						Bizz_C_TransmogSets.SetIsFavorite(targetSetID, not favorite);
+					end
 					addon.Init:InitDB()
-					--RefreshLists()
 				end);
 			end);
 		end
