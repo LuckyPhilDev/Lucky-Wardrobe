@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "zhTW", false, true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale(addonName, "zhTW", false, true)
 -- Traditional Chinese translation by 三皈依 TW-暗影之月
 if not L then return end
 

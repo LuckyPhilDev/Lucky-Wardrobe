@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "deDE", false, true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale(addonName, "deDE", false, true)
 -- German translation by Dathwada EU-Eredar
 if not L then return end
 

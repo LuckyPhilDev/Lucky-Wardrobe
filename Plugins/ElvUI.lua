@@ -397,7 +397,7 @@ end
 addon.ApplyElvUISkin = applySkins
 
 
-function S:LuckyWardrobe()
+function S:LuckysBetterWardrobe()
 	if not (E.private.skins.blizzard.enable) then return end
 	addon.ElvUI_init = true
 
@@ -407,6 +407,6 @@ function S:LuckyWardrobe()
 
 end
 
-S:AddCallbackForAddon('LuckyWardrobe')
+S:AddCallbackForAddon('LuckysBetterWardrobe')
 E:RegisterModule(MyPlugin:GetName())  --Register the module with ElvUI. ElvUI will now call MyPlugin:Initialize() when ElvUI is ready to load our plugin.
 --saddon:RegisterMessage("BW_ADDON_LOADED", function() C_Timer.After(5, applySkins) end)

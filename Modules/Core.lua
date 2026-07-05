@@ -1064,8 +1064,8 @@ local DB_Defaults = {
 
 local firstRun = false
 local function UpdateDB()
-	local characterDB = LuckyWardrobe_CharacterData
-	local listDB = LuckyWardrobe_ListData
+	local characterDB = LuckysBetterWardrobe_CharacterData
+	local listDB = LuckysBetterWardrobe_ListData
 	local favoriteDB = listDB.favoritesDB or {}
 	local collectionDB = listDB.collectionListDB or {}
 	local hiddenDB = listDB.HiddenAppearanceDB or {}
@@ -1206,14 +1206,14 @@ function addon:OnInitialize()
 			_G[newName] = CopyTable(_G[oldName])
 		end
 	end
-	migrate("LuckyWardrobe_Options", "BetterWardrobe_Options")
-	migrate("LuckyWardrobe_CharacterData", "BetterWardrobe_CharacterData")
-	migrate("LuckyWardrobe_SavedSetData", "BetterWardrobe_SavedSetData")
-	migrate("LuckyWardrobe_SubstituteItemData", "BetterWardrobe_SubstituteItemData")
-	migrate("LuckyWardrobe_ListData", "BetterWardrobe_ListData")
+	migrate("LuckysBetterWardrobe_Options", "BetterWardrobe_Options")
+	migrate("LuckysBetterWardrobe_CharacterData", "BetterWardrobe_CharacterData")
+	migrate("LuckysBetterWardrobe_SavedSetData", "BetterWardrobe_SavedSetData")
+	migrate("LuckysBetterWardrobe_SubstituteItemData", "BetterWardrobe_SubstituteItemData")
+	migrate("LuckysBetterWardrobe_ListData", "BetterWardrobe_ListData")
 
-	LuckyWardrobe_ListData = LuckyWardrobe_ListData or {}
-	local listDB = LuckyWardrobe_ListData
+	LuckysBetterWardrobe_ListData = LuckysBetterWardrobe_ListData or {}
+	local listDB = LuckysBetterWardrobe_ListData
 	listDB.favoritesDB = listDB.favoritesDB or {}
 	listDB.collectionListDB = listDB.collectionListDB or {}
 	listDB.HiddenAppearanceDB = listDB.HiddenAppearanceDB or {}
@@ -1221,25 +1221,25 @@ function addon:OnInitialize()
 
 
 --Create all the profiled DB
-	self.db = LibStub("AceDB-3.0"):New("LuckyWardrobe_Options", defaults, true)
+	self.db = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_Options", defaults, true)
 	options.args.settings.args.options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	options.args.settings.args.options.name = L["Options Profiles"]
 	options.args.settings.args.options.order = 2
 
-	self.chardb = LibStub("AceDB-3.0"):New("LuckyWardrobe_CharacterData", DB_Defaults.char_defaults)
+	self.chardb = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_CharacterData", DB_Defaults.char_defaults)
 	--options.args.list_profiles.args.charprofiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.chardb)
 	--options.args.list_profiles.args.charprofiles.name = L["Profiles - Collection Settings"]
 
-	self.setdb = LibStub("AceDB-3.0"):New("LuckyWardrobe_SavedSetData", DB_Defaults.savedsets_defaults)
-	self.itemsubdb = LibStub("AceDB-3.0"):New("LuckyWardrobe_SubstituteItemData", DB_Defaults.itemsub_defaults, true)
+	self.setdb = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_SavedSetData", DB_Defaults.savedsets_defaults)
+	self.itemsubdb = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_SubstituteItemData", DB_Defaults.itemsub_defaults, true)
 	self.OutfitDB = LibStub("AceDB-3.0"):New(listDB.OutfitDB, DB_Defaults.charSavedOutfits_defaults)
 
 	self.favoritesDB =  LibStub("AceDB-3.0"):New(listDB.favoritesDB, DB_Defaults.list_defaults)
 	self.collectionListDB =  LibStub("AceDB-3.0"):New(listDB.collectionListDB, DB_Defaults.collectionList_defaults)
 	self.HiddenAppearanceDB =  LibStub("AceDB-3.0"):New(listDB.HiddenAppearanceDB, DB_Defaults.list_defaults)
-	self.char_savedOutfits = LibStub("AceDB-3.0"):New("LuckyWardrobe_SavedOutfitData", charSavedOutfits_defaults, true)
+	self.char_savedOutfits = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_SavedOutfitData", charSavedOutfits_defaults, true)
 
-	self.collectionCache = LibStub("AceDB-3.0"):New("LuckyWardrobe_CollectionCache", collection_cache_defaults, true)
+	self.collectionCache = LibStub("AceDB-3.0"):New("LuckysBetterWardrobe_CollectionCache", collection_cache_defaults, true)
 
 
 	local profile = self.setdb:GetCurrentProfile()
@@ -1498,6 +1498,6 @@ f:SetSize(1, 1)
 f:Hide()
 addon.prisonFrame = f
 
-function LuckyWardrobe_OnAddonCompartmentClick(addonName, buttonName, menuButtonFrame)
+function LuckysBetterWardrobe_OnAddonCompartmentClick(addonName, buttonName, menuButtonFrame)
       ToggleCollectionsJournal(5)
  end

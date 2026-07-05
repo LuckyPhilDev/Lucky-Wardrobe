@@ -1,0 +1,61 @@
+name: Package & Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # needed so changelog/versioning works properly
+
+      - name: Update version in .toc files
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          sed -i "s/^## Version:.*/## Version: $VERSION/" "LuckysBetterWardrobe.toc"
+          sed -i "s/^## Version:.*/## Version: $VERSION/" "BetterWardrobe_SourceData/BetterWardrobe_SourceData.toc"
+          echo "Updated .toc versions to $VERSION"
+
+      - name: Package and upload
+        run: |
+          bash <(curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh)
+        env:
+          CF_API_KEY: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # Optional: also attach the zip to a GitHub Release.
+          # Docs say it expects a GitHub PAT in GITHUB_OAUTH.
+          # If you don't care about GitHub releases, delete these two lines.
+          GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+
+      - name: Notify Discord on success
+        if: success()
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          NOTES=$(awk '/^## /{c++; if(c==2) exit} c==1 && !/^## /' CHANGELOG.md | sed '/./,$!d')
+          URL="https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION"
+          PAYLOAD=$(jq -n \
+            --arg title "Lucky's Better Wardrobe v$VERSION released" \
+            --arg url "$URL" \
+            --arg desc "$NOTES" \
+            '{embeds:[{title:$title, url:$url, description:$desc, color:3066993}]}')
+          curl -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.DISCORD_WEBHOOK }}"
+
+      - name: Notify Discord on failure
+        if: failure()
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          RUN_URL="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          PAYLOAD=$(jq -n \
+            --arg title "Lucky's Better Wardrobe v$VERSION - release failed" \
+            --arg url "$RUN_URL" \
+            '{embeds:[{title:$title, url:$url, color:15158332}]}')
+          curl -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.DISCORD_WEBHOOK }}"

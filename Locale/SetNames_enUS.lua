@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("LuckyWardrobe", "enUS", true)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 if not L then return end
 

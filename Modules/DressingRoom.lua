@@ -43,7 +43,7 @@ TP:SetScript("OnLoad", GameTooltip_OnLoad)
 --BW_GameTooltip.Text:SetFontObject(GameTooltipTextSmall)
 local TP = GameTooltip
 BW_GameTooltip = GameTooltip
-function LuckyWardrobe:ToggleDressingRoom()
+function LuckysBetterWardrobe:ToggleDressingRoom()
 		if DressUpFrame:IsShown() then 
 			HideUIPanel(DressUpFrame)
 		else

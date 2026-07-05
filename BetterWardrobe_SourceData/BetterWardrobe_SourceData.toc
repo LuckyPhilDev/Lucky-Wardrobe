@@ -4,11 +4,11 @@
 ## Author: SLOKnightfall
 ## Notes: 
 ## Category: Transmog
-## Group: LuckyWardrobe
+## Group: LuckysBetterWardrobe
 ## LoadOnDemand: 1
 ## DefaultState: enabled
 
-## IconTexture: Interface\AddOns\LuckyWardrobe\Images\DerectoryIcon
+## IconTexture: Interface\AddOns\LuckysBetterWardrobe\Images\DerectoryIcon
 
 #Data files
 Data\ColorData.lua

@@ -1,27 +1,27 @@
 <Bindings>
 	<Binding name="LUCKYWARDROBE_PREVIEW_SCROLL_UP" hidden="true">
-		local LuckyWardrobe = LibStub("AceAddon-3.0"):GetAddon("LuckyWardrobe")
-		LuckyWardrobe.preview.previewModel:SetFacing(LuckyWardrobe.preview.previewModel:GetFacing() +.1)
+		local LuckysBetterWardrobe = LibStub("AceAddon-3.0"):GetAddon("LuckysBetterWardrobe")
+		LuckysBetterWardrobe.preview.previewModel:SetFacing(LuckysBetterWardrobe.preview.previewModel:GetFacing() +.1)
 	</Binding>
 	<Binding name="LUCKYWARDROBE_PREVIEW_SCROLL_DOWN" hidden="true">
-		local LuckyWardrobe = LibStub("AceAddon-3.0"):GetAddon("LuckyWardrobe")
-		LuckyWardrobe.preview.previewModel:SetFacing(LuckyWardrobe.preview.previewModel:GetFacing() -.1)
+		local LuckysBetterWardrobe = LibStub("AceAddon-3.0"):GetAddon("LuckysBetterWardrobe")
+		LuckysBetterWardrobe.preview.previewModel:SetFacing(LuckysBetterWardrobe.preview.previewModel:GetFacing() -.1)
 	</Binding>
 
 	<Binding name= "LUCKYWARDROBE_BINDING_TOGGLE_DRESSINGROOM" hidden="false" category="BINDING_HEADER_LUCKYWARDROBE">
-		LuckyWardrobe:ToggleDressingRoom()
+		LuckysBetterWardrobe:ToggleDressingRoom()
 	</Binding>
 
 	<Binding name= "LUCKYWARDROBE_BINDING_TARGETGEAR" hidden="false"  category="BINDING_HEADER_LUCKYWARDROBE">
 		DressUpFrame_Show(DressUpFrame)
-		LuckyWardrobe:SetTargetGear()
+		LuckysBetterWardrobe:SetTargetGear()
 	</Binding>
 	<Binding name= "LUCKYWARDROBE_BINDING_TARGETMODEL" hidden="false" category="BINDING_HEADER_LUCKYWARDROBE">
 		DressUpFrame_Show(DressUpFrame)
-		LuckyWardrobe:SetTarget()
+		LuckysBetterWardrobe:SetTarget()
 	</Binding>
 	<Binding name= "LUCKYWARDROBE_BINDING_PLAYERMODEL" hidden="false" category="BINDING_HEADER_LUCKYWARDROBE">
 		DressUpFrame_Show(DressUpFrame)
-		LuckyWardrobe:SetTargetGear(true)
+		LuckysBetterWardrobe:SetTargetGear(true)
 	</Binding>
 </Bindings>

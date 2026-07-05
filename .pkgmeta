@@ -1,4 +1,4 @@
-package-as: LuckyWardrobe
+package-as: LuckysBetterWardrobe
 
 manual-changelog:
     filename: CHANGELOG.md
@@ -29,4 +29,4 @@ ignore:
     - Libs/LibArmorToken-1.0/LibStub.lua
 
 move-folders:
-    LuckyWardrobe/BetterWardrobe_SourceData: BetterWardrobe_SourceData
+    LuckysBetterWardrobe/BetterWardrobe_SourceData: BetterWardrobe_SourceData
