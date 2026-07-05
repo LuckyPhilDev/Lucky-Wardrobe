@@ -310,6 +310,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentTab5" parentKey="TierSetsTab" inherits="BW_PanelTopTabButtonTemplate" text="Tier Sets" id="5" frameLevel="75" >
+				<KeyValues>
+					<KeyValue key="minWidth" value="57" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<!-- SavedSetsTab (Tab4) is hidden in this fork; anchor past ExtraSetsTab instead -->
+					<Anchor point="LEFT" relativeKey="$parent.ExtraSetsTab"  relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BetterWardrobeCollectionFrame:ClickTab(self);
+					</OnClick>
+				</Scripts>
+			</Button>
 			<EditBox name="$parentSearchBox" parentKey="SearchBox" mixin="BetterWardrobeCollectionFrameSearchBoxMixin" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>

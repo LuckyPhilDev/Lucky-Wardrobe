@@ -110,6 +110,7 @@ local WARDROBE_TAB_ITEMS = 1;
 local WARDROBE_TAB_SETS = 2;
 local WARDROBE_TAB_EXTRASETS = 3;
 local WARDROBE_TAB_SAVED_SETS = 4;
+local WARDROBE_TAB_TIER_SETS = 5;
 local WARDROBE_TABS_MAX_WIDTH = 185;
 
 local WARDROBE_MODEL_SETUP = {
@@ -163,14 +164,31 @@ function WardrobeCollectionFrameMixin:CheckTab(tab)
 	end
 end
 
+-- The hidden Custom Sets tab (Tab4) sits between Extra and Tier in tab order,
+-- so PanelTemplates_ResizeTabsToFit re-flows Tier past its empty slot. Re-pin
+-- Tier flush against Extra after every resize.
+function WardrobeCollectionFrameMixin:AnchorTierTab()
+	if self.TierSetsTab and self.ExtraSetsTab then
+		self.TierSetsTab:ClearAllPoints();
+		self.TierSetsTab:SetPoint("LEFT", self.ExtraSetsTab, "RIGHT", 0, 0);
+	end
+end
+
 function WardrobeCollectionFrameMixin:ClickTab(tab)
 	self:SetTab(tab:GetID());
 	PanelTemplates_ResizeTabsToFit(WardrobeCollectionFrame, WARDROBE_TABS_MAX_WIDTH);
+	self:AnchorTierTab();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WardrobeCollectionFrameMixin:SetTab(tabID)
 	PanelTemplates_SetTab(self, tabID);
+	-- ponytail: Tier tab reuses the Blizzard Sets pipeline (tab 2) with a
+	-- tier-only filter flag instead of a fifth data path
+	addon.tierOnly = (tabID == WARDROBE_TAB_TIER_SETS);
+	if addon.tierOnly then
+		tabID = WARDROBE_TAB_SETS;
+	end
 	self.selectedCollectionTab = tabID;
 
 	if (addon.Profile.IgnoreClassRestrictions and addon.GetTab() ~= 1)  then 
@@ -682,9 +700,10 @@ end
 
 function WardrobeCollectionFrameMixin:OnLoad()
 
-	PanelTemplates_SetNumTabs(self, 4);
+	PanelTemplates_SetNumTabs(self, 5);
 	PanelTemplates_SetTab(self, WARDROBE_TAB_ITEMS);
 	PanelTemplates_ResizeTabsToFit(self, WARDROBE_TABS_MAX_WIDTH);
+	self:AnchorTierTab();
 	self.selectedCollectionTab = WARDROBE_TAB_ITEMS;
 	self:SetTab(self.selectedCollectionTab);
 

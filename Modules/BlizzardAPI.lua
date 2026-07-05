@@ -401,6 +401,17 @@ local PvPSets = {
 	["Elite"] = true,
 }
 
+-- Class tier sets: Blizzard sets restricted to a single class, excluding PvP,
+-- covenant, trading post / shop, and Remix sets.
+function addon.IsTierSet(data)
+	if data.setType ~= "Blizzard" or not data.classID then return false end
+	if data.description and PvPSets[data.description] then return false end
+	if data.setID >= 2015 and data.setID <= 2221 then return false end -- covenant armor
+	if data.filter == 12 then return false end -- trading post / shop
+	if addon.MiscSets.REMIX_SETS[tonumber(data.setID)] then return false end
+	return true
+end
+
 addon.RefreshFilter = true
 function addon:FilterSets(setList, setType)
 	local FilterSets = {}
@@ -433,6 +444,7 @@ function addon:FilterSets(setList, setType)
 		local sourcefilter = (BetterWardrobeCollectionFrame:CheckTab(3) and filterSelection[data.filter])
 		local unavailableFilter = (not unavailable or (addon.Profile.HideUnavalableSets and unavailable))
 		local tab = (BetterWardrobeCollectionFrame:CheckTab(2) and data.tab == 2) or (BetterWardrobeCollectionFrame:CheckTab(3) and data.tab == 3)
+		local tierOK = not addon.tierOnly or addon.IsTierSet(data)
 		if BetterWardrobeCollectionFrame:CheckTab(2) then
 			--expansion = expansion + 1
 			sourcefilter = true
@@ -463,6 +475,7 @@ function addon:FilterSets(setList, setType)
 			sourcefilter and
 			searchSet and
 			not isHidden and
+			tierOK and
 			tab then
 			--(not unavailable or (addon.Profile.HideUnavalableSets and unavailable)) then ----and
 			tinsert(FilterSets, data)
