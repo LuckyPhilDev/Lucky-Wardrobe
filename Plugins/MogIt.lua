@@ -68,7 +68,7 @@ local function UpdateFrames()
 			button:SetScript("OnClick", function(self, button2)
 				if IsControlKeyDown() and button2 == "RightButton" then
 					local preview = mog:GetPreview();
-					local sources = (index == 1 and C_TransmogSets.GetSetSources(self.setID)) or  addon.GetSetsources(self.setID)
+					local sources = (index == 1 and C_TransmogSets.GetSetSources(self.setID)) or  addon.GetSetSources(self.setID)
 					for source in pairs(sources) do
 						mog:AddToPreview(select(6, C_TransmogCollection.GetAppearanceSourceInfo(source)), preview);
 					end
@@ -214,7 +214,7 @@ function MogIt.UpdateWishlistItem(type, typeID, add)
 			setName = C_TransmogSets.GetSetInfo(typeID).name
 		else
 			setInfo = addon.GetSetInfo(typeID)
-			sources = addon.GetSetsources(typeID)
+			sources = addon.GetSetSources(typeID)
 			setName = "name"
 			itemModID = setInfo.mod or 0
 		end
