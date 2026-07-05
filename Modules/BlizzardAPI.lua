@@ -57,7 +57,10 @@ end
 function addon.C_TransmogSets.GetSetInfo(setID)
 	local SetsData = addon.GetSetInfo(setID)
 
-	if not SetsData then return {} end
+	-- Some sets are listed by Blizzard but excluded from the addon's DB (e.g. new
+	-- all-class sets whose class mask the addon doesn't yet recognise). Fall back to
+	-- Blizzard's own data so they still preview instead of showing an empty set.
+	if not SetsData then return C_TransmogSets.GetSetInfo(setID) end
 
 	if SetsData.setType == "Blizzard" then
 		return C_TransmogSets.GetSetInfo(setID)
@@ -69,7 +72,9 @@ end
 function addon.C_TransmogSets.GetBaseSetID(setID)
 	local SetsData = addon.GetSetInfo(setID)
 
-	if not SetsData then return {} end
+	-- Sets Blizzard lists but the addon's DB excludes (e.g. new all-class sets)
+	-- aren't mirrored, so defer to Blizzard's own base/variant grouping.
+	if not SetsData then return C_TransmogSets.GetBaseSetID(setID) end
 
 	if SetsData.setType == "Blizzard" then
 		return C_TransmogSets.GetBaseSetID(setID)
@@ -82,7 +87,7 @@ end
 function addon.C_TransmogSets.GetSetPrimaryAppearances(setID)
 	local SetsData = addon.GetSetInfo(setID)
 
-	if not SetsData then return {} end
+	if not SetsData then return C_TransmogSets.GetSetPrimaryAppearances(setID) end
 
 	if SetsData.setType == "Blizzard" then
 		return C_TransmogSets.GetSetPrimaryAppearances(setID)
@@ -196,7 +201,7 @@ end
 function addon.C_TransmogSets.GetVariantSets(setID)
 	local SetsData = addon.GetSetInfo(setID)
 
-	if not SetsData then return {} end
+	if not SetsData then return C_TransmogSets.GetVariantSets(setID) end
 	if SetsData.setType == "Blizzard" then
 		--print(setID)
 		return C_TransmogSets.GetVariantSets(setID)

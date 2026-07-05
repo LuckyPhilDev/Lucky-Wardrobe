@@ -325,11 +325,6 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 
 	self.DetailsFrame.Label:SetText((setInfo.label or "")..((not setInfo.isClass and setInfo.className) and " -"..setInfo.className.."-" or "") );
 
-	--@debug@
-		self.DetailsFrame.HolidayLabel:Show() 
-		self.DetailsFrame.HolidayLabel:SetText(setID);
-	--@end-debug@
-
 	if ((setInfo.description == ELITE) and setInfo.patchID < buildID) or (setID <= 1446 and setID >=1436) then
 		setInfo.noLongerObtainable = true;
 		setInfo.limitedTimeSet = nil;
@@ -385,7 +380,7 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 	self.Model:Undress();
 	local BUTTON_SPACE = 37;	-- button width + spacing between 2 buttons
 	local sortedSources = SetsDataProvider:GetSortedSetSources(setID);
-	
+
 	local row1 = #sortedSources;
 	local row2 = 0;
 	local yOffset1 = -94;
@@ -503,7 +498,7 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 
 		if invType  == 20 then invType = 5 end
 		if not addon.setdb.profile.autoHideSlot.toggle or ( addon.setdb.profile.autoHideSlot.toggle and not addon.setdb.profile.autoHideSlot[invType]) then
-			if itemFrame.AltItem.useAlt then 
+			if itemFrame.AltItem.useAlt then
 				self.Model:TryOn(itemFrame.AltItem.altid[itemFrame.AltItem.index]);
 			else
 				self.Model:TryOn(sortedSources[i].sourceID);
