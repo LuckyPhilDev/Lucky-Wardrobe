@@ -1,4 +1,4 @@
-# Lucky Wardrobe
+# Lucky's Better Wardrobe
 
 Adds extra sets and functionality to the transmog and collection journal.
 

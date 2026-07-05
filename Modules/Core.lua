@@ -116,7 +116,7 @@ end
 local screenWidth =  math.floor(UIParent:GetWidth())
 --ACE3 Options Constuctor
 local options = {
-	name = "Lucky Wardrobe",
+	name = "Lucky's Better Wardrobe",
 	handler = optionHandler,
 	get = "Getter",
 	set = "Setter",
@@ -784,7 +784,7 @@ local options = {
 }
 local subTextFields={}
 local itemSub_options = {
-	name = "Lucky Wardrobe",
+	name = "Lucky's Better Wardrobe",
 	type = 'group',
 	childGroups = "tab",
 	inline = false,
@@ -908,7 +908,7 @@ end
 
 
 local savedOutfits_options = {
-	name = "Lucky Wardrobe",
+	name = "Lucky's Better Wardrobe",
 	type = 'group',
 	childGroups = "tab",
 	inline = false,
@@ -1269,7 +1269,7 @@ function addon:OnInitialize()
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, options)
 
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, "Lucky Wardrobe")
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, "Lucky's Better Wardrobe")
 
 	self.db.RegisterCallback(addon, "OnProfileChanged", "RefreshConfig")
 	self.db.RegisterCallback(addon, "OnProfileCopied", "RefreshConfig")

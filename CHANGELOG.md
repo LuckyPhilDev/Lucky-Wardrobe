@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-First release of Lucky Wardrobe, a continuation of Better Wardrobe and Transmog by SLOKnightfall.
+First release of Lucky's Better Wardrobe, a continuation of Better Wardrobe and Transmog by SLOKnightfall.
 
 ### Added
 
