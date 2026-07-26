@@ -20,8 +20,6 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **TSM group export**: Turn the shopping list into a TradeSkillMaster group, sorted by appearance.
 - **Item substitution**: Swap any piece in a set for a different appearance, useful when an item has left the game or you simply prefer another look.
 - **Other armour types and classes**: View sets outside your own armour weight or class, with clear indicators on sets flagged for someone else.
-- **Queue a set**: Right-click a set and choose Queue Set to load it straight onto the paper doll next time you visit a transmog vendor.
-- **Collection alerts**: Optional chat messages when you learn a set, extra set, or Collection List appearance.
 
 ### Transmog Vendor
 
@@ -30,9 +28,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Combine sets**: Pick a base set, then shift-click other sets to fill its empty slots from lookalikes or different raid difficulties.
 - **Auto-hide missing pieces**: Empty slots on an incomplete set can be set to hidden automatically.
 - **Unlimited saved outfits**: Outfits past Blizzard's cap of 20 are saved by the addon and appear in the normal outfit list.
-- **Randomizer**: One click builds a random outfit. Shift-click to pull a random outfit from your saved ones instead.
-- **Set names and counts**: Names and collected piece counts on the vendor's set list.
-- **Load queued sets**: Pull in the set you queued from the journal without hunting for it again.
+- **Randomizer**: Click the dice to roll a random set of armour appearances from your collection, or hold it down to keep rolling until you see something you like.
 
 ### Tooltips
 
@@ -41,11 +37,13 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 
 ### Dressing Room
 
-- **Resize and move**: Drag the dressing room anywhere and set the size you want.
-- **Auto-hide**: Optionally strip tabards, shirts, weapons, and the background on open.
-- **Slot buttons**: See the appearance in each slot and right-click to clear it.
-- **Undress**: One button to strip the model.
-- **Import and export**: Paste a Wowhead compare URL or a MogIt string to load an outfit, and export what you're wearing in MogIt format.
+Off by default and still rough around the edges. Turn it on in settings under Dressing Room.
+
+- **Move it anywhere**: Drag the dressing room window wherever you want it.
+- **Auto-hide**: Open the dressing room already undressed, or with tabard, shirt, and weapons stripped. The background can be dimmed or hidden too.
+- **Slot buttons**: See the appearance in each slot, left-click to toggle it, right-click to clear it.
+- **Undress and undo**: One button strips the model, another steps back through what you were just previewing.
+- **Import and export**: Load an outfit from a MogIt string, and export what you're wearing in MogIt format.
 
 ## Installation
 
@@ -74,8 +72,9 @@ The addon compartment button on the minimap opens the Appearances collection.
 
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
-- **General**: Ignore class restrictions on sets and appearances, and choose whether newly collected sets, extra sets, and Collection List appearances are announced in chat.
-- **Transmog Vendor Window**: Show incomplete sets, show hidden items, hide or apply the hidden transmog to missing pieces, set how many pieces a set needs before it counts as owned, and toggle set names and collected counts.
+- **General**: Ignore class restrictions on sets and appearances.
+- **Dressing Room**: Turn on the dressing room enhancements. Off by default while the feature is unfinished.
+- **Transmog Vendor Window**: Show incomplete sets, show hidden items, hide or apply the hidden transmog to missing pieces, and set how many pieces a set needs before it counts as owned.
 
 ## Author
 

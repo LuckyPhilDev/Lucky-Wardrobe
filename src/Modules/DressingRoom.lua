@@ -53,20 +53,19 @@ function LuckysBetterWardrobe:ToggleDressingRoom()
 end
 
 function addon.Init:DressingRoom()
-	DressUpFrameOutfitDropdown:Hide()
-
 	Buttons = BW_DressingRoomFrame.PreviewButtonFrame.Slots
 	Profile = addon.Profile
 
 	if addon.Profile.DR_OptionsEnable then
 		addon:DressingRoom_Enable()
 	else
-		addon:DressingRoom_Disable()
+		BW_DressingRoomFrame:Hide()
 	end
 end
 
 local reset = false
 local defaultWidth, defaultHeight = 450, 545
+local secureHooksInstalled = false
 function addon:DressingRoom_Enable()
 	BW_DressingRoomFrame:Show()
 	addon:HookScript(DressUpFrameResetButton,"OnClick", function()
@@ -80,8 +79,6 @@ function addon:DressingRoom_Enable()
 
 	if DressUpFrame.MaximizeMinimizeFrame then
 		DressUpFrame.MaximizeMinimizeFrame:SetOnMaximizedCallback(function(self)
-			DressUpFrameOutfitDropdown:Hide()
-
 			if Profile.DR_ResizeWindow then
 				DressUpFrame.MaximizeMinimizeFrame:GetParent():SetSize(Profile.DR_Width, Profile.DR_Height) 
 			else
@@ -101,13 +98,16 @@ function addon:DressingRoom_Enable()
 	DressUpFrame:RegisterForDrag("LeftButton")
 	DressUpFrame:SetScript("OnDragStart", DressUpFrame.StartMoving)
 	DressUpFrame:SetScript("OnDragStop", DressUpFrame.StopMovingOrSizing)
-	hooksecurefunc("DressUpVisual", DressingRoom.Update);
-	hooksecurefunc("DressUpCollectionAppearance", DressingRoom.Update);
+	-- ponytail: secure hooks can't be removed, so only install them once per session
+	if not secureHooksInstalled then
+		secureHooksInstalled = true
+		hooksecurefunc("DressUpVisual", DressingRoom.Update);
+		hooksecurefunc("DressUpCollectionAppearance", DressingRoom.Update);
+	end
 end
 
 function addon:DressingRoom_Disable()
 	BW_DressingRoomFrame:Hide()
-	addon:Unhook("DressUpSources")
 	addon:Unhook(DressUpFrameResetButton,"OnClick")
 
 	DressUpFrame:SetMovable(false)
@@ -156,7 +156,7 @@ local function GetDressUpModelSlotSource(slotID, enchantID)
 	end
 
 	local slotname = TransmogUtil.GetSlotName(slotID)
-	local transmogLocation = TransmogUtil.GetTransmogLocation(slotname, Enum.TransmogType.Appearance, Enum.TransmogModification.Main)
+	local transmogLocation = TransmogUtil.GetTransmogLocation(slotname, Enum.TransmogType.Appearance, false)
 	local info = playerActor:GetItemTransmogInfoList()
 	appliedSourceID = info[slotID].appearanceID
 
@@ -172,7 +172,8 @@ local function GetDressUpModelSlotSource(slotID, enchantID)
 	local itemName = sourceInfo.name
 	local appearanceID, sourceID = C_TransmogCollection.GetItemInfo(itemID, itemModID)
 	local itemIcon = C_TransmogCollection.GetSourceIcon(appliedSourceID)
-	local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(appliedSourceID))
+	local appliedSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(appliedSourceID)
+	local itemLink = appliedSourceInfo and appliedSourceInfo.itemLink
 	local hasAppearance = C_TransmogCollection.PlayerHasTransmog(itemID, itemModID) or IsAppearanceKnown(itemLink)
 
 	if itemName and (slotID == 16 or slotID == 17) then 
@@ -290,6 +291,7 @@ function DressingRoom:Update(...)
 	local viewedLink = ...
 	local frame = BW_DressingRoomFrame
 	if not BW_DressingRoomFrame then return end
+	if not addon.Profile.DR_OptionsEnable then return end
 
 	if not frame.pauseUpdate or viewedLink then
 		frame.pauseUpdate = true
@@ -597,10 +599,8 @@ local function BW_DressingRoomImportButton_OnClick(self)
 					return false
 				end
 
-				if setType == "set" then
-					sources = C_TransmogSets.GetSetSources(setID)
-				elseif setType == "extraset" then
-					sources = addon.SetsDataProvider:GetSetSources(setID) --addon.GetSetsources(setID)
+				if setType == "set" or setType == "extraset" then
+					sources = addon.GetSetSources(setID)
 				end
 
 				if not sources then return end
@@ -795,7 +795,7 @@ function BetterDressUpOutfitMixin:LoadOutfit(outfitID)
 
 	if setType == "SavedBlizzard"  or (outfitID >= SET_OFFSET and outfitID <= SET_OFFSET+25) then
 		local outfitID = addon:GetBlizzID(outfitID)
-		DressUpItemTransmogInfoList(C_TransmogCollection.GetOutfitItemTransmogInfoList(outfitID))
+		DressUpItemTransmogInfoList(C_TransmogCollection.GetCustomSetItemTransmogInfoList(outfitID))
 	else
 		local outfit = addon.GetSetInfo(outfitID)
 		local itemTransmogInfoList = {}

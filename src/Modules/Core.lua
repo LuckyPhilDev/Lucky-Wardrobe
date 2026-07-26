@@ -47,6 +47,7 @@ local defaults = {
 		PartialLimit = 4,
 		ShowHidden = false,
 		TSM_Market = "DBMarket",
+		DR_OptionsEnable = false,
 		DR_HideBackground = false,
 		DR_HideWeapons = false,
 		DR_StartUndressed = false,
@@ -312,6 +313,13 @@ function addon:OnInitialize()
 	end
 end
 
+local function InitFeature(name, init)
+	local ok, err = pcall(init)
+	if not ok then
+		geterrorhandler()(("Lucky's Better Wardrobe: %s failed to load. %s"):format(name, err))
+	end
+end
+
 local initialize
 function addon:OnEnable()
 	_,playerClass, classID = UnitClass("player")
@@ -321,16 +329,6 @@ function addon:OnEnable()
 	addon:BuildSettingsPanel()
 	addon.Init:InitDB()
 
-	--addon.Init:BuildTooltips()
-	----addon.Init:DressingRoom()
-	--addon.Init.LoadCollectionListModule()
-	--BW_ColectionListFrameTemplate
-	--addon.Init:BuildTooltips()
-	----addon:InitTooltips()
-	C_Timer.After(0.5, function()
-		----addon.RefreshSubItemData()
-		----addon.RefreshOutfitData()
-	end)
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED", "EventHandler")
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED", "EventHandler")
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler")
@@ -349,6 +347,12 @@ function addon:OnEnable()
 
 	C_Timer.After(1, function() addon.Init:LoadModules() end)
 	--self:HookCustomSetsOnHide()
+
+	-- Optional features last: a failure here must not cost the vendor and journal UI.
+	InitFeature("tooltips", function() addon:InitTooltips() end)
+	InitFeature("dressing room", function() addon.Init:DressingRoom() end)
+	--addon.Init.LoadCollectionListModule()
+	--BW_ColectionListFrameTemplate
 end
 
 --Hides default collection window when at transmog vendor
@@ -505,9 +509,10 @@ function addon:EventHandler(event, ...)
 				TransmogFrame.WardrobeCollection.TabContent.ItemsFrame.PagedContent.PagingControls = f
 
 				 self:SecureHookScript(TransmogFrame, "OnShow", function() C_Timer.After(.1, function() addon:UpdateTabs(); end) end)
+
+				addon:CreateButtons()
 			end
 			addon:UpdateTabs();
-					--addon:CreateButtons()
 		 end)
 
 		----C_Timer.After(1, function() addon:ResetSetsCollectionFrame() end)

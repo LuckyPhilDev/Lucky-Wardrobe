@@ -1017,7 +1017,8 @@ local function ToggleHidden(model, isHidden)
 	local tabID = addon.GetTab()
 	if tabID == 1 then
 		local visualID = model.visualInfo.visualID;
-		local _, _, _, _, _, itemLink = C_TransmogCollection.GetAppearanceSourceInfo(visualID);
+		local sourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(visualID);
+		local itemLink = sourceInfo and sourceInfo.itemLink;
 		local name, link;
 		if itemLink then 
 			local source = CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, addon.GetItemCategory(visualID), addon.GetTransmogLocation(itemLink))[1];

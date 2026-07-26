@@ -34990,7 +34990,6 @@ local ct ={
 
 }
  function EncodeColors()
- 	print("run")
 	 ColorTable = ct --(_G.BetterWardrobeData and _G.BetterWardrobeData.ColorTable2) or {}
 	BTT = {}
 	--AceSerializer:Embed(addon)

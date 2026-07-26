@@ -31,34 +31,6 @@ function addon:BuildSettingsPanel()
             end,
         })
 
-        local alertsLabel = L["Print Set Collection alerts to chat:"]
-        g:Toggle({
-            label   = alertsLabel,
-            desc    = "Announce newly collected sets in the chat window.",
-            checked = Profile.ShowCollectionUpdates,
-            onToggle = function(v) Profile.ShowCollectionUpdates = v end,
-        })
-
-        g:Toggle({
-            label   = L["Sets"],
-            parent  = alertsLabel,
-            checked = Profile.ShowSetCollectionUpdates,
-            onToggle = function(v) Profile.ShowSetCollectionUpdates = v end,
-        })
-
-        g:Toggle({
-            label   = L["Extra Sets"],
-            parent  = alertsLabel,
-            checked = Profile.ShowExtraSetsCollectionUpdates,
-            onToggle = function(v) Profile.ShowExtraSetsCollectionUpdates = v end,
-        })
-
-        g:Toggle({
-            label   = L["Collection List"],
-            parent  = alertsLabel,
-            checked = Profile.ShowCollectionListCollectionUpdates,
-            onToggle = function(v) Profile.ShowCollectionListCollectionUpdates = v end,
-        })
     end
 
     ---------------------------------------------------------------------------
@@ -101,16 +73,23 @@ function addon:BuildSettingsPanel()
             onChanged = function(val) Profile.PartialLimit = val end,
         })
 
-        g:Toggle({
-            label   = L["Show Set Names"],
-            checked = Profile.ShowNames,
-            onToggle = function(v) Profile.ShowNames = v end,
-        })
+    end
+
+    do
+        local g = panel:Group("Dressing Room")
 
         g:Toggle({
-            label   = L["Show Collected Count"],
-            checked = Profile.ShowSetCount,
-            onToggle = function(v) Profile.ShowSetCount = v end,
+            label   = "Enable dressing room enhancements",
+            desc    = "Adds slot buttons, undress, undo, and outfit import and export to the dressing room. This feature is incomplete and unpolished, expect rough edges.",
+            checked = Profile.DR_OptionsEnable,
+            onToggle = function(v)
+                Profile.DR_OptionsEnable = v
+                if v then
+                    addon:DressingRoom_Enable()
+                else
+                    addon:DressingRoom_Disable()
+                end
+            end,
         })
     end
 

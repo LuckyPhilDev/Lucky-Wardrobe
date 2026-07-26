@@ -40,9 +40,9 @@ function CollectionList:BuildCollectionList(complete)
 				 if info.sourceType then
 				 	sourceTypes[info.sourceType] = true
 				 end
-				 local collected = select(5,C_TransmogCollection.GetAppearanceSourceInfo(d))
+				 local sourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(d)
 
-				 if collected then
+				 if sourceInfo and sourceInfo.isCollected then
 				 	isCollected = true
 				 end
 			end
@@ -256,7 +256,7 @@ function BetterWardrobeSetsCollectionListMixin:CreateSlotButtons()
 	button.NormalTexture:ClearAllPoints()
 	button.NormalTexture:SetAllPoints()
 	button.NormalTexture:SetAtlas("transmog-nav-slot-enchant", false)
-	button.transmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Illusion, Enum.TransmogModification.Main)
+	button.transmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Illusion, false)
 	button.parent = parentFrame
 	button.SelectedTexture:SetShown(true)
 

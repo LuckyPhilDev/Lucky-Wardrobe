@@ -70,7 +70,6 @@ L["Profiles"] = true
 L["General Options"] = true
 L["Ignore Class Restriction Filter"] = true
 L["Only for Raid Lookalike/Recolor Sets"] = true
-L["Print Set Collection alerts to chat:"] = true
 L["Sets"] = true
 L["Extra Sets"] = true
 L["MogIt Saved Set"] = true
@@ -96,8 +95,6 @@ L["Show Hidden Items"] = true
 L["Hide Missing Set Pieces at Transmog Vendor"] = true
 L["Use Hidden Transmog for Missing Set Pieces"] = true
 L["Required pieces"] = true
-L["Show Set Names"] = true
-L["Show Collected Count"] = true
 
 L["Select Slot to Hide"] = true
 L["Requires 'Show Incomplete Sets' Enabled"] = true

@@ -58,7 +58,6 @@ L["Profiles"] = "Profile"
 L["General Options"] = "Allgemein"
 L["Ignore Class Restriction Filter"] = "Klassenfilter ignorieren"
 L["Only for Raid Lookalike/Recolor Sets"] = "Nur für Raid Lookalike/Recolor Sets"
-L["Print Set Collection alerts to chat:"] = "Sammelnachricht im Chat für:"
 L["Sets"] = true
 L["Extra Sets"] = true
 L["Collection List"] = "Sammelliste"
@@ -77,8 +76,6 @@ L["Show Items set to Hidden"] = "Ausgeblendete Vorlagen anzeigen"
 L["Hide Missing Set Pieces at Transmog Vendor"] = "Verstecke fehlende Setteile beim Transmogrifizierer"
 L["Use Hidden Transmog for Missing Set Pieces"] = "Verwende \"versteckte\" Transmogvorlagen, für fehlende Setteile."
 L["Required pieces"] = "Zeige nur Sets mit X Gegenständen:"
-L["Show Set Names"] = "Setnamen anzeigen"
-L["Show Collected Count"] = "Gesammelte Anzahl anzeigen"
 
 L["Select Slot to Hide"] = "Slot zum verstecken auswählen"
 L["Requires 'Show Incomplete Sets' Enabled"] = "'Unvollständige Sets anzeigen' muss aktiviert sein"

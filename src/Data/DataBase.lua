@@ -613,7 +613,7 @@ end
 
 	function addon.Init:UpdateCollectedAppearances()
 		for i = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE - 1 do
-			local location = TransmogUtil.GetTransmogLocation(addon.Globals.CATEGORYID_TO_NAME[i], Enum.TransmogType.Appearance, Enum.TransmogModification.Main)
+			local location = TransmogUtil.GetTransmogLocation(addon.Globals.CATEGORYID_TO_NAME[i], Enum.TransmogType.Appearance, false)
 			local appearances = C_TransmogCollection.GetCategoryAppearances(i, location)
 			for _, appearance in pairs(appearances) do
 				local sources = C_TransmogCollection.GetAppearanceSources(appearance.visualID, i, location)
@@ -929,10 +929,10 @@ end
 
 	function addon.StoreBlizzardSets()
 		local BlizzardSavedSets = {}
-		local outfits = C_TransmogCollection.GetOutfits();
+		local outfits = C_TransmogCollection.GetCustomSets();
 		for i, outfitID in ipairs(outfits) do
 			local data = {}
-			local name, icon = C_TransmogCollection.GetOutfitInfo(outfitID);
+			local name, icon = C_TransmogCollection.GetCustomSetInfo(outfitID);
 			data.index = i
 			data.outfitID = outfitID
 			data.name = name
@@ -1299,9 +1299,14 @@ end
 		return visualID ,sourceID
 	end
 
+	-- 12.0.7 removed C_TransmogSets.GetSetSources. Callers still want its sourceID -> collected
+	-- map, so rebuild it from the primary appearance list that survived.
 	function addon.GetSetSources(setID)
-		--return C_TransmogSets.GetSetPrimaryAppearances(setID)
-		return addon.C_TransmogSets.GetSetSources(setID)
+		local sources = {}
+		for _, appearance in ipairs(addon.C_TransmogSets.GetSetPrimaryAppearances(setID) or {}) do
+			sources[appearance.appearanceID] = appearance.collected
+		end
+		return sources
 	end
 
 	function addon:IsCollected(visualID)

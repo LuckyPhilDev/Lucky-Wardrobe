@@ -181,9 +181,9 @@ function IE.ImportTransmogVendorSet(importString)
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID)
 		if sourceInfo then
 			local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
-			local pendingInfo = TransmogUtil.CreateTransmogPendingInfo(Enum.TransmogPendingType.Apply, sourceID);
-			local transmogLocation = TransmogUtil.CreateTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-			C_Transmog.SetPending(transmogLocation, pendingInfo);
+			local transmogLocation = TransmogUtil.CreateTransmogLocation(slot, Enum.TransmogType.Appearance, false);
+			local displayType = C_TransmogCollection.IsAppearanceHiddenVisual(sourceID) and Enum.TransmogOutfitDisplayType.Hidden or Enum.TransmogOutfitDisplayType.Assigned
+			C_TransmogOutfitInfo.SetPendingTransmog(transmogLocation:GetSlot(), transmogLocation:GetType(), Enum.TransmogOutfitSlotOption.None, sourceID, displayType);
 		end
 	end
 end

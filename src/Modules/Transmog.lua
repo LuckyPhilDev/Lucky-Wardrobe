@@ -2814,40 +2814,24 @@ function TransmogWardrobeSituationsMixin:Refresh()
 end
 ]]--
 
-BW_DressingRoomButtonMixin = {}
+BW_DressingRoomButtonMixin = BW_DressingRoomButtonMixin or {}
 
 --Creates the various buttons used on the Collection Journal
 function addon:CreateButtons()
-	--Load Queue Button
-	local BW_LoadQueueButton = CreateFrame("Button", "BW_LoadQueueButton", TransmogFrame.CharacterPreview, "BetterWardrobeButtonTemplate")
-	BW_LoadQueueButton.Icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
-	BW_LoadQueueButton:SetPoint("TOPLEFT", TransmogFrame.CharacterPreview, "TOPLEFT", 20,-5)
-	BW_LoadQueueButton.buttonID = "Import"
-	BW_LoadQueueButton:SetScript("OnClick", function(self) BW_TransmogVendorExportButton_OnClick(self) end)
-	--BW_LoadQueueButton:SetScript("OnEnter",  function(self) BW_DressingRoomButtonMixin:OnEnter(self) end)
-	BW_LoadQueueButton:SetSize(20, 20)
-
 	--Randomize Button, Mixin defined in Randomizer.lua
 	local BW_RandomizeButton = CreateFrame("Button", "BW_RandomizeButton", TransmogFrame.CharacterPreview, "BetterWardrobeButtonTemplate")
 	BW_RandomizeButton.Icon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up")
-	--Mixin(BW_RandomizeButton, BW_RandomizeButtonMixin)
-	BW_RandomizeButton:SetPoint("TOPLEFT", BW_LoadQueueButton, "TOPRIGHT" , 0, 0)
+	Mixin(BW_RandomizeButton, BW_RandomizeButtonMixin)
+	--Sits above Blizzard's clear pending button, clear of the slot toggles on the left.
+	BW_RandomizeButton:SetPoint("TOPRIGHT", TransmogFrame.CharacterPreview, "TOPRIGHT", -21, -90)
+	BW_RandomizeButton:SetSize(36, 36)
+	--The preview's ModelScene covers the whole frame and swallows clicks, so match the
+	--frame level Blizzard gives its own buttons in here.
+	BW_RandomizeButton:SetFrameLevel(100)
+	BW_RandomizeButton:SetScript("OnClick", nil)
 	BW_RandomizeButton:SetScript("OnMouseUp", BW_RandomizeButton.OnMouseUp)
 	BW_RandomizeButton:SetScript("OnMouseDown", BW_RandomizeButton.OnMouseDown)
 	BW_RandomizeButton:SetScript("OnEnter", BW_RandomizeButton.OnEnter)
-
-	local BW_SlotHideButton = CreateFrame("Button", "BW_SlotHideButton", TransmogFrame.CharacterPreview, "BetterWardrobeButtonTemplate")
-	BW_SlotHideButton.buttonID = "HideSlot"
-	BW_SlotHideButton:SetScript("OnEnter", function(self) BW_DressingRoomButtonMixin:OnEnter() end)
-	
-	BW_SlotHideButton.Icon:SetTexture("Interface\\PvPRankBadges\\PvPRank12")
-	--Mixin(BW_SlotHideButton, BW_SlotHideButtonMixin)
-	BW_SlotHideButton:SetPoint("TOPLEFT", BW_RandomizeButton, "TOPRIGHT" , 0, 0)
-	BW_SlotHideButton:SetScript("OnClick", function(self) UI:HideSlotMenu_OnClick(self) end)
-
-	--BW_SlotHideButton:SetScript("OnMouseUp", BW_SlotHideButton.OnMouseUp)
-	--BW_SlotHideButton:SetScript("OnMouseDown", BW_SlotHideButton.OnMouseDown)
-	--BW_SlotHideButton:SetScript("OnEnter", BW_SlotHideButton.OnEnter)
 
 	----local BW_TransmogOptionsDropDown= CreateFrame("Frame", "BW_TransmogOptionsDropDown", BetterWardrobeCollectionFrame, "BW_UIDropDownMenuTemplate")
 	----BW_TransmogOptionsDropDown = BW_TransmogOptionsDropDown

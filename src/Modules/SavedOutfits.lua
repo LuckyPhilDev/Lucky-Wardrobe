@@ -4,21 +4,21 @@ addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 
-local MAX_DEFAULT_OUTFITS = 25 --C_TransmogCollection.GetNumMaxOutfits()
+local MAX_DEFAULT_OUTFITS = C_TransmogCollection.GetNumMaxCustomSets()
 local SET_OFFSET = addon.Globals.SET_OFFSET
 --Coresponds to wardrobeOutfits
 
 
 
 local function GetTableIndex(index)
-	local numOutfits = #C_TransmogCollection.GetOutfits()
+	local numOutfits = #C_TransmogCollection.GetCustomSets()
 	return index - numOutfits + 1
 end
 
 
 local function IsDefaultSet(outfitID)
 	return addon.IsDefaultSet(outfitID)
-	--return outfitID < MAX_DEFAULT_OUTFITS  -- #C_TransmogCollection.GetOutfits()--MAX_DEFAULT_OUTFITS 
+	--return outfitID < MAX_DEFAULT_OUTFITS  -- #C_TransmogCollection.GetCustomSets()--MAX_DEFAULT_OUTFITS 
 end
 
 
@@ -345,7 +345,8 @@ function BetterWardrobeOutfitDropdownMixin:GetLastOutfitID()
 end
 
 local function IsSourceArtifact(sourceID)
-	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+	local sourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+	local link = sourceInfo and sourceInfo.itemLink;
 	if not link then
 		return false;
 	end
@@ -377,7 +378,7 @@ function BetterWardrobeOutfitDropdownMixin:IsOutfitDressed()
 
 	if self.selectedOutfitID >= SET_OFFSET and self.selectedOutfitID <= SET_OFFSET+25 then 
 		local selectedOutfitID = addon:GetBlizzID(self.selectedOutfitID);
-		local outfitItemTransmogInfoList = C_TransmogCollection.GetOutfitItemTransmogInfoList(selectedOutfitID);
+		local outfitItemTransmogInfoList = C_TransmogCollection.GetCustomSetItemTransmogInfoList(selectedOutfitID);
 		if not outfitItemTransmogInfoList then
 			return true
 		end
@@ -402,7 +403,7 @@ function BetterWardrobeOutfitDropdownMixin:IsOutfitDressed()
 			return true;
 		end
 
-		local outfitItemTransmogInfoList = addon.C_TransmogCollection.GetOutfitItemTransmogInfoList(self.selectedOutfitID);
+		local outfitItemTransmogInfoList = C_TransmogCollection.GetCustomSetItemTransmogInfoList(self.selectedOutfitID);
 		local currentItemTransmogInfoList = self:GetItemTransmogInfoList();
 		if not currentItemTransmogInfoList then
 			return true;
@@ -455,14 +456,15 @@ local OUTFIT_FRAME_MAX_STRING_WIDTH = 216;
 local OUTFIT_FRAME_ADDED_PIXELS = 90;	-- pixels added to string width
 
 function BetterWardrobeOutfitManager:NewOutfit(name)
-	local outfitID = LookupOutfitIDFromName(name); --or  ((#C_TransmogCollection.GetOutfits() <= MAX_DEFAULT_OUTFITS) and #C_TransmogCollection.GetOutfits() -1 ) -- or #GetOutfits()-1
+	local outfitID = LookupOutfitIDFromName(name); --or  ((#C_TransmogCollection.GetCustomSets() <= MAX_DEFAULT_OUTFITS) and #C_TransmogCollection.GetCustomSets() -1 ) -- or #GetOutfits()-1
 	local icon = QUESTION_MARK_ICON;
 	local outfit;
 
 	for slotID, itemTransmogInfo in ipairs(self.itemTransmogInfoList) do
 		local appearanceID = itemTransmogInfo.appearanceID;
 		if appearanceID ~= Constants.Transmog.NoTransmogID then
-			icon = select(4, C_TransmogCollection.GetAppearanceSourceInfo(appearanceID));
+			local sourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(appearanceID);
+			icon = sourceInfo and sourceInfo.icon;
 			if icon then
 				break;
 			end
@@ -474,8 +476,8 @@ function BetterWardrobeOutfitManager:NewOutfit(name)
 				sources[i] = data.appearanceID
 			end]]
 
-	if (outfitID and IsDefaultSet(outfitID)) or (#C_TransmogCollection.GetOutfits() < MAX_DEFAULT_OUTFITS)  then 
-		outfitID = C_TransmogCollection.NewOutfit(name, icon, self.itemTransmogInfoList);
+	if (outfitID and IsDefaultSet(outfitID)) or (#C_TransmogCollection.GetCustomSets() < MAX_DEFAULT_OUTFITS)  then 
+		outfitID = C_TransmogCollection.NewCustomSet(name, icon, self.itemTransmogInfoList);
 	else
 		if outfitID then 
 			addon.OutfitDB.char.outfits[LookupIndexFromID(outfitID)]  = addon.OutfitDB.char.outfits[LookupIndexFromID(outfitID)] or {};
@@ -548,7 +550,7 @@ function BetterWardrobeOutfitManager:NameOutfit(newName, outfitID)
 	if outfitID and IsDefaultSet(outfitID) then
 		local blizzardID = addon:GetBlizzID(outfitID);
 	-- this is a rename
-		C_TransmogCollection.RenameOutfit(blizzardID, newName);
+		C_TransmogCollection.RenameCustomSet(blizzardID, newName);
 	elseif outfitID then 
 		local index = LookupIndexFromID(outfitID);
 		addon.OutfitDB.char.outfits[index].name = newName;
@@ -645,7 +647,7 @@ function BetterWardrobeOutfitManager:EvaluateAppearances()
 				end
 			end
 			if isValidAppearance then
-				local transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+				local transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, false);
 				local category = C_TransmogCollection.GetCategoryForItem(appearanceID);
 				local preferredAppearanceID, isInvalidAppearance = self:EvaluateAppearance(appearanceID, category, transmogLocation);
 				if isInvalidAppearance then
@@ -655,7 +657,7 @@ function BetterWardrobeOutfitManager:EvaluateAppearances()
 				end
 				-- secondary check
 				if itemTransmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
-					local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Secondary);
+					local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, true);
 					local secondaryCategory = C_TransmogCollection.GetCategoryForItem(itemTransmogInfo.secondaryAppearanceID);
 					local secondaryPreferredAppearanceID, secondaryIsInvalidAppearance = self:EvaluateAppearance(itemTransmogInfo.secondaryAppearanceID, secondaryCategory, secondaryTransmogLocation);
 					if secondaryIsInvalidAppearance then
@@ -707,7 +709,7 @@ end
 function BetterWardrobeOutfitManager:ContinueWithSave()
 	if self.outfitID and IsDefaultSet(self.outfitID) then
 	-- this is a rename
-		C_TransmogCollection.ModifyOutfit(addon:GetBlizzID(self.outfitID), self.itemTransmogInfoList)
+		C_TransmogCollection.ModifyCustomSet(addon:GetBlizzID(self.outfitID), self.itemTransmogInfoList)
 		self:SaveLastOutfit(self.outfitID);
 		if ( self.dropdown ) then
 			self.dropdown:OnOutfitModified(self.outfitID);
@@ -767,7 +769,7 @@ end
 
 function BetterWardrobeOutfitEditFrameMixin:OnDelete()
 	BetterWardrobeOutfitFrame:Hide()
-	local name = C_TransmogCollection.GetOutfitInfo(addon:GetBlizzID(self.outfitID)) or self.name or ""
+	local name = C_TransmogCollection.GetCustomSetInfo(addon:GetBlizzID(self.outfitID)) or self.name or ""
 	BetterWardrobeOutfitFrame:ShowPopup("BW_CONFIRM_DELETE_TRANSMOG_OUTFIT", name, nil,  self.outfitID)
 end
 
