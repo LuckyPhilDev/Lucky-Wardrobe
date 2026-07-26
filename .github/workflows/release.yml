@@ -17,7 +17,7 @@ jobs:
       - name: Update version in .toc files
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          sed -i "s/^## Version:.*/## Version: $VERSION/" "LuckysBetterWardrobe.toc"
+          sed -i "s/^## Version:.*/## Version: $VERSION/" "src/LuckysBetterWardrobe.toc"
           sed -i "s/^## Version:.*/## Version: $VERSION/" "BetterWardrobe_SourceData/BetterWardrobe_SourceData.toc"
           echo "Updated .toc versions to $VERSION"
 
