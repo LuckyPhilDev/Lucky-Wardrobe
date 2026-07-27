@@ -185,7 +185,7 @@ preview:SetScript("OnHide",function(self)
 	end
 end)
 
-function preview:SetShown()
+function preview:ShowActiveModel()
 	self:SetParent(self.parent)
 	self:Show()
 	self.model:SetShown(self.previewModel == self.model)
@@ -200,10 +200,22 @@ function preview:OnHide2()
 	end
 end
 
-function preview:SetAnchor(tooltip, parent)
-	local primaryTooltip = self.parent.shoppingTooltips[1] 
-	primaryTooltip =  primaryTooltip:IsShown() and primaryTooltip or parent
+-- Comparison tooltips chain outward from the parent, so the one to anchor against
+-- is whichever shown tooltip sits furthest in the direction the preview opens.
+local function OutermostShownTooltip(parent, towardLeft)
+	local outermost = parent
+	for _, shoppingTooltip in ipairs(parent.shoppingTooltips or {}) do
+		local edge = shoppingTooltip:IsShown() and (towardLeft and shoppingTooltip:GetLeft() or shoppingTooltip:GetRight())
+		local outerEdge = towardLeft and outermost:GetLeft() or outermost:GetRight()
+		if edge and outerEdge and ((towardLeft and edge < outerEdge) or (not towardLeft and edge > outerEdge)) then
+			outermost = shoppingTooltip
+		end
+	end
 
+	return outermost
+end
+
+function preview:SetAnchor(tooltip, parent)
 	local leftPos = self.parent:GetLeft()  or 0;
 	local rightPos = self.parent:GetRight()  or 0;
 
@@ -224,9 +236,9 @@ function preview:SetAnchor(tooltip, parent)
 		xShift = false;
 	end
 
-local anchorFrame =	TooltipComparisonManager.anchorFrame
+	local primaryTooltip = OutermostShownTooltip(parent, xShift)
 
-	if anchor == "vertical" then 
+	if anchor == "vertical" then
 		--if ((parent:GetBottom() + self:GetHeight()) > GetScreenHeight() - 100) then 
 		anchor = (yShift and "TOP") or "BOTTOM"
 		relativeAnchor = (yShift and "BOTTOM") or "TOP"
@@ -293,7 +305,7 @@ local removalList = {
 }
 
 function preview:RemoveSurrounding(slot)
-	if removalList[slot] or slot == "INVTYPE_WEAPON"  or slot == "INVTYPE_OFFHAND" then 
+	if removalList[slot] then
 		for _, slotid in ipairs(removalList[slot]) do
 			if slotid > 0 then
 				self.previewModel:UndressSlot(slotid)
@@ -429,9 +441,12 @@ function preview:ShowPreview(itemLink, parent)
 		addDoubleLine(GameTooltip, apperanceKnownText,"")
 	end
 
-	if addon.Profile.ShowTooltips and not found_tooltipinfo then
-		local appearanceID, sourceID = C_TransmogCollection.GetItemInfo(id)
-		if not sourceID then return end
+	local appearanceID, sourceID = C_TransmogCollection.GetItemInfo(itemLink)
+	if not sourceID then
+		appearanceID, sourceID = C_TransmogCollection.GetItemInfo(id)
+	end
+
+	if addon.Profile.ShowTooltips and not found_tooltipinfo and sourceID then
 		local addHeader = false
 		local inList, count = addon.CollectionList:IsInList(appearanceID, "item", true)
 
@@ -543,11 +558,12 @@ function preview:ShowPreview(itemLink, parent)
 			end
 			zoomPreview =  cameraID and (addon.Profile.TooltipPreview_ZoomItem and not isWeapon) or (addon.Profile.TooltipPreview_ZoomWeapon and isWeapon)
 
+			local itemOnlyModel = zoomPreview and isWeapon
+
 			if zoomPreview then
 				self.previewModel = self.zoom
 				self.previewModel:Reset()
 				if isWeapon then
-					local appearanceID = C_TransmogCollection.GetItemInfo(itemLink)
 					if appearanceID then
 						self.previewModel:SetItemAppearance(appearanceID)
 					else
@@ -565,14 +581,19 @@ function preview:ShowPreview(itemLink, parent)
 				self.previewModel:SetFacing(itemFacing - ((addon.Profile.TooltipPreviewRotate and 1) or 0))
 			end
 
-			self:SetShown()
-			self:RemoveSurrounding(slot)
+			self:ShowActiveModel()
 
-			C_Timer.After(0, function()
-				if self.previewModel then 
-					self.previewModel:TryOn(itemLink)
-				end
-			end)
+			-- A zoomed weapon model shows the item on its own; dressing it would put
+			-- the character back and render both at once.
+			if not itemOnlyModel then
+				self:RemoveSurrounding(slot)
+
+				C_Timer.After(0, function()
+					if self.previewModel then
+						self.previewModel:TryOn(itemLink)
+					end
+				end)
+			end
 		else
 			self:Hide()
 		end
