@@ -406,6 +406,8 @@ function WardrobeSetsDataProviderMixin:ClearSets()
 	self.usableSets = nil;
 	self.availableSets = nil;
 	self.sourceData = nil;
+	self.baseSavedSets = nil;
+	self.usableSavedSets = nil;
 end
 
 function WardrobeSetsDataProviderMixin:ClearBaseSets()

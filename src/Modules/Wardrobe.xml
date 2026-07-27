@@ -556,7 +556,7 @@
 				</Scripts>
 			</DropdownButton>
 
-			<DropdownButton parentKey="SavedOutfitDropDown" name = "BW_SavedOutfitDropDown" inherits="WowStyle1DropdownTemplate" mixin="BetterWardrobeCollectionClassDropdownMixin">
+			<DropdownButton parentKey="SavedOutfitDropDown" name = "BW_SavedOutfitDropDown" inherits="WowStyle1DropdownTemplate" mixin="BetterWardrobeSavedOutfitCharacterDropdownMixin">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.ClassDropdown" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>

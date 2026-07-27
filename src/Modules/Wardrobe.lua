@@ -204,6 +204,8 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 	self.SetsCollectionFrame:Hide();
 	--self.SetsTransmogFrame:Hide();
 	self.SavedOutfitDropDown:Hide();
+	-- Saved sets always open on this character; an alt selection never outlives the tab
+	addon.SelecteSavedList = false;
 	---------BW_SortSavedDropDown:Hide()
 
 	BetterWardrobeVisualToggle:Hide()
@@ -2576,6 +2578,57 @@ function WardrobeCollectionClassDropdownMixin:Refresh()
 				rootDescription:CreateRadio(classInfo.className, IsClassFilterSet, SetClassFilter, classInfo);
 			end
 			--dropdown:SetText(classInfo)
+		end
+	end);
+end
+
+local SavedOutfitCharacterDropdownMixin = {};
+BetterWardrobeSavedOutfitCharacterDropdownMixin = SavedOutfitCharacterDropdownMixin
+
+function SavedOutfitCharacterDropdownMixin:OnLoad()
+	self:SetWidth(150);
+end
+
+function SavedOutfitCharacterDropdownMixin:OnShow()
+	self:Refresh();
+end
+
+function SavedOutfitCharacterDropdownMixin:GetSelectedCharacter()
+	return addon.SelecteSavedList or addon.setdb:GetCurrentProfile();
+end
+
+function SavedOutfitCharacterDropdownMixin:SetSelectedCharacter(profile)
+	addon.SelecteSavedList = (profile ~= addon.setdb:GetCurrentProfile()) and profile or false;
+	RefreshLists();
+	self:Refresh();
+end
+
+function SavedOutfitCharacterDropdownMixin:Refresh()
+	-- ponytail: refreshing this character's stored sets on open keeps the list current
+	-- without a login-time cache that would run before the collection is available
+	addon.StoreBlizzardSets();
+
+	local characters = {};
+	for profile in pairs(addon.setdb.global.sets) do
+		tinsert(characters, profile);
+	end
+	table.sort(characters);
+
+	self:SetDefaultText(self:GetSelectedCharacter());
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_BW_SAVED_CHARACTER");
+
+		local function IsCharacterSelected(profile)
+			return self:GetSelectedCharacter() == profile;
+		end
+
+		local function SetCharacter(profile)
+			self:SetSelectedCharacter(profile);
+		end
+
+		for i, profile in ipairs(characters) do
+			rootDescription:CreateRadio(profile, IsCharacterSelected, SetCharacter, profile);
 		end
 	end);
 end
