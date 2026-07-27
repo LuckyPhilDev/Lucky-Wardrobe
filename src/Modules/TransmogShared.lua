@@ -134,13 +134,6 @@ end
 function WardrobeSetsDataProviderMixin:GetBaseSets()
 	local filteredSets = {}
 
-	if BetterWardrobeCollectionFrame:CheckTab(4) then
-		self.baseSavedSets = addon.GetSavedList()
-		addon.SortDropdown(self.baseSavedSets)
-
-		return self.baseSavedSets;
-	end
-
 	if not self.baseSets then
 		local baseSets = addon.BaseList
 		self.baseSets = C_TransmogSets.GetBaseSets();
@@ -180,15 +173,6 @@ end
 function WardrobeSetsDataProviderMixin:GetUsableSets()
 	local setIDS = {}
 	local Profile = addon.Profile;
-
-	if BetterWardrobeCollectionFrame:CheckTab(4) then
-		if ( not self.usableSavedSets ) then
-			self.usableSavedSets = addon.GetSavedList()
-			self:SortSets(self.usableSavedSets)
-		end
-		
-		return self.usableSavedSets;
-	end
 
 	if not self.usableSets then
 		self.usableSets = C_TransmogSets.GetUsableSets();
@@ -406,8 +390,6 @@ function WardrobeSetsDataProviderMixin:ClearSets()
 	self.usableSets = nil;
 	self.availableSets = nil;
 	self.sourceData = nil;
-	self.baseSavedSets = nil;
-	self.usableSavedSets = nil;
 end
 
 function WardrobeSetsDataProviderMixin:ClearBaseSets()

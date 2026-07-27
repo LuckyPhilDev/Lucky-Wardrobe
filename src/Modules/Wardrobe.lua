@@ -109,8 +109,7 @@ local RANGED_INV_TYPE = 15;
 local WARDROBE_TAB_ITEMS = 1;
 local WARDROBE_TAB_SETS = 2;
 local WARDROBE_TAB_EXTRASETS = 3;
-local WARDROBE_TAB_SAVED_SETS = 4;
-local WARDROBE_TAB_TIER_SETS = 5;
+local WARDROBE_TAB_TIER_SETS = 4;
 local WARDROBE_TABS_MAX_WIDTH = 185;
 
 local WARDROBE_MODEL_SETUP = {
@@ -164,20 +163,9 @@ function WardrobeCollectionFrameMixin:CheckTab(tab)
 	end
 end
 
--- The hidden Custom Sets tab (Tab4) sits between Extra and Tier in tab order,
--- so PanelTemplates_ResizeTabsToFit re-flows Tier past its empty slot. Re-pin
--- Tier flush against Extra after every resize.
-function WardrobeCollectionFrameMixin:AnchorTierTab()
-	if self.TierSetsTab and self.ExtraSetsTab then
-		self.TierSetsTab:ClearAllPoints();
-		self.TierSetsTab:SetPoint("LEFT", self.ExtraSetsTab, "RIGHT", 0, 0);
-	end
-end
-
 function WardrobeCollectionFrameMixin:ClickTab(tab)
 	self:SetTab(tab:GetID());
 	PanelTemplates_ResizeTabsToFit(WardrobeCollectionFrame, WARDROBE_TABS_MAX_WIDTH);
-	self:AnchorTierTab();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
@@ -203,9 +191,6 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 	----self.ItemsCollectionFrame:Hide();
 	self.SetsCollectionFrame:Hide();
 	--self.SetsTransmogFrame:Hide();
-	self.SavedOutfitDropDown:Hide();
-	-- Saved sets always open on this character; an alt selection never outlives the tab
-	addon.SelecteSavedList = false;
 	---------BW_SortSavedDropDown:Hide()
 
 	BetterWardrobeVisualToggle:Hide()
@@ -256,7 +241,7 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		end
 	
 
-	elseif tabID == WARDROBE_TAB_SETS or tabID == WARDROBE_TAB_EXTRASETS or tabID == WARDROBE_TAB_SAVED_SETS  then
+	elseif tabID == WARDROBE_TAB_SETS or tabID == WARDROBE_TAB_EXTRASETS then
 		--BetterWardrobeVisualToggle:Show()
 		BW_SortDropDown:Hide()
 		if BW_ColectionListFrame then 
@@ -282,36 +267,6 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.ClassDropdown:SetPoint("BOTTOMRIGHT", self.SetsCollectionFrame, "TOPRIGHT", -9, 4);
 
 		self.SetsCollectionFrame:SetShown(true);
-
-		local r
-
-		if tabID == WARDROBE_TAB_SAVED_SETS then 
-			BW_SortDropDown:Hide()
-			--BW_SortDropDown:SetPoint("TOPLEFT", BetterWardrobeVisualToggle, "TOPRIGHT", 5, 0)
-			BW_SortDropDown:ClearAllPoints()
-			BW_SortDropDown:SetPoint("TOPRIGHT", self.SearchBox, "TOPRIGHT", 21, 5)
-			--BW_SortDropDown:Show()
-			self.FilterButton:Hide()
-			self.SearchBox:Hide()
-			self.ClassDropdown:Hide()
-			self.SavedOutfitDropDown:Show()
-			----BW_SortSavedDropDown:Show()
-			local savedCount = #addon.GetSavedList()
-			WardrobeCollectionFrame:UpdateProgressBar(savedCount, savedCount)
-
-			--tempSorting = BW_SortDropDown.selectedValue
-			--addon.setdb.profile.sorting = BW_SortDropDown.selectedValue
-
-			sortValue = addon.setdb.profile.sorting
-
-			----BW_SortSavedDropDown:ClearAllPoints()
-			----BW_SortSavedDropDown:SetPoint("TOPLEFT", 10, -67);
-
-
-		else
-			--db.sortDropdown = BW_SortDropDown.selectedValue;
-			--sortValue = db.sortDropdown
-		end
 	end
 	BW_SortDropDown:Hide()
 end
@@ -702,10 +657,9 @@ end
 
 function WardrobeCollectionFrameMixin:OnLoad()
 
-	PanelTemplates_SetNumTabs(self, 5);
+	PanelTemplates_SetNumTabs(self, 4);
 	PanelTemplates_SetTab(self, WARDROBE_TAB_ITEMS);
 	PanelTemplates_ResizeTabsToFit(self, WARDROBE_TABS_MAX_WIDTH);
-	self:AnchorTierTab();
 	self.selectedCollectionTab = WARDROBE_TAB_ITEMS;
 	self:SetTab(self.selectedCollectionTab);
 
@@ -2578,57 +2532,6 @@ function WardrobeCollectionClassDropdownMixin:Refresh()
 				rootDescription:CreateRadio(classInfo.className, IsClassFilterSet, SetClassFilter, classInfo);
 			end
 			--dropdown:SetText(classInfo)
-		end
-	end);
-end
-
-local SavedOutfitCharacterDropdownMixin = {};
-BetterWardrobeSavedOutfitCharacterDropdownMixin = SavedOutfitCharacterDropdownMixin
-
-function SavedOutfitCharacterDropdownMixin:OnLoad()
-	self:SetWidth(150);
-end
-
-function SavedOutfitCharacterDropdownMixin:OnShow()
-	self:Refresh();
-end
-
-function SavedOutfitCharacterDropdownMixin:GetSelectedCharacter()
-	return addon.SelecteSavedList or addon.setdb:GetCurrentProfile();
-end
-
-function SavedOutfitCharacterDropdownMixin:SetSelectedCharacter(profile)
-	addon.SelecteSavedList = (profile ~= addon.setdb:GetCurrentProfile()) and profile or false;
-	RefreshLists();
-	self:Refresh();
-end
-
-function SavedOutfitCharacterDropdownMixin:Refresh()
-	-- ponytail: refreshing this character's stored sets on open keeps the list current
-	-- without a login-time cache that would run before the collection is available
-	addon.StoreBlizzardSets();
-
-	local characters = {};
-	for profile in pairs(addon.setdb.global.sets) do
-		tinsert(characters, profile);
-	end
-	table.sort(characters);
-
-	self:SetDefaultText(self:GetSelectedCharacter());
-
-	self:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_BW_SAVED_CHARACTER");
-
-		local function IsCharacterSelected(profile)
-			return self:GetSelectedCharacter() == profile;
-		end
-
-		local function SetCharacter(profile)
-			self:SetSelectedCharacter(profile);
-		end
-
-		for i, profile in ipairs(characters) do
-			rootDescription:CreateRadio(profile, IsCharacterSelected, SetCharacter, profile);
 		end
 	end);
 end

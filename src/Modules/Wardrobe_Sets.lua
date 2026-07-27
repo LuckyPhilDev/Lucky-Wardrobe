@@ -994,7 +994,7 @@ function WardrobeSetsScrollFrameButtonMixin:Init(elementData)
 	--self.CollectionListVisual.InvalidTexture:SetShown(BetterWardrobeCollectionFrame.selectedCollectionTab == 3 and not displayData.isClass);
 
 
-	self.EditButton:SetShown((BetterWardrobeCollectionFrame:CheckTab(4) and (self.setID < 50000 or self.setID >=70000 or C_AddOns.IsAddOnLoaded("MogIt"))))
+	self.EditButton:Hide()
 	topSourcesCollected = topSourcesCollected or 0
 	topSourcesTotal = topSourcesTotal or 0
 

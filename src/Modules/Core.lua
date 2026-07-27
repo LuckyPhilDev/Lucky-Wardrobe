@@ -382,9 +382,8 @@ function addon.Init:LoadModules()
 	-----C_Timer.After(0, function() addon.Init:UpdateWardrobeEnhanced() end)
 
 	local f = CreateFrame("Frame", "BetterWardrobeCollectionFrame", TransmogFrame.WardrobeCollection, "BetterWardrobeCollectionFrameTemplate" )
-	BetterWardrobeCollectionFrameTab4:Hide()
 	-- ponytail: Tier Sets tab temporarily disabled; delete this line to re-enable
-	BetterWardrobeCollectionFrameTab5:Hide()
+	BetterWardrobeCollectionFrameTab4:Hide()
 	addon:setFrames()
 	addon.Init:InitFilterButtons()
 	--Hooks into the colection tabs and sets Better Wardobe when viewing the wardrobe collection
@@ -455,7 +454,6 @@ end
 	
 	TransmogFrame.WardrobeCollection.TabHeaders:SetTabShown(TransmogFrame.WardrobeCollection.itemsTabID, true);
 	TransmogFrame.WardrobeCollection.TabHeaders:SetTabShown(TransmogFrame.WardrobeCollection.setsTabID, false);
-	TransmogFrame.WardrobeCollection.TabHeaders:SetTabShown(TransmogFrame.WardrobeCollection.custmSetsTabID, false);
 	TransmogFrame.WardrobeCollection.TabHeaders:SetTabShown(TransmogFrame.WardrobeCollection.situationsTabID, false);
 
 	--TransmogFrame.WardrobeCollection.TabHeaders:SetTabShown(TransmogFrame.WardrobeCollection.BW_SetsFrame2TabID, true);
@@ -496,10 +494,6 @@ function addon:EventHandler(event, ...)
 				TransmogFrame.WardrobeCollection.TabHeaders.extrasetsTabID = TransmogFrame.WardrobeCollection:AddNamedTab(L["Extra Sets"],  TransmogFrame.WardrobeCollection.TabContent.BW_ExtraSetsFrame);
 				TransmogFrame.WardrobeCollection.TabContent.BW_ExtraSetsFrame:Init(TransmogFrame.WardrobeCollection)
 
-				local f = CreateFrame("Frame", nil, TransmogFrame.WardrobeCollection.TabContent,"CustomSetsFrame2")
-				TransmogFrame.WardrobeCollection.TabContent.BW_ExtraCustomSetsFrame = f
-				TransmogFrame.WardrobeCollection.TabHeaders.extracustomsetsTabID = TransmogFrame.WardrobeCollection:AddNamedTab(TRANSMOG_TAB_CUSTOM_SETS,  TransmogFrame.WardrobeCollection.TabContent.BW_ExtraCustomSetsFrame);
-				TransmogFrame.WardrobeCollection.TabContent.BW_ExtraCustomSetsFrame:Init(TransmogFrame.WardrobeCollection)
 				TransmogFrame.WardrobeCollection.TabHeaders.situationsTabID2 = TransmogFrame.WardrobeCollection:AddNamedTab(TRANSMOG_TAB_SITUATIONS, TransmogFrame.WardrobeCollection.TabContent.SituationsFrame);
 
 				local f = CreateFrame("Frame", nil, TransmogFrame.WardrobeCollection.TabContent.ItemsFrame.PagedContent,"BW_PagingControlsHorizontalTemplate")

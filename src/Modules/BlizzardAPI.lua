@@ -291,8 +291,6 @@ if addon.Profile.ShowHidden then return setList end
 		setType = "set"
 	elseif BetterWardrobeCollectionFrame:CheckTab(3) then
 		setType = "extraset"
-	elseif BetterWardrobeCollectionFrame:CheckTab(4) then
-		return setList
 	end
 
 	local newSet = {}
