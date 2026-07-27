@@ -2,8 +2,9 @@ local addonName, addon = ...
 addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
-local LAT = LibStub("LibArmorToken-1.0")
-local LAI = LibStub("LibAppropriateItems-1.0")
+-- ponytail: silent lookup. LibArmorToken is a .pkgmeta external, absent in dev builds.
+-- Token tooltips just stay off there; a hard lookup takes the whole file down with it.
+local LAT = LibStub("LibArmorToken-1.0", true)
 
 local collectedAppearances = {}
 local weaponSlots = {"INVTYPE_2HWEAPON", "INVTYPE_WEAPON", "INVTYPE_WEAPONMAINHAND", "INVTYPE_RANGED", "INVTYPE_RANGEDRIGHT", "INVTYPE_THROWN",}
@@ -123,9 +124,14 @@ local function CreateModelFrame()
 end
 
 function addon:InitTooltips()
+	-- Blizzard runs insecure tooltip post-calls through a SecureHandler attribute delegate,
+	-- which swallows errors. Without this pcall a broken ShowPreview looks like a no-op.
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(self)
 		if self == GameTooltip or self == GameTooltip.ItemTooltip.Tooltip then
-			preview:ShowPreview(select(2, TooltipUtil.GetDisplayedItem(self)), self)
+			local ok, err = pcall(preview.ShowPreview, preview, select(2, TooltipUtil.GetDisplayedItem(self)), self)
+			if not ok then
+				geterrorhandler()(err)
+			end
 		end
 	end)
 
@@ -332,7 +338,7 @@ function preview:ShowPreview(itemLink, parent)
 	self.parent = parent
 	local id = tonumber(itemLink:match("item:(%d+)"))
 	local dressable = id and C_Item.IsDressableItemByID(id)
-	local token = addon.Profile.ShowTokenTooltips and LAT:ItemIsToken(id)
+	local token = LAT and addon.Profile.ShowTokenTooltips and LAT:ItemIsToken(id)
 	--print((not id or id == 0) or not token and not dressable)
 	if not dressable then 
 		self:Hide()
@@ -421,11 +427,6 @@ function preview:ShowPreview(itemLink, parent)
 		end
 
 		addDoubleLine(GameTooltip, apperanceKnownText,"")
-	end
-
-	local isAppropriate = LAI:IsAppropriate(id)
-	if addon.Profile.ShowOwnedItemTooltips and not isAppropriate then
-		--addDoubleLine(GameTooltip, L["|TInterface\\RaidFrame\\ReadyCheck-NotReady:0|t %s%s"]:format("|cffff0000", L["Your class can't transmogrify this item"]))	
 	end
 
 	if addon.Profile.ShowTooltips and not found_tooltipinfo then
