@@ -29,6 +29,12 @@ L[ARTIFACT] = ITEM_QUALITY6_DESC
 L[ILEVEL] = "ILevel"
 L[ITEMID] = "ItemID"
 
+L["Completion"] = "Completion"
+L["Sort By"] = "Sort By"
+L["Sort Direction"] = "Sort Direction"
+L["Ascending"] = "Ascending"
+L["Descending"] = "Descending"
+
 L.OM_GOLD = "|c00FFD200"
 L.ENDCOLOR = "|r"
 

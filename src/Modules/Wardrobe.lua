@@ -194,6 +194,7 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 	---------BW_SortSavedDropDown:Hide()
 
 	BetterWardrobeVisualToggle:Hide()
+	self.SortDropdown:Hide()
 
 	if tabID == WARDROBE_TAB_ITEMS then
 		BetterWardrobeVisualToggle:Hide()
@@ -219,17 +220,12 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 
 		self.SearchBox:Show()
 
-		BW_SortDropDown:Show()
-		BW_SortDropDown:ClearAllPoints()
-
 		local _, isWeapon = C_TransmogCollection.GetCategoryInfo((BetterWardrobeCollectionFrame and BetterWardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory()) or 1)
 		local yOffset =  LegionWardrobeY;
 
 		self.ClassDropdown:Show();
 
 		BetterWardrobeCollectionFrame.ItemsCollectionFrame.ApplyOnClickCheckbox:Show();
-		BW_SortDropDown:SetPoint("TOPRIGHT", self.ItemsCollectionFrame.SlotsFrame, "TOPLEFT", -12, -35);
-
 		if ElvUI then 
 			BetterWardrobeCollectionFrame.AlteredFormSwapButton:ClearAllPoints()
 			BetterWardrobeCollectionFrame.AlteredFormSwapButton:SetPoint("TOPRIGHT",self:GetParent(), "TOPRIGHT", -13,-55)
@@ -243,7 +239,6 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 
 	elseif tabID == WARDROBE_TAB_SETS or tabID == WARDROBE_TAB_EXTRASETS then
 		--BetterWardrobeVisualToggle:Show()
-		BW_SortDropDown:Hide()
 		if BW_ColectionListFrame then 
 			BW_ColectionListFrame:Hide()
 		end
@@ -265,16 +260,22 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.SearchBox:SetEnabled(true);
 		self.ClassDropdown:ClearAllPoints();
 		self.ClassDropdown:SetPoint("BOTTOMRIGHT", self.SetsCollectionFrame, "TOPRIGHT", -9, 4);
-
 		self.SetsCollectionFrame:SetShown(true);
 	end
-	BW_SortDropDown:Hide()
 end
 
 
 local FILTER_SOURCES = {"Trash", L["MISC"], L["Classic Set"], L["Quest Set"], L["Dungeon Set"], L["Raid Set"], L["Recolor"],L["Garrison"], L["Island Expedition"], L["Warfronts"], L["Covenants"], L["Trading Post"], L["Holiday"], L["NOTE_119"],L["NOTE_120"]}
 local EXPANSIONS = {EXPANSION_NAME0, EXPANSION_NAME1, EXPANSION_NAME2, EXPANSION_NAME3, EXPANSION_NAME4, EXPANSION_NAME5, EXPANSION_NAME6, EXPANSION_NAME7, EXPANSION_NAME8, EXPANSION_NAME9,EXPANSION_NAME10,EXPANSION_NAME11}
 local FILTER_EXTRA_SOURCES = {"Trash", L["MISC"], L["Classic Set"], L["Quest Set"], L["Dungeon Set"], L["Garrison"], L["Island Expedition"], L["Warfronts"], L["Trading Post"], L["Holiday"]}
+local COLLECTION_SET_SORT_MODES = {
+	{ key = "completion", label = L["Completion"] },
+	{ key = "default", label = _G["DEFAULT"] },
+}
+local COLLECTION_SET_SORT_DIRECTIONS = {
+	{ key = "ascending", label = L["Ascending"] },
+	{ key = "descending", label = L["Descending"] },
+}
 
 addon.Filters = {
 	["Base"] = {
@@ -513,6 +514,29 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 ]]--
 		rootDescription:CreateCheckbox(COLLECTED, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_COLLECTED);
 		rootDescription:CreateCheckbox(NOT_COLLECTED, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_UNCOLLECTED);
+		rootDescription:CreateDivider();
+
+		local sortMenu = rootDescription:CreateButton(L["Sort By"]);
+		for _, sortMode in ipairs(COLLECTION_SET_SORT_MODES) do
+			local mode = sortMode;
+			sortMenu:CreateRadio(mode.label, function()
+				return (addon.Profile.CollectionSetSortMode or "default") == mode.key;
+			end, function()
+				addon.Profile.CollectionSetSortMode = mode.key;
+				self.SetsCollectionFrame:OnSearchUpdate();
+			end);
+		end
+
+		local sortDirectionMenu = rootDescription:CreateButton(L["Sort Direction"]);
+		for _, sortDirection in ipairs(COLLECTION_SET_SORT_DIRECTIONS) do
+			local direction = sortDirection;
+			sortDirectionMenu:CreateRadio(direction.label, function()
+				return (addon.Profile.CollectionSetSortDirection or "ascending") == direction.key;
+			end, function()
+				addon.Profile.CollectionSetSortDirection = direction.key;
+				self.SetsCollectionFrame:OnSearchUpdate();
+			end);
+		end
 		rootDescription:CreateDivider();
 
 

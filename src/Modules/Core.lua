@@ -72,6 +72,8 @@ local defaults = {
 		ExtraLargeTransmogArea = false,
 		ExtraLargeTransmogAreaMax = screenWidth,
 		AutoApply = false,
+		CollectionSetSortMode = "default",
+		CollectionSetSortDirection = "ascending",
 	}
 }
 local DB_Defaults = {

@@ -96,39 +96,76 @@ local WardrobeSetsDataProviderMixin = {};
 BetterWardrobeSetsDataProviderMixin = WardrobeSetsDataProviderMixin
 
 addon.SetsDataProvider = BetterWardrobeSetsDataProviderMixin
-function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder, ignorePatchID)
-	local comparison = function(set1, set2)
-		local groupFavorite1 = set1.favoriteSetID and true;
-		local groupFavorite2 = set2.favoriteSetID and true;
-		if ( groupFavorite1 ~= groupFavorite2 ) then
-			return groupFavorite1;
+local function CompareDefaultSetOrder(set1, set2, reverseUIOrder, ignorePatchID)
+	local groupFavorite1 = set1.favoriteSetID and true;
+	local groupFavorite2 = set2.favoriteSetID and true;
+	if ( groupFavorite1 ~= groupFavorite2 ) then
+		return groupFavorite1;
+	end
+	if ( set1.favorite ~= set2.favorite ) then
+		return set1.favorite;
+	end
+	if ( set1.expansionID ~= set2.expansionID ) then
+		return set1.expansionID > set2.expansionID;
+	end
+	if not ignorePatchID then
+		if ( set1.patchID ~= set2.patchID ) then
+			return set1.patchID > set2.patchID;
 		end
-		if ( set1.favorite ~= set2.favorite ) then
-			return set1.favorite;
-		end
-		if ( set1.expansionID ~= set2.expansionID ) then
-			return set1.expansionID > set2.expansionID;
-		end
-		if not ignorePatchID then
-			if ( set1.patchID ~= set2.patchID ) then
-				return set1.patchID > set2.patchID;
-			end
-		end
-		if ( set1.uiOrder ~= set2.uiOrder ) then
-			if ( reverseUIOrder ) then
-				return set1.uiOrder < set2.uiOrder;
-			else
-				return set1.uiOrder > set2.uiOrder;
-			end
-		end
-		if reverseUIOrder then
-			return set1.setID < set2.setID;
+	end
+	if ( set1.uiOrder ~= set2.uiOrder ) then
+		if ( reverseUIOrder ) then
+			return set1.uiOrder < set2.uiOrder;
 		else
-			return set1.setID > set2.setID;
+			return set1.uiOrder > set2.uiOrder;
+		end
+	end
+	if reverseUIOrder then
+		return set1.setID < set2.setID;
+	else
+		return set1.setID > set2.setID;
+	end
+end
+
+function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder, ignorePatchID)
+	table.sort(sets, function(set1, set2)
+		return CompareDefaultSetOrder(set1, set2, reverseUIOrder, ignorePatchID);
+	end);
+end
+
+local function CompareCompletionSetOrder(dataProvider, set1, set2)
+	local collected1, total1 = dataProvider:GetSetSourceCompletionCounts(set1.setID);
+	local collected2, total2 = dataProvider:GetSetSourceCompletionCounts(set2.setID);
+	local missing1 = total1 - collected1;
+	local missing2 = total2 - collected2;
+	if missing1 ~= missing2 then
+		return missing1 < missing2;
+	end
+	if total1 ~= total2 then
+		return total1 > total2;
+	end
+
+	return CompareDefaultSetOrder(set1, set2, false, false);
+end
+
+function WardrobeSetsDataProviderMixin:SortCollectionBaseSets(sets)
+	local compareSets = function(set1, set2)
+		return CompareDefaultSetOrder(set1, set2, false, false);
+	end
+	if addon.Profile.CollectionSetSortMode == "completion" then
+		compareSets = function(set1, set2)
+			return CompareCompletionSetOrder(self, set1, set2);
 		end
 	end
 
-	table.sort(sets, comparison);
+	local descending = addon.Profile.CollectionSetSortDirection == "descending";
+	table.sort(sets, function(set1, set2)
+		if descending then
+			return compareSets(set2, set1);
+		end
+
+		return compareSets(set1, set2);
+	end);
 end
 
 function WardrobeSetsDataProviderMixin:GetBaseSets()
@@ -149,10 +186,7 @@ function WardrobeSetsDataProviderMixin:GetBaseSets()
 		end
 		self.baseSets = tabFilter
 
-		local reverseUIOrder = false;
-		local ignorePatchID = false;
-		local ignoreCollected = true;
-		self:SortSets(self.baseSets, reverseUIOrder, ignorePatchID, ignoreCollected);
+		self:SortCollectionBaseSets(self.baseSets);
 	end
 	return self.baseSets;
 end
@@ -305,6 +339,7 @@ function WardrobeSetsDataProviderMixin:GetBaseSetData(setID)
 		end
 
 		local topCollected, topTotal = self:GetSetSourceCounts(setID);
+		local completionCollected, completionTotal = topCollected, topTotal;
 		local variantSets = self:GetVariantSets(setID);
 		for _index, varientSet in ipairs(variantSets) do
 			local numCollected, numTotal = self:GetSetSourceCounts(varientSet.setID);
@@ -312,8 +347,21 @@ function WardrobeSetsDataProviderMixin:GetBaseSetData(setID)
 				topCollected = numCollected;
 				topTotal = numTotal;
 			end
+
+			local missing = numTotal - numCollected;
+			local completionMissing = completionTotal - completionCollected;
+			if missing < completionMissing or (missing == completionMissing and numTotal > completionTotal) then
+				completionCollected = numCollected;
+				completionTotal = numTotal;
+			end
 		end
-		local setInfo = { topCollected = topCollected, topTotal = topTotal, completed = (topCollected == topTotal) };
+		local setInfo = {
+			topCollected = topCollected,
+			topTotal = topTotal,
+			completionCollected = completionCollected,
+			completionTotal = completionTotal,
+			completed = (topCollected == topTotal),
+		};
 		self.baseSetsData[setID] = setInfo;
 	end
 	return self.baseSetsData[setID];
@@ -323,6 +371,15 @@ function WardrobeSetsDataProviderMixin:GetSetSourceTopCounts(setID)
 	local baseSetData = self:GetBaseSetData(setID);
 	if baseSetData then
 		return baseSetData.topCollected, baseSetData.topTotal;
+	else
+		return self:GetSetSourceCounts(setID);
+	end
+end
+
+function WardrobeSetsDataProviderMixin:GetSetSourceCompletionCounts(setID)
+	local baseSetData = self:GetBaseSetData(setID);
+	if baseSetData then
+		return baseSetData.completionCollected, baseSetData.completionTotal;
 	else
 		return self:GetSetSourceCounts(setID);
 	end
