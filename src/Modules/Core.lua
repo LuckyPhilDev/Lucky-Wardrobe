@@ -71,7 +71,6 @@ local defaults = {
 		CurrentFactionSets = true,
 		ExtraLargeTransmogArea = false,
 		ExtraLargeTransmogAreaMax = screenWidth,
-		AutoApply = false,
 		CollectionSetSortMode = "default",
 		CollectionSetSortDirection = "ascending",
 	}

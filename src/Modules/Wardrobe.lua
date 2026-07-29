@@ -225,8 +225,7 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 
 		self.ClassDropdown:Show();
 
-		BetterWardrobeCollectionFrame.ItemsCollectionFrame.ApplyOnClickCheckbox:Show();
-		if ElvUI then 
+		if ElvUI then
 			BetterWardrobeCollectionFrame.AlteredFormSwapButton:ClearAllPoints()
 			BetterWardrobeCollectionFrame.AlteredFormSwapButton:SetPoint("TOPRIGHT",self:GetParent(), "TOPRIGHT", -13,-55)
 		else 
@@ -2773,16 +2772,6 @@ function BetterWardrobeTransmogOptionsDropdownMixin:OnLoad()
 			end
 		end
 	end);
-end
-
-BW_ApplyOnClickCheckboxMixin = {}
-function BW_ApplyOnClickCheckboxMixin:OnClick()
-	addon.Profile.AutoApply = not addon.Profile.AutoApply
-	self:SetChecked(addon.Profile.AutoApply)
-end
-
-function BW_ApplyOnClickCheckboxMixin:OnLoad()
-	self:SetChecked(addon.Profile.AutoApply)
 end
 
 BetterWardrobeSetsDetailsAltItemMixin = {}
