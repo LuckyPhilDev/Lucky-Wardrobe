@@ -35,16 +35,6 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Set completion**: Item tooltips show which set an item belongs to and how much of that set you've collected, with a full piece list or just the pieces you're missing.
 - **Appearance preview**: A model preview of the item, with an option to keep it rotating.
 
-### Dressing Room
-
-Off by default and still rough around the edges. Turn it on in settings under Dressing Room.
-
-- **Move it anywhere**: Drag the dressing room window wherever you want it.
-- **Auto-hide**: Open the dressing room already undressed, or with tabard, shirt, and weapons stripped. The background can be dimmed or hidden too.
-- **Slot buttons**: See the appearance in each slot, left-click to toggle it, right-click to clear it.
-- **Undress and undo**: One button strips the model, another steps back through what you were just previewing.
-- **Import and export**: Load an outfit from a MogIt string, and export what you're wearing in MogIt format.
-
 ## Installation
 
 Extract the release zip into `World of Warcraft/_retail_/Interface/AddOns/`.
@@ -73,7 +63,6 @@ The addon compartment button on the minimap opens the Appearances collection.
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Ignore class restrictions on sets and appearances.
-- **Dressing Room**: Turn on the dressing room enhancements. Off by default while the feature is unfinished.
 - **Transmog Vendor Window**: Show incomplete sets, show hidden items, hide or apply the hidden transmog to missing pieces, and set how many pieces a set needs before it counts as owned.
 
 ## Author
