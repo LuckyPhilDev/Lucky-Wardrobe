@@ -72,6 +72,7 @@ local defaults = {
 		ExtraLargeTransmogArea = false,
 		ExtraLargeTransmogAreaMax = screenWidth,
 		AutoApply = false,
+		SetSortMode = "completion",
 	}
 }
 local DB_Defaults = {

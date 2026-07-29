@@ -2104,6 +2104,7 @@ local TransmogWardrobeSetsMixin = {
 BW_TransmogWardrobeSetsMixin = TransmogWardrobeSetsMixin
 function TransmogWardrobeSetsMixin:OnLoad()
 	self:InitFilterButton();
+	self:InitSortButton();
 	self.PagedContent:SetElementTemplateData(self.COLLECTION_TEMPLATES);
 	self.SearchBox:SetSearchType(self.searchType);
 	self.setsDataProvider = CreateFromMixins(BetterWardrobeSetsDataProviderMixin);
@@ -2165,6 +2166,78 @@ local function xpackCheckAll(value)
 end
 
 xpackCheckAll(true)
+
+local function CompareDefaultSetOrder(element1, element2)
+	local favorite1 = element1.favorite and true or false;
+	local favorite2 = element2.favorite and true or false;
+	if favorite1 ~= favorite2 then
+		return favorite1;
+	end
+
+	local collected1 = element1.collected == element1.pieces;
+	local collected2 = element2.collected == element2.pieces;
+	if collected1 ~= collected2 then
+		return collected1;
+	end
+
+	if element1.expansionID ~= element2.expansionID then
+		return element1.expansionID > element2.expansionID;
+	end
+
+	return element1.name < element2.name;
+end
+
+local function CompareCompletionSetOrder(element1, element2)
+	local missing1 = element1.pieces - element1.collected;
+	local missing2 = element2.pieces - element2.collected;
+	if missing1 ~= missing2 then
+		return missing1 < missing2;
+	end
+
+	if element1.pieces ~= element2.pieces then
+		return element1.pieces > element2.pieces;
+	end
+
+	return CompareDefaultSetOrder(element1, element2);
+end
+
+local SET_SORT_MODES = {
+	{
+		key = "completion",
+		label = L["Completion"],
+		compare = CompareCompletionSetOrder,
+	},
+	{
+		key = "default",
+		label = DEFAULT,
+		compare = CompareDefaultSetOrder,
+	},
+}
+
+local function GetSetSortMode(sortKey)
+	for _, sortMode in ipairs(SET_SORT_MODES) do
+		if sortMode.key == sortKey then
+			return sortMode;
+		end
+	end
+
+	return SET_SORT_MODES[1];
+end
+
+function TransmogWardrobeSetsMixin:InitSortButton()
+	self.SortButton:SetDefaultText(L["Sort"]);
+	self.SortButton:SetupMenu(function(_dropdown, rootDescription)
+		for _, sortMode in ipairs(SET_SORT_MODES) do
+			local mode = sortMode;
+			rootDescription:CreateRadio(mode.label, function()
+				return GetSetSortMode(addon.Profile.SetSortMode).key == mode.key;
+			end, function()
+				addon.Profile.SetSortMode = mode.key;
+				self:RefreshCollectionEntries();
+			end);
+		end
+	end);
+end
 
 function TransmogWardrobeSetsMixin:InitFilterButton()
 	self.FilterButton:SetupMenu(function(_dropdown, rootDescription)
@@ -2364,33 +2437,7 @@ function TransmogWardrobeSetsMixin:RefreshCollectionEntries()
 		end
 	end
 
-	local compareEntries = function(element1, element2)
-
-		local favorite1 = element1.favorite and true or false;
-		local favorite2 = element2.favorite and true or false;
-		if favorite1 ~= favorite2 then
-			return favorite1;
-		end
-
-		local collected1 = element1.collected == element1.pieces
-		local collected2 = element2.collected == element2.pieces
-		if collected1 ~= collected2 then
-			return collected1;
-		end
-
-		if element1.expansionID ~= element2.expansionID then
-			return element1.expansionID > element2.expansionID;
-		end
-
-		if element1.uiOrder ~= element2.uiOrder then
-			--return element1.uiOrder > element2.uiOrder;
-		end
-
-		local customSetName1, _customSetIcon1 = element1.name;
-		local customSetName2, _customSetIcon2 = element2.name;
-		return customSetName1 < customSetName2;
-	end
-	table.sort(collectionElements, compareEntries);
+	table.sort(collectionElements, GetSetSortMode(addon.Profile.SetSortMode).compare);
 
 
 	local collectionData = {{elements = collectionElements}};

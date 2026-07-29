@@ -7,6 +7,7 @@ First release of Lucky's Better Wardrobe, a continuation of Better Wardrobe and 
 ### Added
 
 - Your existing Better Wardrobe collections, saved sets, hidden appearances, and settings carry over automatically the first time you log in.
+- Sort Sets and Extra Sets by completion, with the closest sets first and larger sets prioritised when they need the same number of pieces.
 
 ### Fixed
 
