@@ -2234,11 +2234,6 @@ function WardrobeItemModelMixin:OnMouseUp(button)
 				addon.CollectionList:UpdateList("item", targetSet, not isInList);
 			end);
 
-			text = L["View Sources"]
-			rootDescription:CreateButton(text, function()
-				addon.CollectionList:GenerateSourceListView(self.visualInfo.visualID);
-			end);
-
 			text = L["View Recolors"]
 			rootDescription:CreateButton(text, function()
 			if not C_AddOns.IsAddOnLoaded("BetterWardrobe_SourceData") then

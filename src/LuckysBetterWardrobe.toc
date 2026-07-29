@@ -56,7 +56,6 @@ Modules\ArtifactAppearances.lua
 Modules\SavedOutfits.xml
 Modules\ImportExport.lua
 Modules\Randomizer.lua
-#Modules\SavedOutfitsViewer.xml
 Modules\TransmogShared.lua
 Modules\TransmogTemplates.xml
 

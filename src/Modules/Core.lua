@@ -347,7 +347,6 @@ function addon:OnEnable()
 	end
 
 	C_Timer.After(1, function() addon.Init:LoadModules() end)
-	--self:HookCustomSetsOnHide()
 
 	-- Optional features last: a failure here must not cost the vendor and journal UI.
 	InitFeature("tooltips", function() addon:InitTooltips() end)
@@ -437,8 +436,6 @@ function addon.Init:LoadModules()
 		----addon.Init:BuildTransmogVendorUI()
 		----addon:UpdateCanIMogIt()
 		----addon:InitExtendedSetsSwap()
-
-		--==addon:CreateCustomSetsButton()
 
 
 		local selected = CollectionsJournal_GetTab(CollectionsJournal)
