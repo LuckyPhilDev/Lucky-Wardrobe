@@ -13,7 +13,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Extra sets**: An Extra tab adds hundreds of sets the default list leaves out, including dungeon, questing, event, and recolor sets, each with completion counts and collected highlighting.
 - **Visual view**: Click the eye icon to swap the set list for a grid of previews, the same layout you get at the transmog vendor.
 - **Favourites**: Star the extra sets you care about so they float to the top.
-- **Sorting**: Order items and sets by colour, similar appearance, expansion, or name. Sets and Extra Sets can also be sorted by completion, with the closest sets first and larger sets ahead when they need the same number of pieces.
+- **Sorting**: Order items and sets by colour, similar appearance, expansion, or name.
 - **Hide what you don't want**: Right-click any appearance or set to hide it. Hidden lists are per character and can be copied between characters or reset in one click.
 - **Collection List**: Build a running list of appearances you're chasing. Tracked appearances get a book icon in the journal, and a check mark once you learn them.
 - **Shopping list**: Shift-click the Collection List icon for a breakdown of every item that unlocks each tracked appearance and how to get it. With TradeSkillMaster installed, vendor, profession, and world drop items show prices.
