@@ -306,6 +306,51 @@ function addon:OnInitialize()
 	end
 end
 
+local function ShowConflictDialog()
+	local frame = LuckyUI.CreatePanel("LuckysBetterWardrobe_ConflictDialog", UIParent, 380, 190)
+	frame:SetPoint("CENTER", 0, 150)
+	frame:SetFrameStrata("DIALOG")
+	LuckyUI.CreateHeader(frame, "Addon Conflict")
+
+	local label = frame:CreateFontString(nil, "OVERLAY")
+	label:SetFont(LuckyUI.BODY_FONT, 14)
+	label:SetPoint("TOPLEFT", 16, -45)
+	label:SetPoint("RIGHT", frame, "RIGHT", -16, 0)
+	label:SetJustifyH("LEFT")
+	label:SetWordWrap(true)
+	label:SetText("Better Wardrobe is also enabled.")
+
+	local subLabel = frame:CreateFontString(nil, "OVERLAY")
+	subLabel:SetFont(LuckyUI.BODY_FONT, 11)
+	subLabel:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -8)
+	subLabel:SetPoint("RIGHT", frame, "RIGHT", -16, 0)
+	subLabel:SetJustifyH("LEFT")
+	subLabel:SetTextColor(LuckyUI.C.textMuted[1], LuckyUI.C.textMuted[2], LuckyUI.C.textMuted[3])
+	subLabel:SetText("Running both causes errors. Which one would you like to disable?")
+
+	local hintLabel = frame:CreateFontString(nil, "OVERLAY")
+	hintLabel:SetFont(LuckyUI.BODY_FONT, 10)
+	hintLabel:SetPoint("BOTTOM", frame, "BOTTOM", 0, 16)
+	hintLabel:SetTextColor(0.5, 0.5, 0.5)
+	hintLabel:SetText("(Disabling reloads your interface)")
+
+	local btnOther = LuckyUI.CreateButton(frame, "Disable Better Wardrobe", 150, 26, "primary")
+	btnOther:SetPoint("BOTTOM", frame, "BOTTOM", -64, 40)
+	btnOther:SetScript("OnClick", function()
+		C_AddOns.DisableAddOn("BetterWardrobe")
+		C_UI.Reload()
+	end)
+
+	local btnSelf = LuckyUI.CreateButton(frame, "Disable Lucky's", 120, 26, "secondary")
+	btnSelf:SetPoint("LEFT", btnOther, "RIGHT", 8, 0)
+	btnSelf:SetScript("OnClick", function()
+		C_AddOns.DisableAddOn(addonName)
+		C_UI.Reload()
+	end)
+
+	frame:Show()
+end
+
 local function InitFeature(name, init)
 	local ok, err = pcall(init)
 	if not ok then
@@ -342,6 +387,10 @@ function addon:OnEnable()
 
 	-- Optional features last: a failure here must not cost the vendor and journal UI.
 	InitFeature("tooltips", function() addon:InitTooltips() end)
+
+	if C_AddOns.IsAddOnLoaded("BetterWardrobe") then
+		ShowConflictDialog()
+	end
 	--addon.Init.LoadCollectionListModule()
 	--BW_ColectionListFrameTemplate
 end
