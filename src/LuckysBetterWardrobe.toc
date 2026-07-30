@@ -1,6 +1,6 @@
 ## Interface: 120007
 ## Title: Lucky's Better Wardrobe
-## Version: 1.0.1
+## Version: 1.1.0
 ## Author: Lucky Phil
 ## Notes: Adds extra sets and functionality to the transmog and collection journal.
 ## Dependencies: Luckys_Utils
