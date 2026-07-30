@@ -34,6 +34,13 @@ local GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
 
 local screenWidth =  math.floor(UIParent:GetWidth())
 
+addon.PREFIX = "|cff00cc00Lucky's Better Wardrobe:|r"
+
+--- Dev logging via LuckyLog, gated on the Dev Mode setting.
+addon.DevLog = LuckyLog:New(addon.PREFIX, function()
+	return addon.Profile and addon.Profile.DevMode
+end)
+
 -- ponytail: Ace config UI removed. These stay as no-op stubs because DataBase.lua
 -- still calls RefreshSubItemData, and AceDB profile callbacks reference the others.
 function addon.RefreshSubItemData() end
@@ -61,6 +68,7 @@ local defaults = {
 		TooltipPreview_DressingDummy = false,
 		IgnoreClassRestrictions = false,
 		KeepTransmogTab = false,
+		DevMode = false,
 		CurrentFactionSets = true,
 		ExtraLargeTransmogArea = false,
 		ExtraLargeTransmogAreaMax = screenWidth,
@@ -354,7 +362,9 @@ end
 
 local function InitFeature(name, init)
 	local ok, err = pcall(init)
-	if not ok then
+	if ok then
+		addon.DevLog(("%s loaded"):format(name))
+	else
 		geterrorhandler()(("Lucky's Better Wardrobe: %s failed to load. %s"):format(name, err))
 	end
 end
@@ -410,9 +420,12 @@ end
 function addon.Init:LoadModules()
 	--Check to make sure that the addon has completed loading
 	if not initialize then
+		addon.DevLog("LoadModules: addon not initialized yet, retrying in 0.5s")
 		C_Timer.After(0.5, function() addon.Init:LoadModules() end)
 		return false
 	end
+
+	addon.DevLog("LoadModules: building collection frames")
 
 	--Check to make sure that the Blizzard Frames have completed loading
 	if not TransmogFrame then

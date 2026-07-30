@@ -38,6 +38,23 @@ function addon:BuildSettingsPanel()
             onToggle = function(v) Profile.KeepTransmogTab = v end,
         })
 
+        g:Toggle({
+            label   = L["Dev Mode"],
+            desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
+            checked = Profile.DevMode,
+            onToggle = function(v) Profile.DevMode = v end,
+        })
+
+        g:BottomSection(L["Version Info"])
+        g:BottomLabel({
+            label = "Lucky's Better Wardrobe",
+            value = "v" .. (C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"),
+        })
+        g:BottomLabel({
+            label = "Lucky's Utils",
+            value = "v" .. (C_AddOns.GetAddOnMetadata("Luckys_Utils", "Version") or "?"),
+        })
+        LuckyPromo:AddToRichGroup(g, addonName)
     end
 
     panel:Finalize()

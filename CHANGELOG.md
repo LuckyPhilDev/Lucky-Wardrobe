@@ -6,6 +6,8 @@
 
 - New setting to keep whichever tab you're on at the transmog vendor when switching outfits, instead of jumping back to Items. Clicking a slot still opens Items.
 - Sorting the Sets and Extra Sets lists by completion, which shipped in 1.0.0, was suggested by Adelie. Thanks!
+- Dev mode toggle in settings for troubleshooting.
+- Settings now show the addon and library versions, plus links to Lucky Phil's other addons.
 
 ### Fixed
 
