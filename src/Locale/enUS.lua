@@ -34,6 +34,13 @@ L["Sort By"] = "Sort By"
 L["Sort Direction"] = "Sort Direction"
 L["Ascending"] = "Ascending"
 L["Descending"] = "Descending"
+L["Save Current Situation"] = true
+L["Save Situation"] = true
+L["No Saved Situations"] = true
+L["Load Situation"] = true
+L["Replace Saved Situation"] = true
+L["Delete Saved Situation"] = true
+L["Delete saved situation \"%s\"? This cannot be undone."] = true
 
 L.OM_GOLD = "|c00FFD200"
 L.ENDCOLOR = "|r"

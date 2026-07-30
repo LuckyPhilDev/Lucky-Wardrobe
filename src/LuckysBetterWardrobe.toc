@@ -64,10 +64,12 @@ Modules\TransmogTemplates.xml
 Modules\Transmog.xml
 Modules\TransmogTab.lua
 Modules\SituationLabels.lua
+Modules\SituationPresets.lua
 Modules\Wardrobe_Sets.xml
 Modules\Wardrobe.xml
 Modules\ColorFilter.lua
 Modules\CollectionList.xml
 
 Modules\SortingFunctions.lua
+Modules\DevTools.lua
 

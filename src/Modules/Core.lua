@@ -76,6 +76,7 @@ local defaults = {
 		ExtraLargeTransmogAreaMax = screenWidth,
 		CollectionSetSortMode = "default",
 		CollectionSetSortDirection = "ascending",
+		SituationPresets = {},
 	}
 }
 local DB_Defaults = {
@@ -546,6 +547,7 @@ function addon:EventHandler(event, ...)
 				-- Extra Sets. The originals are hidden in UpdateTabs.
 				TransmogFrame.WardrobeCollection.TabHeaders.custmSetsTabID2 = TransmogFrame.WardrobeCollection:AddNamedTab(TRANSMOG_TAB_CUSTOM_SETS, TransmogFrame.WardrobeCollection.TabContent.CustomSetsFrame);
 				TransmogFrame.WardrobeCollection.TabHeaders.situationsTabID2 = TransmogFrame.WardrobeCollection:AddNamedTab(TRANSMOG_TAB_SITUATIONS, TransmogFrame.WardrobeCollection.TabContent.SituationsFrame);
+				InitFeature("situation presets", function() addon:InitSituationPresets() end)
 
 				local f = CreateFrame("Frame", nil, TransmogFrame.WardrobeCollection.TabContent.ItemsFrame.PagedContent,"BW_PagingControlsHorizontalTemplate")
 				f:ClearAllPoints()
