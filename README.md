@@ -63,7 +63,6 @@ The addon compartment button on the minimap opens the Appearances collection.
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Ignore class restrictions on sets and appearances.
-- **Transmog Vendor Window**: Show incomplete sets, show hidden items, hide or apply the hidden transmog to missing pieces, and set how many pieces a set needs before it counts as owned.
 
 ## Author
 

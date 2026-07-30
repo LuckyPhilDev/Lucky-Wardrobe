@@ -1356,7 +1356,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name ="BetterWardrobeButtonTemplate" inherits="SquareIconButtonTemplate" mixin="BW_DressingRoomButtonMixin" virtual="true" hidden="false">
+	<Button name ="BetterWardrobeButtonTemplate" inherits="SquareIconButtonTemplate" mixin="BW_TooltipButtonMixin" virtual="true" hidden="false">
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">

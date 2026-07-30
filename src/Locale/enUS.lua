@@ -40,10 +40,6 @@ L.ENDCOLOR = "|r"
 
 --_G["BINDING_NAME_" .. name
 _G["BINDING_HEADER_LUCKYWARDROBE"] = addonName
-_G["BINDING_NAME_LUCKYWARDROBE_BINDING_PLAYERMODEL"] = "Use Player Model"
-_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETMODEL"] = "Use Target Model"
-_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TARGETGEAR"] = "Use Target Gear"
-_G["BINDING_NAME_LUCKYWARDROBE_BINDING_TOGGLE_DRESSINGROOM"] = "Toggle DressingRoom"
 
 L["CLOTH"] = "Cloth"
 L["LEATHER"] = "Leather"
@@ -152,21 +148,6 @@ L["Use custom model"] = true
 L["CUSTOM_MODEL_WARNING"] = "*Custom models are set to the transmog dressing model, and might not display correctly"
 L["Model race"] = true
 L["Model gender"] = true
---~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DRESSING ROOM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
-
-L["Dressing Room Options"] = true
-L["Enable"] = true
-L["Show Item Buttons"] = true
-L["Show Narcissus Buttons"] = true
-L["Show DressingRoom Controls"] = true
-L["Dim Backround Image"] = true
-L["Hide Backround Image"] = true
-L["Start Undressed"] = true
-L["Hide Weapons"] = true
-L["Hide Shirt"] = true
-L["Hide Tabard"] = true
-L["Resize Window"] = true
-
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ITEM SUBSTITUTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
 
 L["Items"] = true
@@ -256,26 +237,9 @@ L["Click: Show Collection List"] = true
 L["Shift Click: Show Detail List"] = true
 
 --------------------------------------------------------------------------
------------------------------ DRESSING ROOM ------------------------------
+------------------------------- TOOLTIPS ---------------------------------
 --------------------------------------------------------------------------
 
-L["Display Options"] = true
-L["Character Options"] = true
-
-L["Import/Export Options"] = true
-L["Load Set: %s"] = true
-L["None Selected"] = true
-
-L["Import Item"] = true
-L["Import Set"] =  true
-L["Export Set"] = true
-L["Create Dressing Room Command Link"] = true
-
-L["Target Options"] = true
-L["Use Player Model"] = true
-L["Use Target Model"] = true
-L["Use Target Gear"] = true
-L["Undress"] = true
 L["Hide Armor Slots"] = true
 
 --------------------------------------------------------------------------

@@ -189,25 +189,6 @@ function IE.ImportTransmogVendorSet(importString)
 end
 
 local linkText = "f(%d,%d);"
-function addon:CreateChatLink()
-	local string = [[/run local function f(i,b)DressUpItemLink("item:"..i.."::::::::::::9:"..b);end;]]
-	local Buttons = BW_DressingRoomFrame.PreviewButtonFrame.Slots
-	for index, button in pairs(Buttons) do
-		local itemlink = nil
-		local slot = button:GetID()
-		
-		--if not DressingRoom:IsSlotHidden(slot) then
-			itemlink = button.itemLink --GetInventoryItemLink("player", slot)
-			if itemlink then
-				local id, dif, bonus = ConvertItemLink(itemlink)
-				string = string..linkText:format(id,bonus or 0)
-			end
-		--end
-	end
-	print(string)
-	Export(string,false)
-end
-
 
 function addon:CreateChatLinkTransmogVendor()
 	local string = [[/run local function f(i,b)DressUpItemLink("item:"..i.."::::::::::::9:"..b);end;]]

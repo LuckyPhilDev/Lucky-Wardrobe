@@ -47,16 +47,8 @@ local defaults = {
 		PartialLimit = 4,
 		ShowHidden = false,
 		TSM_Market = "DBMarket",
-		DR_OptionsEnable = false,
-		DR_HideBackground = false,
-		DR_HideWeapons = false,
-		DR_StartUndressed = false,
-		DR_HideShirt = false,
-		DR_HideTabard = false,	
 		TooltipPreview_Width = 300,
 		TooltipPreview_Height = 300,
-		DR_Width = 450,
-		DR_Height = 545,
 		ShowItemIDTooltips = false,
 		TooltipPreview_Show = false,
 		TooltipPreview_Anchor = "horizontal",
@@ -350,7 +342,6 @@ function addon:OnEnable()
 
 	-- Optional features last: a failure here must not cost the vendor and journal UI.
 	InitFeature("tooltips", function() addon:InitTooltips() end)
-	InitFeature("dressing room", function() addon.Init:DressingRoom() end)
 	--addon.Init.LoadCollectionListModule()
 	--BW_ColectionListFrameTemplate
 end
@@ -430,14 +421,6 @@ function addon.Init:LoadModules()
 ]]--
 
 	C_Timer.After(0, function()
-		----addon:UpdatePetTracker()
-		----addon.Init:initCollectionList()
-	 	----addon.Init:BuildCollectionList()
-		----addon.Init:BuildTransmogVendorUI()
-		----addon:UpdateCanIMogIt()
-		----addon:InitExtendedSetsSwap()
-
-
 		local selected = CollectionsJournal_GetTab(CollectionsJournal)
 		BetterWardrobeCollectionFrame:SetShown(selected == 5) 
 

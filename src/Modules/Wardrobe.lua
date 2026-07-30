@@ -220,9 +220,6 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 
 		self.SearchBox:Show()
 
-		local _, isWeapon = C_TransmogCollection.GetCategoryInfo((BetterWardrobeCollectionFrame and BetterWardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory()) or 1)
-		local yOffset =  LegionWardrobeY;
-
 		self.ClassDropdown:Show();
 
 		if ElvUI then
@@ -2813,73 +2810,14 @@ function BetterWardrobeSetsDetailsItemUseabiltiyMixin:OnLeave()
 end
 
 
-BW_DressingRoomButtonMixin = {}
-function BW_DressingRoomButtonMixin:OnMouseDown()
-	BW_GameTooltip:Hide()
+BW_TooltipButtonMixin = {}
+
+function BW_TooltipButtonMixin.OnEnter(self)
 	local button = self.buttonID
 	if not button then return end
-	if button == "Settings" then
-		DressupSettingsButton_OnClick(self)
-
-	elseif button == "Import" then
-		BW_DressingRoomImportButton_OnClick(self)
-	elseif button == "Player" then
-		useTarget = false
-		DressingRoom:UpdateModel("player")
-
-	elseif button == "Target" then
-		useTarget = true
-		DressingRoom:UpdateModel("target")
-
-	elseif button == "Gear" then
-		--DressingRoom:SetTargetGear()
-		useTarget = false
-		DressingRoom:UpdateModel("target")
-
-	elseif button == "Reset" then
-		text = RESET
-
-	elseif button == "Undress" then
-		BW_DressingRoomHideArmorButton_OnClick(self)
-
-	elseif button == "Undo" then
-		DressingRoom:Undo()
-
-	--elseif button == "Link" then
-		--DressUpModelFrameLinkButtonMixin:OnClick()
-	end
-end
-
-function BW_DressingRoomButtonMixin.OnEnter(self)
-	local button = self.buttonID
 	local text
-	if not button then return end
-	if button == "Settings" then
-	text = L["General Options"]
-	elseif button == "Import" then
-		text = L["Import/Export Options"]
-
-	elseif button == "Player" then
-		text = L["Use Player Model"]
-
-	elseif button == "Target" then
-		text = L["Use Target Model"]
-
-	elseif button == "Gear" then
-		text = L["Use Target Gear"]
-
-	elseif button == "Reset" then
-		text = RESET
-
-	elseif button == "Undress" then
-		text = L["Undress"]
-	elseif button == "Undo" then
-		text = L["Undo"]
-	elseif button == "HideSlot" then
+	if button == "HideSlot" then
 		text = L["Hide Armor Slots"]
-
-	elseif button == "Link" then
-		text = LINK_TRANSMOG_OUTFIT_HELPTIP
 	end
 
 	BW_GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -2887,6 +2825,6 @@ function BW_DressingRoomButtonMixin.OnEnter(self)
 	BW_GameTooltip:Show()
 end
 
-function BW_DressingRoomButtonMixin.OnLeave()
+function BW_TooltipButtonMixin.OnLeave()
 	BW_GameTooltip:Hide()
 end

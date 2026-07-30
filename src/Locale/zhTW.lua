@@ -127,20 +127,6 @@ L["Use custom model"] = "使用自訂模型"
 L["CUSTOM_MODEL_WARNING"] = "*自定義模型設置為塑形試衣模型，可能無法正確顯示"
 L["Model race"] = "模型種族"
 L["Model gender"] = "模型性別"
---~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DRESSING ROOM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
-
-L["Dressing Room Options"] = "試衣間選項"
-L["Enable"] = "啟用"
-L["Show Item Buttons"] = "顯示物品按鈕"
-L["Show DressingRoom Controls"] = "顯示試衣間控制"
-L["Dim Backround Image"] = "黯淡背景圖像"
-L["Hide Backround Image"] = "隱藏背景圖像"
-L["Start Undressed"] = "開始時脫裝"
-L["Hide Weapons"] = "隱藏武器"
-L["Hide Shirt"] = "隱藏襯衣"
-L["Hide Tabard"] = "隱藏外袍"
-L["Resize Window"] = "調整視窗大小"
-
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ITEM SUBSTITUTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
 
 L["Items"] = "物品"
@@ -220,26 +206,9 @@ L["Click: Show Collection List"] = "點擊: 顯示收藏清單"
 L["Shift Click: Show Detail List"] = "Shift-點擊: 顯示詳細清單"
 
 --------------------------------------------------------------------------
------------------------------ DRESSING ROOM ------------------------------
+------------------------------- TOOLTIPS ---------------------------------
 --------------------------------------------------------------------------
 
-L["Display Options"] = "顯示選項"
-L["Character Options"] = "角色選項"
-
-L["Import/Export Options"] = "導入/導出選項"
-L["Load Set: %s"] = "載入套裝: %s"
-L["None Selected"] = "未選擇"
-
-L["Import Item"] = "導入物品"
-L["Import Set"] =  "導入套裝"
-L["Export Set"] = "導出套裝"
-L["Create Dressing Room Command Link"] = "建立試衣間指令連結"
-
-L["Target Options"] = "目標選項"
-L["Use Player Model"] = "使用玩家模型"
-L["Use Target Model"] = "使用目標模型"
-L["Use Target Gear"] = "使用目標裝備"
-L["Undress"] = "脫裝"
 L["Hide Armor Slots"] = "隱藏護甲部位"
 
 --------------------------------------------------------------------------

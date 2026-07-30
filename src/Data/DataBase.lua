@@ -876,27 +876,6 @@ end
 				end
 			end
 		
-		--[[
-			--MogIt Sets
-			local mogit_Outfits = addon.MogIt.GetMogitOutfits()
-			if mogit_Outfits then 
-				for i, data in ipairs(mogit_Outfits) do
-					data.validForCharacter = true
-
-					tinsert(FullList, data)
-				end
-			end
-
-			--TransmogOutfits Sets
-			local transmogOutfits_Sets = addon.TransmogOutfits.GetOutfits()
-			if transmogOutfits_Sets then 
-				for i, data in ipairs(transmogOutfits_Sets) do
-								data.validForCharacter = true
-
-					tinsert(FullList, data)
-				end
-			end
-	]]--
 		end
 
 

@@ -304,7 +304,6 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 	--TODO: ENable when fixed
 	self.DetailsFrame.BW_SetsHideSlotButton:Hide();
 	self.DetailsFrame.BW_LinkSetButton:Hide()
-	self.DetailsFrame.BW_OpenDressingRoomButton:Hide()
 
 	self.DetailsFrame.Name:SetText(setInfo.name);
 	if ( self.DetailsFrame.Name:IsTruncated() ) then
@@ -790,56 +789,6 @@ function WardrobeSetsCollectionMixin:ScrollToSet(setID, alignment)
 	end;
 
 	scrollBox:ScrollToElementDataByPredicate(FindSet, alignment);
-end
-
-function WardrobeSetsCollectionMixin:OpenInDressingRoom(setID)
-	if DressUpFrame:IsShown() then 
-	else
-		DressUpFrame_Show(DressUpFrame)
-		C_Timer.After(0, function() self:OpenInDressingRoom(setID) 
-		return 
-	end)
-	end
-		
-	--local setType = tabType[addon.GetTab()]
-	-----local setInfo = addon.getFullList(setID) --addon:GetSetInfo(setID)
-	local setInfo = C_TransmogSets.GetSetInfo(setID);
-
-	local setType = "Blizzard" --setInfo.setType;
-
-	--local setType = addon.QueueList[1]
-	--local setID = addon.QueueList[2]
-	local playerActor = DressUpFrame.ModelScene:GetPlayerActor()
-
-	if not playerActor or not setID then
-		return false;
-	end
-
-	local sources = nil;
-
-	if setType == "Blizzard" then
-		sources = {}
-		local sourceInfo = C_TransmogSets.GetSetPrimaryAppearances(setID)
-		for i, data in ipairs(sourceInfo) do
-			sources[data.appearanceID] = false
-		end
-
-	else--if setType == "ExtraSet" then
-		sources = setInfo.sources
-	end
-
-	if not sources then return end
-
-	playerActor:Undress()
-	for i, d in pairs(sources)do
-		playerActor:TryOn(i)
-	end
-
-	import = true
-	--DressUpSources(sources)
-	import = false
-	--TODO: Enable with Dressingroom files
-	----addon:UpdateDressingRoom()
 end
 
 function BetterWardrobeSetsCollectionMixin:LinkSet(setID)

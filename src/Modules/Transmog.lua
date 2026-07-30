@@ -2814,8 +2814,6 @@ function TransmogWardrobeSituationsMixin:Refresh()
 end
 ]]--
 
-BW_DressingRoomButtonMixin = BW_DressingRoomButtonMixin or {}
-
 --Creates the various buttons used on the Collection Journal
 function addon:CreateButtons()
 	--Randomize Button, Mixin defined in Randomizer.lua

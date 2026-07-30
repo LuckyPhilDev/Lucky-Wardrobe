@@ -23,3 +23,5 @@ First release of Lucky's Better Wardrobe, a continuation of Better Wardrobe and 
 ### Removed
 
 - Set collection chat alerts, and the set name and collected count toggles at the vendor. None of them ever did anything.
+- The unfinished Dressing Room window and its settings. It never left the experimental stage and was off by default.
+- The Transmog Vendor Window's incomplete-set and hidden-item settings. They didn't do anything.

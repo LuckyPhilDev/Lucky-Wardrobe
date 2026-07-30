@@ -127,20 +127,6 @@ L["CUSTOM_MODEL_WARNING"] = "*Benutzerdefinierte Modelle sind auf das Anprobemod
 L["Model race"] = "Rasse"
 L["Model gender"] = "Geschlecht"
 
---~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DRESSING ROOM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
-
-L["Dressing Room Options"] = "Anprobe"
-L["Enable"] = "Aktivieren"
-L["Show Item Buttons"] = "Zeige Gegenstandslots"
-L["Show DressingRoom Controls"] = "Zeige Anprobesteuerungen"
-L["Dim Backround Image"] = "Hintergrundbild verdunkeln"
-L["Hide Backround Image"] = "Hintergrundbild verstecken"
-L["Start Undressed"] = "Starte unbekleidet"
-L["Hide Weapons"] = "Waffen verstecken"
-L["Hide Shirt"] = "Hemd verstecken"
-L["Hide Tabard"] = "Wappenrock verstecken"
-L["Resize Window"] = "Fenstergröße ändern"
-
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ITEM SUBSTITUTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--
 
 L["Items"] = "Gegenstände"
@@ -224,26 +210,9 @@ L["Click: Show Collection List"] = "Klick: Zeige die Sammelliste"
 L["Shift Click: Show Detail List"] = "Shift + Klick: Zeige die Detailierte Liste"
 
 --------------------------------------------------------------------------
------------------------------ DRESSING ROOM ------------------------------
+------------------------------- TOOLTIPS ---------------------------------
 --------------------------------------------------------------------------
 
-L["Display Options"] = "Anzeigeoptionen"
-L["Character Options"] = "Charakteroptionen"
-
-L["Import/Export Options"] = "Import/Export Optionen"
-L["Load Set: %s"] = "Lade Set: %s"
-L["None Selected"] = "Keins ausgewählt"
-
-L["Import Item"] = "Gegenstand importieren"
-L["Import Set"] = "Set importieren"
-L["Export Set"] = "Set exportieren"
-L["Create Dressing Room Command Link"] = "Anprobenlink erstellen"
-
-L["Target Options"] = "Ziel Optionen"
-L["Use Player Model"] = "Spielermodell verwenden"
-L["Use Target Model"] = "Zielmodell verwenden"
-L["Use Target Gear"] = "Rüstung vom Ziel verwenden"
-L["Undress"] = "Ausziehen"
 L["Hide Armor Slots"] = "Rüstungsslots verstecken"
 
 --------------------------------------------------------------------------

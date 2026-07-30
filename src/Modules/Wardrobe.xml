@@ -874,44 +874,15 @@
 										--self:SetFrameLevel(level);
 									</OnShow>
 									<OnEnter>
-										BW_DressingRoomButtonMixin.OnEnter(self)  
+										BW_TooltipButtonMixin.OnEnter(self)
 									</OnEnter>
 									<OnLeave>
-										BW_DressingRoomButtonMixin.OnLeave()
+										BW_TooltipButtonMixin.OnLeave()
 									</OnLeave>
 									<OnClick>
 										BW_JournalHideSlotMenu_OnClick(self)
 									</OnClick>
 
-								</Scripts>
-							</Button>
-							<Button parentKey="BW_OpenDressingRoomButton" inherits="SquareIconButtonTemplate" >
-								<Size x="32" y="32"/>
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="3" y="0"/>
-								</Anchors>					
-								<Layers>
-									<Layer level="ARTWORK" textureSubLevel="5">
-										<Texture parentKey="Icon" file="Interface\ICONS\Trade_Archaeology_HighborneSoulMirror">
-											<Size x="40" y="40"/>
-											<Anchors>
-												<Anchor point="CENTER" />
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnShow> 
-									</OnShow>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip_SetTitle(GameTooltip, VIEW_IN_DRESSUP_FRAME, NORMAL_FONT_COLOR, true);
-										GameTooltip:Show();
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-									<OnClick>
-										self:GetParent():GetParent():OpenInDressingRoom(self:GetParent().BW_LinkSetButton.setID)
-									</OnClick>
 								</Scripts>
 							</Button>
 

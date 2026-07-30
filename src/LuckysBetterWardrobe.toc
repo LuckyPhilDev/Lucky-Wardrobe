@@ -4,7 +4,7 @@
 ## Author: Lucky Phil
 ## Notes: Adds extra sets and functionality to the transmog and collection journal.
 ## Dependencies: Luckys_Utils
-## OptionalDeps: BetterWardrobe, MogMount,MogIt, CanIMogIt, LegionWardrobe, WardrobeEnhanced, Rarity, TransmogOutfits, ExtendedSets, ElvUI, PetTracker, PetTrackerJournal
+## OptionalDeps: BetterWardrobe, MogIt, CanIMogIt, ElvUI
 ## SavedVariables: LuckysBetterWardrobe_Options, LuckysBetterWardrobe_CharacterData, LuckysBetterWardrobe_SavedSetData, LuckysBetterWardrobe_SubstituteItemData, LuckysBetterWardrobe_ListData, LuckysBetterWardrobe_SavedOutfitData, LuckysBetterWardrobe_CollectionCache, BTT
 ## IconTexture: Interface\GossipFrame\transmogrifyGossipIcon.blp
 ## AddonCompartmentFunc: LuckysBetterWardrobe_OnAddonCompartmentClick
@@ -48,6 +48,7 @@ Data\Mail.lua
 Data\Leather.lua
 Data\Plate.lua
 Data\MISC.lua
+Data\COSMETIC.lua
 Data\SetOverrides.lua
 
 Modules\Tooltips.lua
@@ -62,11 +63,8 @@ Modules\TransmogTemplates.xml
 Modules\Transmog.xml
 Modules\Wardrobe_Sets.xml
 Modules\Wardrobe.xml
-Modules\DressingRoom.xml
 Modules\ColorFilter.lua
 Modules\CollectionList.xml
 
 Modules\SortingFunctions.lua
 
-#3rd party addon compatability
-Plugins\ElvUI.lua
