@@ -63,6 +63,7 @@ Modules\TransmogTemplates.xml
 
 Modules\Transmog.xml
 Modules\TransmogTab.lua
+Modules\SituationLabels.lua
 Modules\Wardrobe_Sets.xml
 Modules\Wardrobe.xml
 Modules\ColorFilter.lua

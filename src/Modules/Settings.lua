@@ -39,6 +39,16 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
+            label   = L["Show Situation Values"],
+            desc    = L["Shows the selected situation values on outfit entries instead of just the category names."],
+            checked = Profile.ShowSituationValues,
+            onToggle = function(v)
+                Profile.ShowSituationValues = v
+                addon:RefreshSituationLabels()
+            end,
+        })
+
+        g:Toggle({
             label   = L["Dev Mode"],
             desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
             checked = Profile.DevMode,

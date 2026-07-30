@@ -211,6 +211,7 @@ function TransmogFrameMixin:RefreshOutfits(selectActiveOutfit)
 	end
 
 	self.OutfitCollection:Refresh(dataProvider, selectActiveOutfit);
+	addon:RefreshSituationLabels();
 end
 
 function TransmogFrameMixin:RefreshSlots()

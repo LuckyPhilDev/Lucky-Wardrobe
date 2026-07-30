@@ -68,6 +68,7 @@ local defaults = {
 		TooltipPreview_DressingDummy = false,
 		IgnoreClassRestrictions = false,
 		KeepTransmogTab = false,
+		ShowSituationValues = true,
 		DevMode = false,
 		CurrentFactionSets = true,
 		ExtraLargeTransmogArea = false,
