@@ -375,7 +375,7 @@ function addon:OnEnable()
 	addon.Profile = self.db.profile
 	Profile = addon.Profile
 
-	addon:BuildSettingsPanel()
+	InitFeature("settings panel", function() addon:BuildSettingsPanel() end)
 	addon.Init:InitDB()
 
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED", "EventHandler")
