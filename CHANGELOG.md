@@ -2,6 +2,10 @@
 
 ## 1.0.1
 
+### Added
+
+- New setting to keep whichever tab you're on at the transmog vendor when switching outfits, instead of jumping back to Items. Clicking a slot still opens Items.
+
 ### Fixed
 
 - Logging in with the original Better Wardrobe still enabled now shows a dialog offering to disable either addon and reload, instead of leaving you with a broken, unclosable window. (Thanks for the report Adelie)
