@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+
+- Logging in with the original Better Wardrobe still enabled now shows a dialog offering to disable either addon and reload, instead of leaving you with a broken, unclosable window. (Thanks for the report Adelie)
+
 ## 1.0.0
 
 First release of Lucky's Better Wardrobe, a continuation of Better Wardrobe and Transmog by SLOKnightfall.
