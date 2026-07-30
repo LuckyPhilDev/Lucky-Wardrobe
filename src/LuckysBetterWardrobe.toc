@@ -8,6 +8,7 @@
 ## SavedVariables: LuckysBetterWardrobe_Options, LuckysBetterWardrobe_CharacterData, LuckysBetterWardrobe_SavedSetData, LuckysBetterWardrobe_SubstituteItemData, LuckysBetterWardrobe_ListData, LuckysBetterWardrobe_SavedOutfitData, LuckysBetterWardrobe_CollectionCache, BTT
 ## IconTexture: Interface\GossipFrame\transmogrifyGossipIcon.blp
 ## AddonCompartmentFunc: LuckysBetterWardrobe_OnAddonCompartmentClick
+## X-Curse-Project-ID: 1631480
 
 #Libraries
 Libs\LibStub\LibStub.lua
