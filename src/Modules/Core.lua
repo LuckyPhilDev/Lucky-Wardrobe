@@ -60,6 +60,7 @@ local defaults = {
 		TooltipPreview_CustomGender = 0,
 		TooltipPreview_DressingDummy = false,
 		IgnoreClassRestrictions = false,
+		KeepTransmogTab = false,
 		CurrentFactionSets = true,
 		ExtraLargeTransmogArea = false,
 		ExtraLargeTransmogAreaMax = screenWidth,

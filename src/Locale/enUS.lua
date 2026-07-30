@@ -71,6 +71,7 @@ L["Profiles"] = true
 
 L["General Options"] = true
 L["Ignore Class Restriction Filter"] = true
+L["Keep Active Transmog Tab"] = true
 L["Only for Raid Lookalike/Recolor Sets"] = true
 L["Sets"] = true
 L["Extra Sets"] = true

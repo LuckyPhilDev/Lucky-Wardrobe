@@ -31,6 +31,13 @@ function addon:BuildSettingsPanel()
             end,
         })
 
+        g:Toggle({
+            label   = L["Keep Active Transmog Tab"],
+            desc    = "Keeps whichever tab you're on when switching outfits at the transmog NPC, instead of jumping back to Items. Clicking a slot still opens Items.",
+            checked = Profile.KeepTransmogTab,
+            onToggle = function(v) Profile.KeepTransmogTab = v end,
+        })
+
     end
 
     panel:Finalize()

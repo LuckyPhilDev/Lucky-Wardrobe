@@ -62,7 +62,7 @@ The addon compartment button on the minimap opens the Appearances collection.
 
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
-- **General**: Ignore class restrictions on sets and appearances.
+- **General**: Ignore class restrictions on sets and appearances, keep your active tab at the transmog NPC when switching outfits.
 
 ## Author
 
