@@ -123,6 +123,23 @@ local function CreateModelFrame()
 	return model
 end
 
+-- ShoppingTooltip1 and 2 are global singletons shared by GameTooltip, its embedded item
+-- tooltip and EmbeddedItemTooltip, but TooltipComparisonManager tracks a single owning
+-- tooltip. GameTooltip_OnHide asks the manager to clear, and the manager no-ops whenever
+-- its owner is one of the other tooltips, stranding a comparison tooltip on screen with
+-- nothing left to close it. The manager owns each shopping tooltip via SetOwner, so an
+-- owner that is no longer shown is the signature of one that has been stranded.
+local function HideStrandedComparisonTooltips()
+	for _, shoppingTooltip in ipairs(GameTooltip.shoppingTooltips or {}) do
+		local owner = shoppingTooltip:IsShown() and shoppingTooltip:GetOwner()
+		if owner and not owner:IsShown() then
+			addon.DevLog(("Hiding stranded %s, owner %s is no longer shown")
+				:format(shoppingTooltip:GetName() or "comparison tooltip", owner:GetName() or "unnamed"))
+			shoppingTooltip:Hide()
+		end
+	end
+end
+
 function addon:InitTooltips()
 	-- Blizzard runs insecure tooltip post-calls through a SecureHandler attribute delegate,
 	-- which swallows errors. Without this pcall a broken ShowPreview looks like a no-op.
@@ -135,11 +152,13 @@ function addon:InitTooltips()
 		end
 	end)
 
-	GameTooltip:HookScript("OnHide", function() 
-		if (AuctionHouseFrame and not AuctionHouseFrame:IsShown()) or not AuctionHouseFrame then 
+	GameTooltip:HookScript("OnHide", function()
+		if (AuctionHouseFrame and not AuctionHouseFrame:IsShown()) or not AuctionHouseFrame then
 			preview:Hide()
-			preview:OnHide2() 
-		end 
+			preview:OnHide2()
+		end
+
+		HideStrandedComparisonTooltips()
 	end)
 
 	preview:SetSize(addon.Profile.TooltipPreview_Width, addon.Profile.TooltipPreview_Height)
