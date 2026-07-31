@@ -652,8 +652,156 @@ commands.probe = function()
 	end)
 end
 
+local function SourceCategoryNames()
+	local names = {}
+	for key, id in pairs(addon.Filter) do
+		names[id] = key
+	end
+	return names
+end
+
+local LIST_LIMIT = 40
+
+-- Lists every visible set in one category with the raw fields the classifier had
+-- to work with, which is the only way to see why a set landed where it did.
+local function ListCategory(categoryName)
+	local names = SourceCategoryNames()
+	local categoryID
+	for id, key in pairs(names) do
+		if key:lower() == categoryName then categoryID = id end
+	end
+
+	if not categoryID then
+		local keys = {}
+		for _, key in pairs(names) do keys[#keys + 1] = key:lower() end
+		table.sort(keys)
+		Print("|cffff5555Unknown category '%s'.|r Try: %s", categoryName, table.concat(keys, ", "))
+		return
+	end
+
+	local matches = {}
+	for _, data in ipairs(addon.SetsDataProvider:GetBaseSets() or {}) do
+		if (data.filter or addon.Filter.MISC) == categoryID then
+			matches[#matches + 1] = data
+		end
+	end
+
+	-- Blizzard's own count, deliberately: this file does not shadow C_TransmogSets,
+	-- and only the unshadowed API is usable at classify time, when the addon's own
+	-- variant grouping has not been built yet.
+	local function VariantCount(setID)
+		local baseSetID = C_TransmogSets.GetBaseSetID(setID) or setID
+		local variants = C_TransmogSets.GetVariantSets(baseSetID)
+		return variants and #variants or 0
+	end
+
+	Print("%s (id %d): %d visible sets", names[categoryID], categoryID, #matches)
+	for index, data in ipairs(matches) do
+		if index > LIST_LIMIT then
+			Print("  ... %d more, narrow the list with the other filters", #matches - LIST_LIMIT)
+			break
+		end
+
+		Print("  %d %s | label=%s | desc=%s | variants=%d | xpac=%s patch=%s limited=%s class=%s",
+			data.setID, tostring(data.name), tostring(data.label), tostring(data.description),
+			VariantCount(data.setID),
+			tostring(data.expansionID), tostring(data.patchID), tostring(data.limitedTimeSet),
+			tostring(data.classMask))
+	end
+
+	-- Raid tier comes in difficulties, so the spread here is what says whether a
+	-- variant count could replace naming exceptions one by one.
+	local variantCounts = {}
+	for _, data in ipairs(matches) do
+		local count = VariantCount(data.setID)
+		variantCounts[count] = (variantCounts[count] or 0) + 1
+	end
+
+	local counts = {}
+	for count in pairs(variantCounts) do counts[#counts + 1] = count end
+	table.sort(counts)
+
+	Print("Variant counts in %s:", names[categoryID])
+	for _, count in ipairs(counts) do
+		Print("  %d variants: %d sets", count, variantCounts[count])
+	end
+
+	-- The classifier leans on description, so its spread across a category is the
+	-- signal for whether that category can be split up any further.
+	local descriptions = {}
+	for _, data in ipairs(matches) do
+		local key = tostring(data.description)
+		descriptions[key] = (descriptions[key] or 0) + 1
+	end
+
+	local distinct = {}
+	for description in pairs(descriptions) do distinct[#distinct + 1] = description end
+	table.sort(distinct)
+
+	Print("Distinct descriptions in %s: %d", names[categoryID], #distinct)
+	for _, description in ipairs(distinct) do
+		Print("  %s x%d", description, descriptions[description])
+	end
+end
+
+-- Reports why sets are on screen: which source checkboxes the current tab has,
+-- what each is set to, and which category every visible set falls into.
+commands.sources = function(categoryName)
+	local tab = BetterWardrobeCollectionFrame and BetterWardrobeCollectionFrame.selectedCollectionTab
+	if not tab then
+		Print("|cffff5555Open the Collections Journal first.|r")
+		return
+	end
+
+	if categoryName then
+		ListCategory(categoryName)
+		return
+	end
+
+	local filterSelection = addon.Filters.Base.filterSelection
+	local tabSources = addon.Globals.GetSourceFiltersForTab(tab)
+	local names = SourceCategoryNames()
+
+	Print("Source checkboxes on tab %d:", tab)
+	local hasCheckbox = {}
+	for _, source in ipairs(tabSources) do
+		hasCheckbox[source.id] = true
+		Print("  [%s] %s (%s, id %d)", filterSelection[source.id] ~= false and "x" or " ",
+			source.label, names[source.id] or "?", source.id)
+	end
+
+	if not tabSources[1] then
+		Print("  none")
+	end
+
+	local sets = addon.SetsDataProvider:GetBaseSets() or {}
+	local counts, unfilterable = {}, false
+	for _, data in ipairs(sets) do
+		local id = data.filter or addon.Filter.MISC
+		counts[id] = (counts[id] or 0) + 1
+		if not hasCheckbox[id] then unfilterable = true end
+	end
+
+	local ids = {}
+	for id in pairs(counts) do ids[#ids + 1] = id end
+	table.sort(ids)
+
+	Print("Visible sets: %d", #sets)
+	for _, id in ipairs(ids) do
+		Print("  %s (id %d): %d%s", names[id] or "?", id, counts[id],
+			hasCheckbox[id] and "" or " |cffff5555no checkbox on this tab, cannot be filtered out|r")
+	end
+
+	if unfilterable then
+		Print("|cffff5555Categories flagged above survive Uncheck All.|r")
+	end
+end
+
 commands.help = function()
-	Print("Situations dev commands (/bwdev):")
+	Print("Dev commands (/bwdev):")
+	Print("  sources          source checkboxes and the category of every visible set")
+	Print("  sources <name>   list the visible sets in one category with their raw fields")
+	Print("Situations:")
 	Print("  probe            end to end viability check, leaves nothing pending")
 	Print("  api              which C_TransmogOutfitInfo functions exist and their taint state")
 	Print("  schema           situation categories and options, with indices for 'set'")
@@ -673,19 +821,27 @@ end
 
 DevTools.commands = commands
 
+-- Commands that don't touch the Situations API, so they still run on a client
+-- that doesn't have it.
+local SITUATION_FREE_COMMANDS = {
+	help = true,
+	sources = true,
+}
+
 SLASH_LUCKYBWDEV1 = "/bwdev"
 SlashCmdList["LUCKYBWDEV"] = function(input)
-	if not C_TransmogOutfitInfo then
-		Print("|cffff5555C_TransmogOutfitInfo is not available on this client.|r")
-		return
-	end
-
 	local args = {}
 	for word in tostring(input or ""):gmatch("%S+") do
 		args[#args + 1] = word:lower()
 	end
 
-	local command = commands[args[1] or "help"]
+	local commandName = args[1] or "help"
+	if not C_TransmogOutfitInfo and not SITUATION_FREE_COMMANDS[commandName] then
+		Print("|cffff5555C_TransmogOutfitInfo is not available on this client.|r")
+		return
+	end
+
+	local command = commands[commandName]
 	if not command then
 		Print("|cffff5555Unknown command '%s'.|r", tostring(args[1]))
 		commands.help()

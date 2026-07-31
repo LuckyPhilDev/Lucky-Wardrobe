@@ -14,6 +14,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Visual view**: Click the eye icon to swap the set list for a grid of previews, the same layout you get at the transmog vendor.
 - **Favourites**: Star the extra sets you care about so they float to the top.
 - **Sorting**: Use Filter to sort the Sets and Extra Sets lists by completion in ascending or descending order. Ascending completion focuses on the closest sets first, with larger sets first when they need the same number of pieces.
+- **Filter by source**: Under Filter > Sources, narrow either set list to where the sets actually come from. Sets covers raid, PvP, covenant, heritage, cosmetic, dungeon, and trading post, while Extra Sets covers classic, quest, dungeon, recolor, garrison, island expedition, warfronts, holiday, and trading post. Cosmetic gathers the outfit collections any class can wear, so you can browse class armour without them in the way.
 - **Hide what you don't want**: Right-click any appearance or set to hide it. Hidden lists are per character and can be copied between characters or reset in one click.
 - **Collection List**: Build a running list of appearances you're chasing. Tracked appearances get a book icon in the journal, and a check mark once you learn them.
 - **Shopping list**: Shift-click the Collection List icon for a breakdown of every item that unlocks each tracked appearance and how to get it. With TradeSkillMaster installed, vendor, profession, and world drop items show prices.

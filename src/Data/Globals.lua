@@ -377,18 +377,167 @@ Globals.colors = {
 	["white"] = {255, 255, 255},
 }
 
+-- Source category stored on every set as `filter`. The source checkboxes index
+-- filter state by these IDs, so they must stay stable: append new categories
+-- rather than renumbering existing ones.
 addon.Filter = {
 ["TRASH"] = 1,
 ["MISC"] = 2,
 ["CLASSIC"] = 3,
 ["QUEST"] = 4,
 ["DUNGEON"] = 5,
-["RAID"] = 0,
-["RECOLOR"] = 0,
 ["GARRISON"] = 6,
 ["ISLAND"] = 7,
-["HOLIDAY"] = 10,
+["WARFRONT"] = 8,
 ["TPOST"] = 9,
-["COVENANT"] = 0,
-["WARFRONT"] = 8,	
+["HOLIDAY"] = 10,
+["RECOLOR"] = 11,
+["RAID"] = 12,
+["COVENANT"] = 13,
+["PVP"] = 14,
+["HERITAGE"] = 15,
+["COSMETIC"] = 16,
 }
+
+Globals.BASE_SETS_TAB = 2
+Globals.EXTRA_SETS_TAB = 3
+
+local BASE = Globals.BASE_SETS_TAB
+local EXTRA = Globals.EXTRA_SETS_TAB
+
+-- Order of the Sources submenu, and the tabs each category can actually appear
+-- on. Every category a tab's sets can be classified as must be listed for that
+-- tab: an unlisted category has no checkbox, so Uncheck All cannot clear it and
+-- its sets stay on screen when the user has asked for nothing. PvP overlaps
+-- Blizzard's own PvE/PvP toggle above this submenu, and is listed anyway for
+-- that reason.
+Globals.SourceFilters = {
+	{id = addon.Filter.RAID, label = L["Raid Set"], tabs = {[BASE] = true}},
+	{id = addon.Filter.PVP, label = L["PvP"], tabs = {[BASE] = true}},
+	{id = addon.Filter.COVENANT, label = L["Covenants"], tabs = {[BASE] = true}},
+	{id = addon.Filter.HERITAGE, label = L["Heritage"], tabs = {[BASE] = true}},
+	{id = addon.Filter.COSMETIC, label = L["Cosmetic"], tabs = {[BASE] = true}},
+	{id = addon.Filter.CLASSIC, label = L["Classic Set"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.QUEST, label = L["Quest Set"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.DUNGEON, label = L["Dungeon Set"], tabs = {[BASE] = true, [EXTRA] = true}},
+	{id = addon.Filter.RECOLOR, label = L["Recolor"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.GARRISON, label = L["Garrison"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.ISLAND, label = L["Island Expedition"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.WARFRONT, label = L["Warfronts"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.HOLIDAY, label = L["Holiday"], tabs = {[EXTRA] = true}},
+	{id = addon.Filter.TPOST, label = L["Trading Post"], tabs = {[BASE] = true, [EXTRA] = true}},
+	{id = addon.Filter.MISC, label = L["MISC"], tabs = {[BASE] = true, [EXTRA] = true}},
+	{id = addon.Filter.TRASH, label = L["Trash"], tabs = {[EXTRA] = true}},
+}
+
+function Globals.GetSourceFiltersForTab(tab)
+	local sources = {}
+	for _, source in ipairs(Globals.SourceFilters) do
+		if source.tabs[tab] then
+			table.insert(sources, source)
+		end
+	end
+	return sources
+end
+
+Globals.TRADING_POST_LABEL = "Trading Post" --BATTLE_PET_SOURCE_12
+Globals.IN_GAME_SHOP_LABEL = "In-Game Shop" --BATTLE_PET_SOURCE_10
+
+local COVENANT_SETID_MIN, COVENANT_SETID_MAX = 2015, 2221
+local pvpSets, challengeSets
+
+-- Descriptions Blizzard gives PvP sets. The static PvP set ID list goes stale
+-- every season, so the description is what catches sets from the current one.
+Globals.PvPSetDescriptions = {
+	["Honor"] = true,
+	["Combatant"] = true,
+	["Combatant I"] = true,
+	["Warfront"] = true,
+	["Aspirant"] = true,
+	["Gladiator"] = true,
+	["Elite"] = true,
+}
+
+-- Raid tier sets describe themselves by difficulty, and nothing else does: every
+-- other kind of set puts its colour, its content type or its event in that field.
+-- That makes the difficulty the one reliable marker of an actual raid set.
+-- Blizzard's globals keep this working outside English, with the English values
+-- kept as a fallback in case a global is ever renamed.
+Globals.RaidDifficulties = {
+	["Normal"] = true,
+	["Heroic"] = true,
+	["Mythic"] = true,
+	["Raid Finder"] = true,
+}
+
+for _, difficulty in ipairs({ PLAYER_DIFFICULTY1, PLAYER_DIFFICULTY2, PLAYER_DIFFICULTY3, PLAYER_DIFFICULTY6 }) do
+	if difficulty then
+		Globals.RaidDifficulties[difficulty] = true
+	end
+end
+
+-- Wrath era tier puts the difficulty inside the raid size, as in "10 Player
+-- (Normal)", so the difficulty is matched within the description as well as
+-- against the whole of it. Only the bracketed form counts, so a description that
+-- merely contains the word is not mistaken for a difficulty.
+function Globals.IsRaidDifficulty(description)
+	if description == nil then return false end
+	if Globals.RaidDifficulties[description] then return true end
+
+	for difficulty in pairs(Globals.RaidDifficulties) do
+		if string.find(description, "(" .. difficulty .. ")", 1, true) then return true end
+	end
+
+	return false
+end
+
+local function SetIDLookup(idList)
+	local lookup = {}
+	for _, setID in ipairs(idList) do
+		lookup[setID] = true
+	end
+	return lookup
+end
+
+-- Plain find: the hyphen in "In-Game Shop" is a pattern quantifier, so a pattern
+-- search never matches the labels we're looking for.
+local function IsShopText(text)
+	if text == nil then return false end
+	return string.find(text, Globals.IN_GAME_SHOP_LABEL, 1, true) ~= nil
+		or string.find(text, Globals.TRADING_POST_LABEL, 1, true) ~= nil
+end
+
+-- Source category for a Blizzard set. Extra sets carry their category in the set
+-- data; Blizzard sets have to be placed by what the game tells us about them.
+-- Only a set that names a raid difficulty counts as Raid. Treating "has any
+-- description at all" as Raid swept in colour variants, event sets and anything
+-- else the earlier tests missed, which was most of the category.
+-- Everything unrecognised lands in Misc rather than being guessed at.
+-- The MiscSets lookups are built on first use: MISC.lua loads after this file.
+function Globals.GetBlizzardSetFilter(data)
+	pvpSets = pvpSets or SetIDLookup(addon.MiscSets.PVP_SETID)
+	challengeSets = challengeSets or SetIDLookup(addon.MiscSets.CHALLENGE_SETID)
+
+	if pvpSets[data.setID] or (data.description and Globals.PvPSetDescriptions[data.description]) then
+		return addon.Filter.PVP
+	elseif data.setID >= COVENANT_SETID_MIN and data.setID <= COVENANT_SETID_MAX then
+		return addon.Filter.COVENANT
+	elseif addon.MiscSets.TRADINGPOST_SETS[data.setID] or IsShopText(data.label) or IsShopText(data.description) then
+		return addon.Filter.TPOST
+	elseif addon.MiscSets.HeritageSets[data.setID] then
+		return addon.Filter.HERITAGE
+	elseif challengeSets[data.setID] then
+		return addon.Filter.DUNGEON
+	elseif Globals.IsRaidDifficulty(data.description)
+		and not (data.label and addon.MiscSets.NON_RAID_LABELS[data.label]) then
+		return addon.Filter.RAID
+	elseif data.classMask == 0 then
+		-- Wearable by every class, which is what the outfit collections are: the
+		-- colour variants of Petalweave, the Villager Collection and the like.
+		-- Content rewards keep the armour type or class they drop for, so this
+		-- separates the cosmetic sets from them without reading any text.
+		return addon.Filter.COSMETIC
+	end
+
+	return addon.Filter.MISC
+end

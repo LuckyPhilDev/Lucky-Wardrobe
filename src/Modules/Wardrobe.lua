@@ -261,9 +261,8 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 end
 
 
-local FILTER_SOURCES = {"Trash", L["MISC"], L["Classic Set"], L["Quest Set"], L["Dungeon Set"], L["Raid Set"], L["Recolor"],L["Garrison"], L["Island Expedition"], L["Warfronts"], L["Covenants"], L["Trading Post"], L["Holiday"], L["NOTE_119"],L["NOTE_120"]}
 local EXPANSIONS = {EXPANSION_NAME0, EXPANSION_NAME1, EXPANSION_NAME2, EXPANSION_NAME3, EXPANSION_NAME4, EXPANSION_NAME5, EXPANSION_NAME6, EXPANSION_NAME7, EXPANSION_NAME8, EXPANSION_NAME9,EXPANSION_NAME10,EXPANSION_NAME11}
-local FILTER_EXTRA_SOURCES = {"Trash", L["MISC"], L["Classic Set"], L["Quest Set"], L["Dungeon Set"], L["Garrison"], L["Island Expedition"], L["Warfronts"], L["Trading Post"], L["Holiday"]}
+local SOURCE_FILTERS = addon.Globals.SourceFilters
 local COLLECTION_SET_SORT_MODES = {
 	{ key = "completion", label = L["Completion"] },
 	{ key = "default", label = _G["DEFAULT"] },
@@ -295,8 +294,8 @@ local xpacSelection = addon.Filters.Base.xpacSelection;
 local sets = {"Base", "Extra"}
 
 for i, types in ipairs(sets) do
-	for i = 1, #FILTER_EXTRA_SOURCES do
-		addon.Filters[types].filterSelection[i] = true;
+	for _, source in ipairs(SOURCE_FILTERS) do
+		addon.Filters[types].filterSelection[source.id] = true;
 	end
 
 	for i = 1, #EXPANSIONS do
@@ -402,8 +401,8 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 			if not xpacSelection[index] then return false end
 		end
 
-		for index = 1,  #FILTER_EXTRA_SOURCES do
-			if not filterSelection[index] then return false end
+		for _, source in ipairs(SOURCE_FILTERS) do
+			if not filterSelection[source.id] then return false end
 		end
 
 		for index in pairs(locationDropDown) do
@@ -472,9 +471,11 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 		RefreshLists();
 	end
 
-	local function sourceCheckAll(value)
-		for index = 1,  #FILTER_EXTRA_SOURCES do
-			filterSelection[index] = value;
+	-- Without a list this covers every category, so resetting the whole filter
+	-- button also clears sources belonging to the tab that isn't showing.
+	local function sourceCheckAll(value, sources)
+		for _, source in ipairs(sources or SOURCE_FILTERS) do
+			filterSelection[source.id] = value;
 		end
 	end
 
@@ -542,31 +543,36 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 			rootDescription:CreateDivider();
 	end
 
-	if BetterWardrobeCollectionFrame.selectedCollectionTab == 3 then 
+	local tabSources = addon.Globals.GetSourceFiltersForTab(BetterWardrobeCollectionFrame.selectedCollectionTab);
+
+	if #tabSources > 0 then
 
 		local submenu = rootDescription:CreateButton(SOURCES);
+		-- Refresh rather than the default close: ticking sources one at a time
+		-- keeps the menu open, so clearing them all should not shut it.
 		submenu:CreateButton(CHECK_ALL, function()
-			sourceCheckAll(true)
+			sourceCheckAll(true, tabSources)
 			RefreshLists();
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateButton(UNCHECK_ALL, function()
-			sourceCheckAll(false)
+			sourceCheckAll(false, tabSources)
 			RefreshLists();
-
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateDivider();
 
-		for index = 1,  #FILTER_EXTRA_SOURCES do
-			local filterIndex = index;
-			submenu:CreateCheckbox(FILTER_EXTRA_SOURCES[index], 
-				function() return filterSelection[index] end,
-				function() 
-					filterSelection[index] = not filterSelection[index];
+		for _, source in ipairs(tabSources) do
+			local filterID = source.id;
+			submenu:CreateCheckbox(source.label,
+				function() return filterSelection[filterID] end,
+				function()
+					filterSelection[filterID] = not filterSelection[filterID];
 					RefreshLists()
 				end,
-				index);
+				filterID);
 		end
 	end
 
@@ -574,11 +580,13 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 		submenu:CreateButton(CHECK_ALL, function()
 			xpackCheckAll(true)
 			RefreshLists()
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateButton(UNCHECK_ALL, function()
 			xpackCheckAll(false)
 			RefreshLists()
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateDivider();
@@ -2719,21 +2727,23 @@ function BetterWardrobeTransmogOptionsDropdownMixin:OnLoad()
 				4);
 
 				local submenu = rootDescription:CreateButton("Include:");
-				submenu:CreateButton(CHECK_ALL, 
+				submenu:CreateButton(CHECK_ALL,
 					function()
 						for index in pairs(locationDropDown) do
 							addon.includeLocation[index] = true;
 						end
 						-----BetterWardrobeCollectionFrame.SetsTransmogFrame:OnSearchUpdate();
+						return MenuResponse.Refresh;
 					end
 				);
 
-				submenu:CreateButton(UNCHECK_ALL, 
+				submenu:CreateButton(UNCHECK_ALL,
 					function()
 						for index in pairs(locationDropDown) do
 							addon.includeLocation[index] = false;
 						end
 						-----BetterWardrobeCollectionFrame.SetsTransmogFrame:OnSearchUpdate();
+						return MenuResponse.Refresh;
 					end
 				);
 

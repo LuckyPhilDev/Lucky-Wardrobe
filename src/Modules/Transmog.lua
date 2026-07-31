@@ -2209,13 +2209,13 @@ function TransmogWardrobeSetsMixin:InitFilterButton()
 		submenu:CreateButton(CHECK_ALL, function()
 			xpackCheckAll(true)
 			self:RefreshCollectionEntries()
-
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateButton(UNCHECK_ALL, function()
 			xpackCheckAll(false)
 			self:RefreshCollectionEntries()
-
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateDivider();

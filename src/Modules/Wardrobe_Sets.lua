@@ -268,7 +268,48 @@ function WardrobeSetsCollectionMixin:ClearLatestSource()
 	BetterWardrobeCollectionFrame:UpdateTabButtons();
 end
 
+function WardrobeSetsCollectionMixin:ClearSelectedSet()
+	local tab = BetterWardrobeCollectionFrame.selectedCollectionTab;
+	if tab == 2 then
+		self.selectedSetID = nil;
+	elseif tab == 3 then
+		self.selectedExtraSetID = nil;
+	end
+
+	self.DetailsFrame:Hide();
+	self.Model:Hide();
+end
+
+-- Filtering can remove the set that is currently selected. Left alone, the
+-- details panel keeps showing it while the list highlights whichever row has
+-- taken its place, so drop the selection to the top of the new list instead.
+function WardrobeSetsCollectionMixin:ReselectIfSetFilteredOut()
+	local tab = BetterWardrobeCollectionFrame.selectedCollectionTab;
+	if tab ~= 2 and tab ~= 3 then return end
+
+	local sets = SetsDataProvider:GetBaseSets();
+	if not sets then return end
+
+	local selectedSetID = self:GetSelectedSetID();
+	if selectedSetID then
+		-- Matched on either ID: the list holds base sets, but a variant's base ID
+		-- is not worth trusting as the only way to recognise a set that is still
+		-- on screen.
+		local selectedBaseSetID = C_TransmogSets.GetBaseSetID(selectedSetID);
+		for _, set in ipairs(sets) do
+			if set.setID == selectedBaseSetID or set.setID == selectedSetID then return end
+		end
+	end
+
+	if sets[1] then
+		self:SelectSet(self:GetDefaultSetIDForBaseSet(sets[1].setID));
+	else
+		self:ClearSelectedSet();
+	end
+end
+
 function WardrobeSetsCollectionMixin:Refresh()
+	self:ReselectIfSetFilteredOut();
 	self.ListContainer:UpdateDataProvider();
 	self:UpdateProgressBar();
 	self:DisplaySet(self:GetSelectedSetID());
@@ -888,7 +929,7 @@ function WardrobeSetsScrollFrameButtonMixin:Init(elementData)
 		self.Variants.Count:SetText(0)
 	end
 
-	self.Store:SetShown((addon.MiscSets.TRADINGPOST_SETS[self.setID] or displayData.filter == 9) and addon.Profile.ShowShopIcon);
+	self.Store:SetShown((addon.MiscSets.TRADINGPOST_SETS[self.setID] or displayData.filter == addon.Filter.TPOST) and addon.Profile.ShowShopIcon);
 	if not C_AddOns.IsAddOnLoaded("CanIMogIt")then
 		self.Store:ClearAllPoints();
 		self.Store:SetPoint("TOPRIGHT", 0, -25);
@@ -1233,6 +1274,8 @@ function WardrobeSetsCollectionContainerMixin:UpdateListSelection()
 	local selectedSetID = self:GetParent():GetSelectedSetID();
 	if selectedSetID then
 		self:SelectElementDataMatchingSetID(C_TransmogSets.GetBaseSetID(selectedSetID));
+	else
+		g_selectionBehavior:ClearSelections();
 	end
 end
 

@@ -394,23 +394,21 @@ local function OpposingFaction(faction)
 	end
 end
 
-local PvPSets = {
-	["Honor"] = true,
-	["Combatant"] = true,
-	["Combatant I"] = true,
-	["Warfront"] = true,
-	["Aspirant"] = true,
-	["Gladiator"] = true,
-	["Elite"] = true,
+local PvPSets = addon.Globals.PvPSetDescriptions
+
+local NON_TIER_SOURCES = {
+	[addon.Filter.PVP] = true,
+	[addon.Filter.COVENANT] = true,
+	[addon.Filter.TPOST] = true,
+	[addon.Filter.HERITAGE] = true,
 }
 
 -- Class tier sets: Blizzard sets restricted to a single class, excluding PvP,
--- covenant, trading post / shop, and Remix sets.
+-- covenant, heritage, trading post / shop, and Remix sets.
 function addon.IsTierSet(data)
 	if data.setType ~= "Blizzard" or not data.classID then return false end
 	if data.description and PvPSets[data.description] then return false end
-	if data.setID >= 2015 and data.setID <= 2221 then return false end -- covenant armor
-	if data.filter == 12 then return false end -- trading post / shop
+	if NON_TIER_SOURCES[data.filter] then return false end
 	if addon.MiscSets.REMIX_SETS[tonumber(data.setID)] then return false end
 	return true
 end
@@ -444,13 +442,15 @@ function addon:FilterSets(setList, setType)
 		local isPvP = data.description and PvPSets[data.description];
 		local count , total = setData.numCollected, setData.numTotal
 		local expansion = data.expansionID
-		local sourcefilter = (BetterWardrobeCollectionFrame:CheckTab(3) and filterSelection[data.filter])
+		-- A set with no category of its own counts as Misc, so that every set sits
+		-- behind exactly one checkbox: anything unaccounted for would otherwise
+		-- survive Uncheck All and show up when the user asked for nothing.
+		local sourcefilter = filterSelection[data.filter or addon.Filter.MISC] ~= false
 		local unavailableFilter = (not unavailable or (addon.Profile.HideUnavalableSets and unavailable))
 		local tab = (BetterWardrobeCollectionFrame:CheckTab(2) and data.tab == 2) or (BetterWardrobeCollectionFrame:CheckTab(3) and data.tab == 3)
 		local tierOK = not addon.tierOnly or addon.IsTierSet(data)
 		if BetterWardrobeCollectionFrame:CheckTab(2) then
 			--expansion = expansion + 1
-			sourcefilter = true
 			unavailableFilter = true
 		end
 
