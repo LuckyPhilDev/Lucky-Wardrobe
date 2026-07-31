@@ -8,4 +8,9 @@
 		LuckysBetterWardrobe.preview.previewModel:SetFacing(LuckysBetterWardrobe.preview.previewModel:GetFacing() -.1)
 	</Binding>
 
+	<Binding name="LUCKYWARDROBE_TOGGLE_SET_LIST" header="LUCKYWARDROBE">
+		local LuckysBetterWardrobe = LibStub("AceAddon-3.0"):GetAddon("LuckysBetterWardrobe")
+		LuckysBetterWardrobe.SetCompletion:Toggle()
+	</Binding>
+
 </Bindings>

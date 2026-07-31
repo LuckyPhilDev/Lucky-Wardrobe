@@ -78,6 +78,16 @@ local defaults = {
 		CollectionSetSortDirection = "ascending",
 		SituationPresets = {},
 		MinimapButton = {},
+		ShowInstanceSets = true,
+		InstanceSetsMaxMissing = 3,
+		IncludeCurrentTier = false,
+		InstanceSetsPosition = {},
+		InstanceSetsDwellSeconds = 4,
+		AlertSetPieceLoot = true,
+		AlertCatalystLoot = true,
+		AlertWithSound = true,
+		AlertWithChat = true,
+		InstanceSetsFlashSeconds = 12,
 	}
 }
 local DB_Defaults = {
@@ -403,6 +413,8 @@ function addon:OnEnable()
 
 	-- Optional features last: a failure here must not cost the vendor and journal UI.
 	InitFeature("tooltips", function() addon:InitTooltips() end)
+	InitFeature("instance set completion", function() addon:InitSetCompletion() end)
+	InitFeature("loot alerts", function() addon:InitLootAlerts() end)
 
 	if C_AddOns.IsAddOnLoaded("BetterWardrobe") then
 		ShowConflictDialog()

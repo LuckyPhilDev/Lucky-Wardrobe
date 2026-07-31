@@ -4,6 +4,7 @@
 
 ### Added
 
+- Walk into a dungeon or raid and a list shows the sets you are close to finishing there, with the pieces that drop and the bosses holding them. Sets finished by the run come first. Hover a set for the full breakdown, click one to open it in your appearances, and shift-click the minimap button to bring the list back after closing it.
 - Filter sets by where they come from. Open Filter, choose Sources, and tick the categories you want to see. The Sets tab offers raid, PvP, covenant, heritage, cosmetic, dungeon, trading post, and misc, and the Extra tab offers classic, quest, dungeon, recolor, garrison, island expedition, warfronts, holiday, trading post, misc, and trash.
 - A Cosmetic category for the outfit collections any class can wear, so they can be hidden separately from class armour.
 - Source filtering now works on the Sets tab as well as the Extra tab. Previously only the Extra tab had it.

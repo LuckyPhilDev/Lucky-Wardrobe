@@ -797,10 +797,457 @@ commands.sources = function(categoryName)
 	end
 end
 
+--- Reports what the instance scan sees: the names it matches drop data against,
+--- and every set it found, so a miss can be told from a name that didn't match.
+commands.instance = function()
+	local instance = addon.SetCompletion:GetCurrentInstance()
+	if not instance then
+		Print("|cffff5555Not in a dungeon or raid.|r")
+		return
+	end
+
+	Print("Instance: %s", instance.name)
+	Print("  journal name: %s", instance.journalName or "|cffff5555none, only the map name can match|r")
+	Print("  difficulty:   %s", instance.difficulty or "unknown")
+	Print("  max missing:  %d", addon.Profile.InstanceSetsMaxMissing)
+
+	local started = debugprofilestop()
+	local matches, stats = addon.SetCompletion:Scan(instance)
+	Print("Sets found: %d in %.0f ms", #matches, debugprofilestop() - started)
+
+	-- Where the sets went. A scan that finds nothing is either filtering them out
+	-- or looking up pieces that carry no drop data, and these separate the two.
+	Print("  sets scanned:       %d", stats.sets)
+	Print("  skipped, category:  %d", stats.skippedCategory)
+	Print("  skipped, this tier: %d%s", stats.skippedCurrentTier,
+		addon.Profile.IncludeCurrentTier and " (the current tier is set to show)" or "")
+	Print("  skipped, over limit:%d", stats.overLimit)
+	Print("  candidates:         %d", stats.candidates)
+	Print("  pieces looked up:   %d", stats.lookups)
+	Print("  pieces with drops:  %d%s", stats.sourcesWithDrops,
+		stats.lookups > 0 and stats.sourcesWithDrops == 0
+			and " |cffff5555no piece has any drop data at all|r" or "")
+	Print("  pieces matched by the set's source: %d", stats.fromSetSource)
+
+	local auto = addon.SetCompletion:GetAutoOpenState()
+	Print("Auto open: setting %s, panel %s, %s",
+		auto.enabled and "on" or "|cffff5555off|r",
+		auto.panelBuilt and (auto.panelShown and "shown" or "built but hidden") or "never built",
+		auto.alreadyShownFor and ("already opened for " .. auto.alreadyShownFor)
+			or "not yet opened here")
+
+	local seen = {}
+	for name in pairs(stats.instanceNames) do seen[#seen + 1] = name end
+	table.sort(seen)
+	if #seen > 0 then
+		Print("  instances named by that drop data: %s", table.concat(seen, ", "))
+	end
+
+	for _, match in ipairs(matches) do
+		Print("  %s (%d/%d), %d here, %d elsewhere%s", match.name or "?", match.collected,
+			match.total, #match.here, match.remaining, match.isExtraSet and " [extra]" or "")
+		for _, piece in ipairs(match.here) do
+			Print("      %s from %s%s", piece.name or "?",
+				piece.encounter or "|cff8a7e6athe set's source, no boss named|r",
+				piece.difficultyNote and (" |cffff5555(" .. piece.difficultyNote .. ")|r") or "")
+		end
+	end
+end
+
+--- Replays walking into the instance, so the panel and its glide can be watched
+--- again without zoning out and back.
+commands.replay = function()
+	if not addon.SetCompletion:GetCurrentInstance() then
+		Print("|cffff5555Not in a dungeon or raid.|r")
+		return
+	end
+
+	local shown = addon.SetCompletion:ReplayEntry()
+	if shown then
+		Print("Replayed the entry, panel is open.")
+		return
+	end
+
+	local auto = addon.SetCompletion:GetAutoOpenState()
+	Print("Replayed the entry, panel stayed closed: %s.",
+		not auto.enabled and "|cffff5555the setting is off|r" or "nothing here finishes a set")
+end
+
+--- Fakes a drop so the alerts can be heard without waiting for a boss to oblige.
+--- Item links cannot be passed here: the slash handler splits on spaces and
+--- lowercases, which mangles them, so an item is named by ID.
+commands.alert = function(itemArg)
+	local catalystSource = addon.LootAlerts:IsCatalystSourceAvailable()
+	Print("Catalyst data: %s", catalystSource and "Transmog Upgrade Master is loaded"
+		or "|cffff5555none, catalyst alerts stay silent|r")
+	Print("Alerts: set pieces %s, catalyst %s",
+		addon.Profile.AlertSetPieceLoot and "on" or "|cffff5555off|r",
+		addon.Profile.AlertCatalystLoot and "on" or "|cffff5555off|r")
+
+	local itemID = tonumber(itemArg)
+	-- A raid set exists once per difficulty and the versions share item IDs, so a
+	-- link built from an item ID alone resolves to whichever came first. Carrying
+	-- the panel's own source alongside is what makes the fake drop stand for the
+	-- piece on screen rather than its Normal-difficulty twin.
+	local panelSourceID
+	if not itemID then
+		-- Prefer a piece from the instance the player is standing in, so the panel
+		-- is on screen to light up. Anything else tracked will do outside one.
+		local instance = addon.SetCompletion:GetCurrentInstance()
+		if instance then
+			for _, match in ipairs(addon.SetCompletion:Scan(instance)) do
+				for _, piece in ipairs(match.pieces or {}) do
+					if piece.availableHere and piece.itemID then
+						itemID, panelSourceID = piece.itemID, piece.sourceID
+						Print("Using %s from %s, which drops here.",
+							tostring(piece.name or itemID), tostring(match.name))
+						break
+					end
+				end
+				if itemID then break end
+			end
+		end
+	end
+
+	if not itemID then
+		local wanted = addon.SetCompletion:GetWantedPieces()
+		for sourceID, match in pairs(wanted.bySource) do
+			local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID)
+			if sourceInfo and sourceInfo.itemID then
+				itemID = sourceInfo.itemID
+				Print("Using %s from %s.", tostring(sourceInfo.name or itemID),
+					tostring(match.name))
+				break
+			end
+		end
+	end
+
+	if not itemID then
+		Print("|cffff5555No set is close enough to completion to have a piece to fake.|r")
+		Print("Name an item instead: /bwdev alert <itemID>")
+		return
+	end
+
+	local itemLink = select(2, C_Item.GetItemInfo(itemID))
+	if not itemLink then
+		-- Uncached, so stand in a link the alert path can still read an ID out of.
+		itemLink = ("|Hitem:%d|h[%d]|h"):format(itemID, itemID)
+		Print("Item %d is not cached yet, using a bare link.", itemID)
+	end
+
+	local visualID, linkSourceID = C_TransmogCollection.GetItemInfo(itemLink)
+	if panelSourceID and linkSourceID and panelSourceID ~= linkSourceID then
+		Print("  the bare link reads as source %s, the panel's piece is %s; using the panel's.",
+			tostring(linkSourceID), tostring(panelSourceID))
+	end
+
+	local sourceID = panelSourceID or linkSourceID
+	local outcome, match = addon.LootAlerts:SimulateLoot(itemLink, panelSourceID)
+	if outcome == "set" then
+		Print("|cff69db7cAlerted: finishes %s.|r", tostring(match and match.name))
+
+		-- The highlight is a separate step from the alert and can fail on its own,
+		-- so it reports separately too.
+		local lit, haloes, panelShown = addon.SetCompletion:GetFlashState(sourceID)
+		local mechanism = addon.SetCompletion:GetGlowMechanism()
+		Print("  source %s (visual %s): flagged %s, panel open %s",
+			tostring(sourceID), tostring(visualID), tostring(lit), tostring(panelShown))
+		Print("  glow: %s%s", mechanism,
+			mechanism == "halo" and " |cffff5555(no Blizzard template built, using the fallback)|r"
+				or "")
+		if not panelShown then
+			Print("  |cffff5555The panel is closed, so there is nothing to light up.|r")
+		elseif mechanism == "halo" and haloes == 0 then
+			Print("  |cffff5555Flagged but nothing lit: the piece is not one the panel is drawing.|r")
+		end
+	elseif outcome == "catalyst" then
+		Print("|cff69db7cAlerted: catalysing it would teach an appearance.|r")
+	elseif outcome == "nothing" then
+		Print("No alert: nothing tracked wants it, and the catalyst would not help.")
+	else
+		Print("|cffff5555The loot line was not recognised as the player's own.|r")
+	end
+end
+
+--- Fakes a catalysable drop. Finding a real one means asking about the items the
+--- player is actually carrying, since only a current-season piece of the right
+--- slot and armour type qualifies and no rule of thumb picks one reliably.
+-- The copy in the player's bags is the item as they hold it, bonus IDs and all.
+-- An item ID on its own names the base item, which carries no season and no
+-- upgrade track, so the catalyst answer for it is always no.
+local function FindLinkInBags(itemID)
+	for bag = 0, NUM_BAG_SLOTS do
+		for slot = 1, (C_Container.GetContainerNumSlots(bag) or 0) do
+			local link = C_Container.GetContainerItemLink(bag, slot)
+			if link and tonumber(link:match("item:(%d+)")) == itemID then
+				return link
+			end
+		end
+	end
+end
+
+commands.catalyst = function(itemArg)
+	local itemID = tonumber(itemArg)
+	local itemLink, origin
+
+	if itemID then
+		itemLink, origin = FindLinkInBags(itemID), "the copy in your bags"
+		if not itemLink then
+			itemLink, origin = select(2, C_Item.GetItemInfo(itemID)), "the item cache"
+		end
+		if not itemLink then
+			itemLink = ("|Hitem:%d|h[%d]|h"):format(itemID, itemID)
+			origin = "a bare link, the item is not cached"
+		end
+	else
+		Print("Searching your bags for something the catalyst would improve...")
+		for bag = 0, NUM_BAG_SLOTS do
+			for slot = 1, (C_Container.GetContainerNumSlots(bag) or 0) do
+				local link = C_Container.GetContainerItemLink(bag, slot)
+				local found = link and addon.LootAlerts:InspectCatalyst(link)
+				if found and found.canCatalyse and found.catalystMissing then
+					itemLink, origin = link, "your bags"
+					break
+				end
+			end
+			if itemLink then break end
+		end
+	end
+
+	if not itemLink then
+		Print("|cffff5555Nothing in your bags would teach an appearance if catalysed.|r")
+		Print("Name one instead: /bwdev catalyst <itemID>")
+		return
+	end
+
+	local report = addon.LootAlerts:InspectCatalyst(itemLink)
+	Print("Catalyst check on %s, from %s", itemLink, origin)
+	if not report.available then
+		Print("  |cffff5555Transmog Upgrade Master is not loaded, so there is nothing to ask.|r")
+		return
+	end
+
+	-- A perfect answer still says nothing with the alert turned off, which looks
+	-- exactly like the answer having been no.
+	Print("  catalyst alerts: %s", addon.Profile.AlertCatalystLoot and "on"
+		or "|cffff5555off, so nothing will speak whatever the answer is|r")
+
+	Print("  cache warm: %s (%.0f%%)", tostring(report.warm), (report.progress or 0) * 100)
+	if not report.ok then
+		Print("  |cffff5555lookup failed: %s|r", tostring(report.err))
+		return
+	end
+
+	if report.bonusIDs == 0 then
+		Print("  |cffff5555No bonus IDs on this link, so it carries no season and no upgrade")
+		Print("  track. The answer below is about the base item, not one you own.|r")
+	end
+
+	Print("  canCatalyse: %s  canUpgrade: %s  catalystAppearanceMissing: %s",
+		tostring(report.canCatalyse), tostring(report.canUpgrade), tostring(report.catalystMissing))
+
+	local context = report.context
+	Print("  season: %s  tier: %s  bonus IDs: %d",
+		tostring(context and context.seasonID), tostring(context and context.tier),
+		report.bonusIDs or 0)
+
+	-- nil and false are different refusals and want different things done next.
+	if report.canCatalyse == nil then
+		Print("  |cffff5555Never read: the item data is not cached. Ask again in a moment.|r")
+	elseif report.canCatalyse == false then
+		Print("  Read and rejected: the catalyst does not apply to this item.")
+	end
+
+	local outcome = addon.LootAlerts:SimulateLoot(itemLink)
+	Print(outcome == "catalyst" and "|cff69db7cAlerted as catalysable.|r"
+		or ("No catalyst alert: %s"):format(tostring(outcome)))
+end
+
+local SETINFO_LIMIT = 3
+
+--- Everything the instance scan reads about one named set, so a set that never
+--- reaches the list can be followed through each test it has to pass.
+commands.setinfo = function(search)
+	if not search then
+		Print("|cffff5555Usage: /bwdev setinfo <part of a set name>|r")
+		return
+	end
+
+	local names = SourceCategoryNames()
+	local found = 0
+	for setID, setData in pairs(addon.GetFullSets() or {}) do
+		if setData.name and setData.name:lower():find(search, 1, true) then
+			found = found + 1
+			if found <= SETINFO_LIMIT then
+				Print("%s (setID %d) [%s]", setData.name, setID, setData.setType or "?")
+				Print("  category: %s  tab: %s  description: %s",
+					names[setData.filter] or ("? (" .. tostring(setData.filter) .. ")"),
+					tostring(setData.tab), tostring(setData.description))
+				-- The label is what the journal groups sets under, and for a content
+				-- reward that grouping tends to be the content itself.
+				Print("  label: %s  note: %s  customGroups: %s",
+					tostring(setData.label), tostring(setData.note), tostring(setData.customGroups))
+
+				local blizzard = C_TransmogSets.GetSetInfo(setID)
+				if blizzard then
+					Print("  Blizzard label: %s  expansion: %s  patch: %s",
+						tostring(blizzard.label), tostring(blizzard.expansionID),
+						tostring(blizzard.patchID))
+				end
+
+				local appearances = addon.C_TransmogSets.GetSetPrimaryAppearances(setID) or {}
+				local missing = 0
+				for _, appearance in ipairs(appearances) do
+					if not appearance.collected then missing = missing + 1 end
+				end
+				Print("  pieces: %d, missing %d (limit is %d)", #appearances, missing,
+					addon.Profile.InstanceSetsMaxMissing)
+
+				for _, appearance in ipairs(appearances) do
+					if not appearance.collected then
+						local sourceID = appearance.appearanceID
+						local info = C_TransmogCollection.GetSourceInfo(sourceID)
+						Print("    [%d] %s  sourceType=%s item=%s", sourceID,
+							info and info.name or "?",
+							info and tostring(info.sourceType) or "?",
+							info and tostring(info.itemID) or "?")
+
+						local drops = C_TransmogCollection.GetAppearanceSourceDrops(sourceID) or {}
+						if #drops == 0 then
+							Print("        drops: |cffff5555none|r")
+						end
+						for _, drop in ipairs(drops) do
+							Print("        drops: %s / %s  [%s]", tostring(drop.instance),
+								tostring(drop.encounter),
+								drop.difficulties and table.concat(drop.difficulties, ", ") or "")
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if found == 0 then
+		Print("|cffff5555No set name contains '%s'.|r", search)
+	elseif found > SETINFO_LIMIT then
+		Print("...and %d more, narrow the search.", found - SETINFO_LIMIT)
+	end
+end
+
+local LOOT_LIMIT = 30
+
+--- What the Encounter Journal says drops here, and what each entry resolves to in
+--- the wardrobe. Tier has no drop data of its own because the token drops, not the
+--- piece, so the question is whether the journal hands back the class item instead.
+--- Selecting an instance and filtering loot is global state the open journal shares,
+--- so both are put back afterwards.
+commands.loot = function(search)
+	local uiMapID = C_Map.GetBestMapForUnit("player")
+	local journalInstanceID = uiMapID and EJ_GetInstanceForMap(uiMapID)
+	if not journalInstanceID or journalInstanceID == 0 then
+		Print("|cffff5555No Encounter Journal instance for this map.|r")
+		return
+	end
+
+	-- Several of these are defined by Blizzard_EncounterJournal rather than the C
+	-- API, so they don't exist until something has opened the journal once.
+	if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then
+		C_AddOns.LoadAddOn("Blizzard_EncounterJournal")
+		Print("Loaded Blizzard_EncounterJournal.")
+	end
+
+	-- The EJ_ globals have been moving into C_EncounterJournal patch by patch, so
+	-- which of them this client still has is the first thing worth knowing.
+	local api = {
+		EJ_GetCurrentInstance = EJ_GetCurrentInstance,
+		EJ_SelectInstance = EJ_SelectInstance,
+		EJ_SetDifficulty = EJ_SetDifficulty,
+		EJ_SetLootFilter = EJ_SetLootFilter,
+		EJ_GetLootFilter = EJ_GetLootFilter,
+		EJ_GetNumLoot = EJ_GetNumLoot,
+	}
+
+	local names = {}
+	for name in pairs(api) do names[#names + 1] = name end
+	table.sort(names)
+
+	local missingAPI = {}
+	for _, name in ipairs(names) do
+		if not api[name] then missingAPI[#missingAPI + 1] = name end
+	end
+	Print("Journal API missing: %s", #missingAPI > 0
+		and ("|cffff5555" .. table.concat(missingAPI, ", ") .. "|r") or "nothing")
+
+	local journal = C_EncounterJournal or {}
+	local getLoot = journal.GetLootInfoByIndex
+	local getNumLoot = api.EJ_GetNumLoot or journal.GetNumLoot
+	if not getLoot or not getNumLoot or not api.EJ_SelectInstance then
+		Print("|cffff5555Cannot read loot without SelectInstance, GetNumLoot and GetLootInfoByIndex.|r")
+		return
+	end
+
+	local previousInstance = api.EJ_GetCurrentInstance and api.EJ_GetCurrentInstance()
+	local previousClass, previousSpec
+	if api.EJ_GetLootFilter then previousClass, previousSpec = api.EJ_GetLootFilter() end
+
+	local _, _, difficultyID = GetInstanceInfo()
+	local _, _, classID = UnitClass("player")
+
+	api.EJ_SelectInstance(journalInstanceID)
+	if api.EJ_SetDifficulty and difficultyID then api.EJ_SetDifficulty(difficultyID) end
+	if api.EJ_SetLootFilter then api.EJ_SetLootFilter(classID, 0) end
+
+	local total = getNumLoot() or 0
+	Print("Journal instance %d, difficulty %s, loot filtered to class %d: %d entries",
+		journalInstanceID, tostring(difficultyID), classID, total)
+	if total == 0 then
+		Print("|cffff5555No loot data. Open the Encounter Journal on this instance once, then retry.|r")
+	end
+
+	-- An entry with no appearance of its own is the shape a tier token takes: it is
+	-- listed as loot, but the wardrobe knows nothing about it until it is traded in.
+	local shown, withSource, noSource = 0, 0, 0
+	for index = 1, total do
+		local info = getLoot(index)
+		local name = info and info.name or "?"
+		if info and (not search or name:lower():find(search, 1, true)) then
+			local _, sourceID = C_TransmogCollection.GetItemInfo(info.itemID)
+			if sourceID then withSource = withSource + 1 else noSource = noSource + 1 end
+
+			shown = shown + 1
+			-- Everything that resolves is ordinary gear; the ones that don't are the
+			-- interesting half, so they are what gets shown when the list is long.
+			if shown <= LOOT_LIMIT or not sourceID then
+				Print("  item=%s source=%s slot=%s armor=%s  %s", tostring(info.itemID),
+					sourceID and tostring(sourceID) or "|cffff5555none|r",
+					tostring(info.slot), tostring(info.armorType), name)
+			end
+		end
+	end
+
+	Print("Matched %d entries: %d resolved to a source, %d did not.", shown, withSource, noSource)
+	if shown > LOOT_LIMIT then
+		Print("...%d more not shown.", shown - LOOT_LIMIT)
+	end
+
+	if api.EJ_SetLootFilter then
+		api.EJ_SetLootFilter(previousClass or 0, previousSpec or 0)
+	end
+	if previousInstance and previousInstance > 0 then
+		api.EJ_SelectInstance(previousInstance)
+	end
+end
+
 commands.help = function()
 	Print("Dev commands (/bwdev):")
 	Print("  sources          source checkboxes and the category of every visible set")
 	Print("  sources <name>   list the visible sets in one category with their raw fields")
+	Print("  instance         what the instance set scan sees where you are standing")
+	Print("  replay           open the panel again as if you had just walked in")
+	Print("  alert [itemID]   fake a drop, defaulting to a piece that drops where you are")
+	Print("  catalyst [itemID] fake a catalysable drop, defaulting to one from your bags")
+	Print("  setinfo <name>   one set's pieces and the drop data behind each of them")
+	Print("  loot [name]      what the Encounter Journal says drops here, with sources")
 	Print("Situations:")
 	Print("  probe            end to end viability check, leaves nothing pending")
 	Print("  api              which C_TransmogOutfitInfo functions exist and their taint state")
@@ -826,6 +1273,12 @@ DevTools.commands = commands
 local SITUATION_FREE_COMMANDS = {
 	help = true,
 	sources = true,
+	instance = true,
+	replay = true,
+	alert = true,
+	catalyst = true,
+	setinfo = true,
+	loot = true,
 }
 
 SLASH_LUCKYBWDEV1 = "/bwdev"

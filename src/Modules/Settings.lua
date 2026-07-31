@@ -16,7 +16,17 @@ function addon:BuildSettingsPanel()
 
     SLASH_LUCKYBW1 = "/bw"
     SLASH_LUCKYBW2 = "/betterwardrobe"
-    SlashCmdList["LUCKYBW"] = function() panel:Open() end
+    -- Hiding the minimap button is a supported choice, and shift-clicking it was
+    -- the only way to open the set list by hand. Anything unrecognised opens
+    -- settings, which is where someone typing a half-remembered command wants to
+    -- end up anyway.
+    SlashCmdList["LUCKYBW"] = function(input)
+        if (input or ""):match("^%s*(%S*)"):lower() == "sets" then
+            addon.SetCompletion:Toggle()
+        else
+            panel:Open()
+        end
+    end
 
     ---------------------------------------------------------------------------
     -- General
@@ -95,6 +105,106 @@ function addon:BuildSettingsPanel()
                 Profile.ShowSituationTooltips = v
                 addon:RefreshSituationLabels()
             end,
+        })
+    end
+
+    ---------------------------------------------------------------------------
+    -- Set Completion
+    --
+    -- The instance list and the loot alerts are two sides of one feature and
+    -- share the threshold that decides what counts as close to finishing, so the
+    -- threshold leads and neither side owns it.
+    ---------------------------------------------------------------------------
+    do
+        local g = panel:Group(L["Set Completion"])
+
+        g:Slider({
+            label     = L["Pieces Missing At Most"],
+            desc      = L["How incomplete a set can be and still count as one you are close to finishing. At 3, a set you are missing four or more pieces of is left out of the instance list and never alerts."],
+            min       = 1,
+            max       = 8,
+            value     = Profile.InstanceSetsMaxMissing,
+            onChanged = function(v)
+                Profile.InstanceSetsMaxMissing = v
+                addon.SetCompletion:Refresh()
+            end,
+        })
+
+        g:Toggle({
+            label    = L["Include the Current Tier"],
+            desc     = L["Sets from the tier you are raiding now are left out, on the grounds that you will finish those by turning up. Turn this on to hear about them anyway. Older sets you have gone back for are never affected."],
+            checked  = Profile.IncludeCurrentTier,
+            onToggle = function(v)
+                Profile.IncludeCurrentTier = v
+                addon.SetCompletion:Refresh()
+            end,
+        })
+
+        g:Section(L["In Dungeons and Raids"])
+
+        g:Toggle({
+            label    = L["Open the List Automatically"],
+            desc     = L["Opens a list when you enter a dungeon or raid of the sets you are close to completing whose missing pieces drop there. Type /bw sets, use a keybinding, or shift-click the minimap button to open it any time, whether this is on or off."],
+            checked  = Profile.ShowInstanceSets,
+            onToggle = function(v) Profile.ShowInstanceSets = v end,
+        })
+
+        g:Slider({
+            label     = L["Move Aside After"],
+            desc      = L["How long the list holds the middle of the screen before it shrinks into the corner. At 0 it opens in the corner and never takes the middle."],
+            parent    = L["Open the List Automatically"],
+            min       = 0,
+            max       = 15,
+            suffix    = "s",
+            value     = Profile.InstanceSetsDwellSeconds,
+            onChanged = function(v) Profile.InstanceSetsDwellSeconds = v end,
+        })
+
+        g:Button({
+            label   = L["Reset Window Position"],
+            desc    = L["Puts the list back in the top-left corner, for a drag that left it somewhere you cannot reach."],
+            onClick = function() addon.SetCompletion:ResetPosition() end,
+        })
+
+        g:Section(L["When You Loot"])
+
+        g:Toggle({
+            label    = L["Alert on Set Pieces"],
+            desc     = L["Speaks up when you loot a piece of a set you are close to finishing, wherever you are."],
+            checked  = Profile.AlertSetPieceLoot,
+            onToggle = function(v) Profile.AlertSetPieceLoot = v end,
+        })
+
+        local catalystAvailable = addon.LootAlerts and addon.LootAlerts:IsCatalystSourceAvailable()
+        g:Toggle({
+            label    = L["Alert on Catalyst Upgrades"],
+            desc     = L["Speaks up, more quietly, when you loot something the catalyst could turn into an appearance you are missing."],
+            warning  = not catalystAvailable
+                and L["Needs Transmog Upgrade Master installed. The game gives no way to work out what the catalyst produces."]
+                or nil,
+            checked  = Profile.AlertCatalystLoot,
+            onToggle = function(v) Profile.AlertCatalystLoot = v end,
+        })
+
+        g:MultiSelect({
+            label     = L["Alert With"],
+            desc      = L["How an alert reaches you. A long clear puts a lot of lines in chat, and the sound alone carries just as well."],
+            options   = {
+                { key = "AlertWithSound", label = L["Sound"] },
+                { key = "AlertWithChat",  label = L["Chat message"] },
+            },
+            isChecked = function(key) return Profile[key] and true or false end,
+            onToggle  = function(key, checked) Profile[key] = checked end,
+        })
+
+        g:Slider({
+            label     = L["Highlight Lasts"],
+            desc      = L["How long the piece that just dropped keeps glowing on the instance list, when the list is open."],
+            min       = 3,
+            max       = 30,
+            suffix    = "s",
+            value     = Profile.InstanceSetsFlashSeconds,
+            onChanged = function(v) Profile.InstanceSetsFlashSeconds = v end,
         })
     end
 

@@ -16,6 +16,8 @@ function addon:CreateMinimapButton()
 		onClick = function(_, mouseBtn)
 			if mouseBtn == "RightButton" then
 				addon.settingsPanel:Open()
+			elseif IsShiftKeyDown() then
+				addon.SetCompletion:Toggle()
 			else
 				ToggleCollectionsJournal(APPEARANCES_TAB)
 			end
@@ -24,6 +26,7 @@ function addon:CreateMinimapButton()
 			tt:AddLine(LuckyUI.WC.goldPrimary .. "Lucky's Better Wardrobe" .. LuckyUI.WC.reset)
 			tt:AddLine(" ")
 			tt:AddLine(L["Left-click: Open appearances"], 0.91, 0.86, 0.78)
+			tt:AddLine(L["Shift-click: Sets you can finish here"], 0.91, 0.86, 0.78)
 			tt:AddLine(L["Right-click: Open settings"], 0.91, 0.86, 0.78)
 			tt:AddLine(L["Drag: Move button"], 0.54, 0.49, 0.42)
 		end,

@@ -22,6 +22,12 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Item substitution**: Swap any piece in a set for a different appearance, useful when an item has left the game or you simply prefer another look.
 - **Other armour types and classes**: View sets outside your own armour weight or class, with clear indicators on sets flagged for someone else.
 
+### Set Completion
+
+- **Finish a set here**: Enter a dungeon or raid and a list opens showing the sets you are close to completing whose missing pieces drop there, closest to done first. Each entry names the pieces still to find, and hovering one shows which boss holds each and whether it needs a different difficulty. Click a set to open it in your appearances. Both the standard sets and the Extra sets are covered.
+- **Loot alerts**: Loot a piece of a set you are close to finishing, anywhere in the world, and the addon says so with a sound, a chat line, or both. The piece lights up on the instance list if it is open. Items the catalyst could turn into an appearance you are missing get a quieter alert of their own.
+- **Set how close counts**: Choose how incomplete a set can be and still count, so the list and the alerts stay as narrow or as thorough as you like. Sets from the tier you are currently raiding are left out, since you will finish that one by turning up, and you can ask for them back.
+
 ### Transmog Vendor
 
 - **Bigger preview window**: More room to see what you're building.
@@ -57,11 +63,14 @@ Lucky's Utils is required. Release packages include it automatically, along with
 | Command | Action |
 |---|---|
 | `/bw` | Open the settings panel |
+| `/bw sets` | Show the sets you can finish where you are standing |
 | `/betterwardrobe` | Alias for `/bw` |
+
+A keybinding for the set list is available under **Sets You Can Finish Here** in the game's Key Bindings screen.
 
 ## Minimap Button
 
-A minimap button opens your appearances with a left-click and these settings with a right-click. Drag it to reposition it, or hide it in settings. The addon compartment button does the same job if you prefer a tidier minimap.
+A minimap button opens your appearances with a left-click, the sets you can finish in your current instance with a shift-click, and these settings with a right-click. Drag it to reposition it, or hide it in settings. The addon compartment button opens your appearances too if you prefer a tidier minimap.
 
 ## Settings
 
@@ -69,6 +78,7 @@ Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Ignore class restrictions on sets and appearances, show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
 - **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
+- **Set Completion**: Choose how many pieces a set can still be missing and count as close to done, and whether to include the tier you are currently raiding, which is left out by default. Set whether the list opens by itself in a dungeon or raid and how long it holds the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 
 ## Author
 
