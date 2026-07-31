@@ -152,14 +152,28 @@ function addon:InitTooltips()
 		end
 	end)
 
-	GameTooltip:HookScript("OnHide", function()
-		if (AuctionHouseFrame and not AuctionHouseFrame:IsShown()) or not AuctionHouseFrame then
-			preview:Hide()
+	-- A hidden tooltip leaves its preview shown, so the preview has to be torn down here
+	-- or it reappears beside the next tooltip to open. The teardown waits a frame because
+	-- the auction house hides and immediately re-shows the tooltip as results refresh, and
+	-- reacting to each of those flickered the model. OnHide2 then keeps the preview only
+	-- while the tooltip it belongs to is still showing an item, so a unit tooltip, which
+	-- never carries one, still clears it.
+	local function ScheduleTeardown()
+		C_Timer.After(0, function()
 			preview:OnHide2()
-		end
+		end)
+	end
+
+	GameTooltip:HookScript("OnHide", function()
+		ScheduleTeardown()
 
 		HideStrandedComparisonTooltips()
 	end)
+
+	-- The preview attaches to the embedded item tooltip as well, and Blizzard hides that
+	-- one on its own while GameTooltip stays open, as it does when a quest reward turns
+	-- out to be a currency container.
+	GameTooltip.ItemTooltip.Tooltip:HookScript("OnHide", ScheduleTeardown)
 
 	preview:SetSize(addon.Profile.TooltipPreview_Width, addon.Profile.TooltipPreview_Height)
 	preview.model = CreateModelFrame()
