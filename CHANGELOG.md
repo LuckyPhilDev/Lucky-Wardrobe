@@ -1,15 +1,15 @@
 # Changelog
 
-## 1.1.0
+## 1.2.0
 
 ### Added
 
-- New setting to keep whichever tab you're on at the transmog vendor when switching outfits, instead of jumping back to Items. Clicking a slot still opens Items.
-- Dev mode toggle in settings for troubleshooting.
-- Settings now show the addon and library versions, plus links to Lucky Phil's other addons.
-- Sorting the Sets and Extra Sets lists by completion, which shipped in 1.0.0, was suggested by Adelie. Thanks!
+- Save the situations you have picked for an outfit as a named preset, then apply it to any other outfit from the load button. Presets that include a specialisation only show up on the class that has it, so your characters never see each other's clutter.
+- Delete a saved preset straight from the load menu.
+- New setting to show the values you have selected on each outfit in the list, so you can tell at a glance which zone or specialisation an outfit is set to instead of just the category name.
+- New setting to show an outfit's full situation list, with the value chosen in every category, in a tooltip when you hover it.
+- A minimap button. Left-click opens your appearances, right-click opens settings, and you can drag it anywhere around the minimap or hide it in settings.
 
-### Fixed
+### Improved
 
-- Logging in with the original Better Wardrobe still enabled now shows a dialog offering to disable either addon and reload, instead of leaving you with a broken, unclosable window. (Thanks for the report Adelie)
-- A problem opening the settings panel no longer stops the rest of the addon from loading.
+- The two situation settings now show an example image of what they look like in game, so you can see the effect before turning either on.

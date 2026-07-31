@@ -28,6 +28,8 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Combine sets**: Pick a base set, then shift-click other sets to fill its empty slots from lookalikes or different raid difficulties.
 - **Auto-hide missing pieces**: Empty slots on an incomplete set can be set to hidden automatically.
 - **Unlimited saved outfits**: Outfits past Blizzard's cap of 20 are saved by the addon and appear in the normal outfit list.
+- **Situation presets**: Save the situations you've picked for an outfit under a name, then apply the whole lot to another outfit in one click. Presets that include a specialisation stay on the class that has it. Delete them from the same menu.
+- **Situation detail on outfits**: Show the values you've chosen on each outfit in the list, and hover an outfit for a tooltip with its full situation breakdown.
 - **Randomizer**: Click the dice to roll a random set of armour appearances from your collection, or hold it down to keep rolling until you see something you like.
 
 ### Tooltips
