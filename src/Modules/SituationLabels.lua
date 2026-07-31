@@ -102,12 +102,18 @@ local function HideScanOverlay()
 	if scanOverlay then scanOverlay:Hide() end
 end
 
-local function Enabled()
+local function ValuesShownOnEntries()
 	return not addon.Profile or addon.Profile.ShowSituationValues ~= false
 end
 
 local function TooltipsEnabled()
 	return not addon.Profile or addon.Profile.ShowSituationTooltips ~= false
+end
+
+-- The tooltip lists the same values the entry subtitle can show, so the cache is
+-- worth building whenever either surface is on.
+local function ValuesNeeded()
+	return ValuesShownOnEntries() or TooltipsEnabled()
 end
 
 local function GetStoredValues()
@@ -138,7 +144,6 @@ local function ReadValues()
 end
 
 local function SelectedValues(outfitID, categoryName)
-	if not Enabled() then return end
 	values = values or GetStoredValues()
 	local outfitValues = values and values[outfitID]
 	local categoryValues = outfitValues and outfitValues[categoryName]
@@ -150,9 +155,10 @@ end
 local function SituationText(elementData)
 	local summary = {}
 	local details = {}
+	local showValues = ValuesShownOnEntries()
 	for _, categoryName in ipairs(elementData.situationCategories or {}) do
 		local categoryValues = SelectedValues(elementData.outfitID, categoryName)
-		summary[#summary + 1] = categoryValues or categoryName
+		summary[#summary + 1] = (showValues and categoryValues) or categoryName
 		details[#details + 1] = { name = categoryName, values = categoryValues }
 	end
 	elementData.situationDetails = details
@@ -220,7 +226,7 @@ local function InstallSituationTooltip(entry)
 end
 
 local function CacheValues()
-	if not Enabled() or reading or not TransmogFrame:IsShown() then return end
+	if not ValuesNeeded() or reading or not TransmogFrame:IsShown() then return end
 	if C_TransmogOutfitInfo.HasPendingOutfitSituations() or C_TransmogOutfitInfo.HasPendingOutfitTransmogs() then return end
 
 	local outfits = C_TransmogOutfitInfo.GetOutfitsInfo()
@@ -254,7 +260,7 @@ local function CacheValues()
 		pendingStep = nil
 		restoring = true
 		C_TransmogOutfitInfo.ChangeViewedOutfit(originalOutfitID)
-		if Enabled() then
+		if ValuesNeeded() then
 			ApplyValues()
 			SaveValues()
 		end
@@ -263,7 +269,7 @@ local function CacheValues()
 		C_Timer.After(0.25, function() restoring = false end)
 	end
 	local function Next()
-		if not Enabled() then
+		if not ValuesNeeded() then
 			Finish()
 			return
 		end
@@ -287,7 +293,7 @@ end
 function addon:RefreshSituationLabels()
 	if not TransmogFrame or not TransmogFrame:IsShown() then return end
 	ApplyValues()
-	if Enabled() then CacheValues() end
+	CacheValues()
 end
 
 local installed = false
@@ -319,7 +325,7 @@ eventFrame:SetScript("OnEvent", function(_, event)
 		return
 	end
 	if restoring then return end
-	if event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" and values and Enabled() then
+	if event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" and values and ValuesNeeded() then
 		values[C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID()] = ReadValues()
 		SaveValues()
 		ApplyValues()

@@ -8,7 +8,10 @@ function addon:BuildSettingsPanel()
     if self.settingsPanel then return end
 
     local Profile = self.Profile
-    local panel = LuckySettings:NewRichPanel("Lucky's Better Wardrobe")
+    local panel = LuckySettings:NewRichPanel("Lucky's Better Wardrobe", {
+        addonFolder = "LuckysBetterWardrobe",
+        imagesRoot  = "Images",
+    })
     self.settingsPanel = panel
 
     SLASH_LUCKYBW1 = "/bw"
@@ -71,20 +74,27 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
-            label   = L["Show Situation Values"],
-            desc    = L["Shows the selected situation values on outfit entries instead of just the category names."],
-            checked = Profile.ShowSituationValues,
-            onToggle = function(v)
+            label     = L["Show Situation Values"],
+            desc      = L["Shows the selected situation values on outfit entries instead of just the category names."],
+            image     = "transmog-window/show-situation-values",
+            imageSize = { 571, 222 },
+            checked   = Profile.ShowSituationValues,
+            onToggle  = function(v)
                 Profile.ShowSituationValues = v
                 addon:RefreshSituationLabels()
             end,
         })
 
         g:Toggle({
-            label   = L["Show Situation Tooltips"],
-            desc    = L["Shows an outfit's full situation list in a tooltip when you hover it."],
-            checked = Profile.ShowSituationTooltips,
-            onToggle = function(v) Profile.ShowSituationTooltips = v end,
+            label     = L["Show Situation Tooltips"],
+            desc      = L["Shows an outfit's full situation list, with the values selected in each category, in a tooltip when you hover it."],
+            image     = "transmog-window/show-situation-tooltips",
+            imageSize = { 558, 140 },
+            checked   = Profile.ShowSituationTooltips,
+            onToggle  = function(v)
+                Profile.ShowSituationTooltips = v
+                addon:RefreshSituationLabels()
+            end,
         })
     end
 

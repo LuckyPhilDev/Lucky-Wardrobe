@@ -22,6 +22,7 @@ enable-nolib-creation: no
 
 ignore:
     - README.md
+    - images
     - src/Libs/test.txt
     - src/Libs/LibArmorToken-1.0/LibArmorToken-1.0.toc
     - src/Libs/LibArmorToken-1.0/LibStub.lua
