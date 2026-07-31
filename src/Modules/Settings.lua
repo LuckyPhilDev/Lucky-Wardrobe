@@ -49,6 +49,13 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
+            label   = L["Show Situation Tooltips"],
+            desc    = L["Shows an outfit's full situation list in a tooltip when you hover it."],
+            checked = Profile.ShowSituationTooltips,
+            onToggle = function(v) Profile.ShowSituationTooltips = v end,
+        })
+
+        g:Toggle({
             label   = L["Dev Mode"],
             desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
             checked = Profile.DevMode,

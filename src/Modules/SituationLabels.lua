@@ -106,6 +106,10 @@ local function Enabled()
 	return not addon.Profile or addon.Profile.ShowSituationValues ~= false
 end
 
+local function TooltipsEnabled()
+	return not addon.Profile or addon.Profile.ShowSituationTooltips ~= false
+end
+
 local function GetStoredValues()
 	if not addon.chardb then return end
 	addon.chardb.char.SituationLabels = addon.chardb.char.SituationLabels or {}
@@ -133,31 +137,86 @@ local function ReadValues()
 	return result
 end
 
-local function ApplyValues(outfits, showValues)
-	local scrollBox = TransmogFrame.OutfitCollection.OutfitList.ScrollBox
-	for _, outfit in ipairs(outfits) do
-		local elementData = scrollBox:FindElementDataByPredicate(function(data)
-			return data.outfitID == outfit.outfitID
-		end)
-		if elementData then
-			local summary = {}
-			for _, categoryName in ipairs(outfit.situationCategories or {}) do
-				local outfitValues = showValues and values[outfit.outfitID]
-				summary[#summary + 1] = outfitValues and outfitValues[categoryName] or categoryName
-			end
-			elementData.situationCategories = summary
-		end
-	end
+local function SelectedValues(outfitID, categoryName)
+	if not Enabled() then return end
+	values = values or GetStoredValues()
+	local outfitValues = values and values[outfitID]
+	local categoryValues = outfitValues and outfitValues[categoryName]
+	if categoryValues ~= "" then return categoryValues end
+end
 
-	scrollBox:ForEachFrame(function(frame)
-		local elementData = frame:GetElementData()
-		local categories = elementData and elementData.situationCategories or {}
-		local text = table.concat(categories, TRANSMOG_SITUATION_CATEGORY_LIST_SEPARATOR)
-		local content = frame.OutfitButton.TextContent
-		content.SituationInfo:SetShown(text ~= "")
-		content.SituationInfo:SetText(text)
-		content:Layout()
-	end)
+-- The outfit list rebuilds its element data from the API on every refresh, so the
+-- override has to be reapplied per entry rather than stored on the element data.
+local function SituationText(elementData)
+	local summary = {}
+	local details = {}
+	for _, categoryName in ipairs(elementData.situationCategories or {}) do
+		local categoryValues = SelectedValues(elementData.outfitID, categoryName)
+		summary[#summary + 1] = categoryValues or categoryName
+		details[#details + 1] = { name = categoryName, values = categoryValues }
+	end
+	elementData.situationDetails = details
+	return table.concat(summary, TRANSMOG_SITUATION_CATEGORY_LIST_SEPARATOR)
+end
+
+local function ApplyEntry(entry, elementData)
+	elementData = elementData or entry:GetElementData()
+	if not elementData then return end
+
+	local text = SituationText(elementData)
+	local content = entry.OutfitButton.TextContent
+	content.SituationInfo:SetShown(text ~= "")
+	content.SituationInfo:SetText(text)
+	content:Layout()
+end
+
+local function ApplyValues()
+	if not TransmogFrame or not TransmogFrame.OutfitCollection then return end
+	TransmogFrame.OutfitCollection.OutfitList.ScrollBox:ForEachFrame(ApplyEntry)
+end
+
+local function ReadableValues(text)
+	return (text:gsub("%+", ", "))
+end
+
+local function TooltipLine(detail)
+	if not detail.values then return detail.name end
+
+	local label = GRAY_FONT_COLOR:WrapTextInColorCode(detail.name .. ":")
+	return ("%s %s"):format(label, ReadableValues(detail.values))
+end
+
+local function TooltipDetails(elementData)
+	if elementData.situationDetails then return elementData.situationDetails end
+
+	local details = {}
+	for _, categoryName in ipairs(elementData.situationCategories or {}) do
+		details[#details + 1] = { name = categoryName }
+	end
+	return details
+end
+
+local function ShowSituationTooltip(entry)
+	if not TooltipsEnabled() then return end
+
+	local elementData = entry:GetElementData()
+	if not elementData or not entry.OutfitButton.TextContent.SituationInfo:IsShown() then return end
+
+	GameTooltip:SetOwner(entry.OutfitButton, "ANCHOR_NONE")
+	GameTooltip:SetPoint("TOPLEFT", entry.OutfitButton, "TOPRIGHT", 4, 0)
+	GameTooltip_SetTitle(GameTooltip, elementData.name)
+	for _, detail in ipairs(TooltipDetails(elementData)) do
+		GameTooltip_AddHighlightLine(GameTooltip, TooltipLine(detail))
+	end
+	GameTooltip:Show()
+end
+
+local function InstallSituationTooltip(entry)
+	if entry.luckySituationTooltip then return end
+	entry.luckySituationTooltip = true
+
+	entry.OutfitButton:HookScript("OnEnter", function() ShowSituationTooltip(entry) end)
+	entry.OutfitButton:HookScript("OnLeave", GameTooltip_Hide)
 end
 
 local function CacheValues()
@@ -168,18 +227,21 @@ local function CacheValues()
 	if not outfits or #outfits == 0 then return end
 
 	values = values or GetStoredValues() or {}
+	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID()
 	local missing = {}
 	for _, outfit in ipairs(outfits) do
 		if not values[outfit.outfitID] then
 			if #(outfit.situationCategories or {}) == 0 then
 				values[outfit.outfitID] = {}
+			elseif outfit.outfitID == viewedOutfitID then
+				values[outfit.outfitID] = ReadValues()
 			else
 				missing[#missing + 1] = outfit
 			end
 		end
 	end
 	if #missing == 0 then
-		ApplyValues(outfits, true)
+		ApplyValues()
 		SaveValues()
 		return
 	end
@@ -193,7 +255,7 @@ local function CacheValues()
 		restoring = true
 		C_TransmogOutfitInfo.ChangeViewedOutfit(originalOutfitID)
 		if Enabled() then
-			ApplyValues(outfits, true)
+			ApplyValues()
 			SaveValues()
 		end
 		reading = false
@@ -224,11 +286,8 @@ end
 
 function addon:RefreshSituationLabels()
 	if not TransmogFrame or not TransmogFrame:IsShown() then return end
-	if Enabled() then
-		CacheValues()
-	else
-		ApplyValues(C_TransmogOutfitInfo.GetOutfitsInfo() or {}, false)
-	end
+	ApplyValues()
+	if Enabled() then CacheValues() end
 end
 
 local installed = false
@@ -238,6 +297,11 @@ local function Install()
 		C_Timer.After(0.5, Install)
 		return
 	end
+
+	hooksecurefunc(TransmogOutfitEntryMixin, "Init", function(entry, elementData)
+		InstallSituationTooltip(entry)
+		ApplyEntry(entry, elementData)
+	end)
 
 	TransmogFrame:HookScript("OnShow", function()
 		C_Timer.After(0, CacheValues)
@@ -258,7 +322,7 @@ eventFrame:SetScript("OnEvent", function(_, event)
 	if event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" and values and Enabled() then
 		values[C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID()] = ReadValues()
 		SaveValues()
-		ApplyValues(C_TransmogOutfitInfo.GetOutfitsInfo() or {}, true)
+		ApplyValues()
 	elseif TransmogFrame:IsShown() then
 		CacheValues()
 	end
@@ -278,9 +342,7 @@ local function WipeValues()
 
 	values = {}
 	SaveValues()
-	if TransmogFrame and TransmogFrame:IsShown() then
-		ApplyValues(C_TransmogOutfitInfo.GetOutfitsInfo() or {}, false)
-	end
+	if TransmogFrame and TransmogFrame:IsShown() then ApplyValues() end
 	print(addon.PREFIX .. " situation labels: cache wiped, run /bwlabels scan to rescan")
 end
 

@@ -69,6 +69,7 @@ local defaults = {
 		IgnoreClassRestrictions = false,
 		KeepTransmogTab = false,
 		ShowSituationValues = true,
+		ShowSituationTooltips = true,
 		DevMode = false,
 		CurrentFactionSets = true,
 		ExtraLargeTransmogArea = false,
