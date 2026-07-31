@@ -25,46 +25,67 @@ local function ForEachOption(callback)
 	end
 end
 
+local function PlayerClassID()
+	return select(3, UnitClass("player"))
+end
+
+-- A specialisation only exists on one class, so a preset that selects one is stored
+-- against that class and stays hidden from every other character.
 local function CaptureSelections()
 	local selections = {}
+	local classID
 	ForEachOption(function(option)
 		if C_TransmogOutfitInfo.GetOutfitSituation(option.option) then
 			selections[GetOptionKey(option.option)] = true
+			if (option.option.specID or 0) ~= 0 then classID = PlayerClassID() end
 		end
 	end)
-	return selections
+	return selections, classID
 end
 
-local function GetPresetNames()
-	local names = {}
-	for name in pairs(addon.Profile.SituationPresets) do
-		names[#names + 1] = name
+-- Class scoped presets are keyed apart from shared ones so a druid saving "Raiding"
+-- cannot silently overwrite the mage preset of the same name it can never see.
+local function GetPresetKey(name, classID)
+	return classID and ("class%d:%s"):format(classID, name) or name
+end
+
+local function GetAvailablePresets()
+	local classID = PlayerClassID()
+	local presets = {}
+	for key, preset in pairs(addon.Profile.SituationPresets) do
+		if not preset.classID or preset.classID == classID then
+			-- Presets saved before class scoping have no stored name; their key is the name.
+			presets[#presets + 1] = { key = key, name = preset.name or key, preset = preset }
+		end
 	end
-	table.sort(names)
-	return names
+	table.sort(presets, function(left, right) return left.name < right.name end)
+	return presets
 end
 
 function SituationPresets:UpdateLoadButton()
 	if self.loadButton then
-		self.loadButton:SetEnabled(next(addon.Profile.SituationPresets) ~= nil)
+		self.loadButton:SetEnabled(#GetAvailablePresets() > 0)
 	end
 end
 
 function SituationPresets:Save(name, overwrite)
 	name = strtrim(name)
 	if name == "" then return end
-	if not overwrite and addon.Profile.SituationPresets[name] then
+
+	local selections, classID = CaptureSelections()
+	local key = GetPresetKey(name, classID)
+	if not overwrite and addon.Profile.SituationPresets[key] then
 		StaticPopup_Show("LUCKYS_BETTER_WARDROBE_REPLACE_SITUATION", nil, nil, name)
 		return false
 	end
 
-	addon.Profile.SituationPresets[name] = { selections = CaptureSelections() }
+	addon.Profile.SituationPresets[key] = { name = name, classID = classID, selections = selections }
 	self:UpdateLoadButton()
 	return true
 end
 
-function SituationPresets:Delete(name)
-	addon.Profile.SituationPresets[name] = nil
+function SituationPresets:Delete(key)
+	addon.Profile.SituationPresets[key] = nil
 	self:UpdateLoadButton()
 end
 
@@ -142,8 +163,8 @@ StaticPopupDialogs["LUCKYS_BETTER_WARDROBE_DELETE_SITUATION"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
-	OnAccept = function(_dialog, name)
-		SituationPresets:Delete(name)
+	OnAccept = function(_dialog, key)
+		SituationPresets:Delete(key)
 	end,
 }
 
@@ -159,10 +180,9 @@ function addon:InitSituationPresets()
 	loadButton:SetPoint("BOTTOMRIGHT", situationsFrame.Situations, "TOPRIGHT", 0, 10)
 	loadButton:SetScript("OnClick", function()
 		MenuUtil.CreateContextMenu(loadButton, function(_owner, rootDescription)
-			for _, name in ipairs(GetPresetNames()) do
-				local preset = addon.Profile.SituationPresets[name]
-				local presetButton = rootDescription:CreateButton(name, function()
-					SituationPresets:Apply(preset, situationsFrame)
+			for _, entry in ipairs(GetAvailablePresets()) do
+				local presetButton = rootDescription:CreateButton(entry.name, function()
+					SituationPresets:Apply(entry.preset, situationsFrame)
 				end)
 				presetButton:AddInitializer(function(menuButton, _description, menu)
 					local deleteButton = MenuTemplates.AttachBasicButton(menuButton)
@@ -171,7 +191,7 @@ function addon:InitSituationPresets()
 					deleteIcon:SetAllPoints()
 					deleteIcon:SetTexture(MenuVariants.CancelButtonTexture)
 					deleteButton:SetScript("OnClick", function()
-						StaticPopup_Show("LUCKYS_BETTER_WARDROBE_DELETE_SITUATION", name, nil, name)
+						StaticPopup_Show("LUCKYS_BETTER_WARDROBE_DELETE_SITUATION", entry.name, nil, entry.key)
 						menu:Close()
 					end)
 					MenuUtil.HookTooltipScripts(deleteButton, function(tooltip)

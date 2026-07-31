@@ -77,6 +77,7 @@ local defaults = {
 		CollectionSetSortMode = "default",
 		CollectionSetSortDirection = "ascending",
 		SituationPresets = {},
+		MinimapButton = {},
 	}
 }
 local DB_Defaults = {
@@ -379,6 +380,7 @@ function addon:OnEnable()
 	Profile = addon.Profile
 
 	InitFeature("settings panel", function() addon:BuildSettingsPanel() end)
+	InitFeature("minimap button", function() addon:CreateMinimapButton() end)
 	addon.Init:InitDB()
 
 	addon:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED", "EventHandler")

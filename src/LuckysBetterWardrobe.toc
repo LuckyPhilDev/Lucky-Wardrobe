@@ -43,6 +43,7 @@ Modules\CollectionTemplates.xml
 Modules\Templates.xml
 Modules\Core.lua
 Modules\Settings.lua
+Modules\Minimap.lua
 Data\DataBase.lua
 Data\Cloth.lua
 Data\Mail.lua

@@ -78,6 +78,12 @@ L["Profiles"] = true
 
 L["General Options"] = true
 L["Ignore Class Restriction Filter"] = true
+L["Minimap Button"] = true
+L["Shows a Lucky's Better Wardrobe button on the minimap. Left-click it to open your appearances, right-click for these settings."] = true
+L["Left-click: Open appearances"] = true
+L["Right-click: Open settings"] = true
+L["Drag: Move button"] = true
+L["Transmog Window"] = true
 L["Keep Active Transmog Tab"] = true
 L["Show Situation Values"] = true
 L["Shows the selected situation values on outfit entries instead of just the category names."] = true

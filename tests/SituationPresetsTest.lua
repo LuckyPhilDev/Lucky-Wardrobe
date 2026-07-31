@@ -19,7 +19,16 @@ local options = {
 			} },
 		},
 	},
+	{
+		groupData = {
+			{ optionData = {
+				{ option = { situationID = 0, specID = 62, loadoutID = 0, equipmentSetID = 0 } },
+			} },
+		},
+	},
 }
+
+local playerClassID = 8
 
 local function OptionKey(option)
 	return table.concat({ option.situationID, option.specID, option.loadoutID, option.equipmentSetID }, ":")
@@ -36,6 +45,7 @@ _G.TestAddon = addon
 _G.StaticPopupDialogs = {}
 _G.SAVE, _G.CANCEL, _G.YES, _G.NO = "Save", "Cancel", "Yes", "No"
 _G.strtrim = function(value) return value:match("^%s*(.-)%s*$") end
+_G.UnitClass = function() return "Mage", "MAGE", playerClassID end
 local shownPopup
 local calls = {}
 local situationsEnabled = false
@@ -91,3 +101,48 @@ assert(table.concat(calls, ",") == "enable,update,update,commit")
 StaticPopupDialogs["LUCKYS_BETTER_WARDROBE_DELETE_SITUATION"].OnAccept(nil, "Rest Area")
 assert(not addon.Profile.SituationPresets["Rest Area"])
 assert(not loadEnabled)
+
+-- A preset that selects a specialisation belongs to the class that saved it.
+selected["0:62:0:0"] = true
+assert(addon.SituationPresets:Save("Raiding"))
+local magePreset = addon.Profile.SituationPresets["class8:Raiding"]
+assert(magePreset.name == "Raiding")
+assert(magePreset.classID == 8)
+assert(magePreset.selections["0:62:0:0"])
+assert(loadEnabled)
+
+-- Another class neither sees it nor overwrites it by reusing the name.
+playerClassID = 1
+addon.SituationPresets:UpdateLoadButton()
+assert(not loadEnabled)
+shownPopup = nil
+assert(addon.SituationPresets:Save("Raiding"))
+assert(not shownPopup)
+assert(addon.Profile.SituationPresets["class1:Raiding"].classID == 1)
+assert(addon.Profile.SituationPresets["class8:Raiding"] == magePreset)
+assert(loadEnabled)
+
+-- Presets without a specialisation stay shared with every character.
+selected["0:62:0:0"] = false
+assert(addon.SituationPresets:Save("Anywhere"))
+assert(not addon.Profile.SituationPresets["Anywhere"].classID)
+playerClassID = 5
+addon.SituationPresets:UpdateLoadButton()
+assert(loadEnabled)
+
+StaticPopupDialogs["LUCKYS_BETTER_WARDROBE_DELETE_SITUATION"].OnAccept(nil, "Anywhere")
+addon.SituationPresets:UpdateLoadButton()
+assert(not loadEnabled)
+
+-- Presets saved before class scoping have no stored name and must still list and delete.
+addon.Profile.SituationPresets = {
+	["Rest Area"] = { selections = { ["3:0:0:0"] = true } },
+	["Dungeons"] = { selections = { ["13:0:0:0"] = true } },
+}
+addon.SituationPresets:UpdateLoadButton()
+assert(loadEnabled)
+
+StaticPopupDialogs["LUCKYS_BETTER_WARDROBE_DELETE_SITUATION"].OnAccept(nil, "Rest Area")
+assert(not addon.Profile.SituationPresets["Rest Area"])
+assert(addon.Profile.SituationPresets["Dungeons"])
+assert(loadEnabled)

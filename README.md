@@ -56,13 +56,16 @@ Lucky's Utils is required. Release packages include it automatically, along with
 | `/bw` | Open the settings panel |
 | `/betterwardrobe` | Alias for `/bw` |
 
-The addon compartment button on the minimap opens the Appearances collection.
+## Minimap Button
+
+A minimap button opens your appearances with a left-click and these settings with a right-click. Drag it to reposition it, or hide it in settings. The addon compartment button does the same job if you prefer a tidier minimap.
 
 ## Settings
 
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
-- **General**: Ignore class restrictions on sets and appearances, keep your active tab at the transmog NPC when switching outfits, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
+- **General**: Ignore class restrictions on sets and appearances, show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
+- **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
 
 ## Author
 

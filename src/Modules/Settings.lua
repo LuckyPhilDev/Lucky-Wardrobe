@@ -32,6 +32,38 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
+            label   = L["Minimap Button"],
+            desc    = L["Shows a Lucky's Better Wardrobe button on the minimap. Left-click it to open your appearances, right-click for these settings."],
+            checked = not Profile.MinimapButton.hide,
+            onToggle = function(v) addon:SetMinimapButtonShown(v) end,
+        })
+
+        g:Toggle({
+            label   = L["Dev Mode"],
+            desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
+            checked = Profile.DevMode,
+            onToggle = function(v) Profile.DevMode = v end,
+        })
+
+        g:BottomSection(L["Version Info"])
+        g:BottomLabel({
+            label = "Lucky's Better Wardrobe",
+            value = "v" .. (C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"),
+        })
+        g:BottomLabel({
+            label = "Lucky's Utils",
+            value = "v" .. (C_AddOns.GetAddOnMetadata("Luckys_Utils", "Version") or "?"),
+        })
+        LuckyPromo:AddToRichGroup(g, addonName)
+    end
+
+    ---------------------------------------------------------------------------
+    -- Transmog Window
+    ---------------------------------------------------------------------------
+    do
+        local g = panel:Group(L["Transmog Window"])
+
+        g:Toggle({
             label   = L["Keep Active Transmog Tab"],
             desc    = "Keeps whichever tab you're on when switching outfits at the transmog NPC, instead of jumping back to Items. Clicking a slot still opens Items.",
             checked = Profile.KeepTransmogTab,
@@ -54,24 +86,6 @@ function addon:BuildSettingsPanel()
             checked = Profile.ShowSituationTooltips,
             onToggle = function(v) Profile.ShowSituationTooltips = v end,
         })
-
-        g:Toggle({
-            label   = L["Dev Mode"],
-            desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
-            checked = Profile.DevMode,
-            onToggle = function(v) Profile.DevMode = v end,
-        })
-
-        g:BottomSection(L["Version Info"])
-        g:BottomLabel({
-            label = "Lucky's Better Wardrobe",
-            value = "v" .. (C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"),
-        })
-        g:BottomLabel({
-            label = "Lucky's Utils",
-            value = "v" .. (C_AddOns.GetAddOnMetadata("Luckys_Utils", "Version") or "?"),
-        })
-        LuckyPromo:AddToRichGroup(g, addonName)
     end
 
     panel:Finalize()
