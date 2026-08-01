@@ -245,8 +245,17 @@ local function DropLocations(instance, sourceID)
 	return locations
 end
 
-local function BuildPieceList(instance, setID, hereBySource)
-	local pieces = {}
+-- What the player is carrying that the catalyst would turn into a piece, keyed by
+-- source. Read once per scan rather than per set, since the answer costs a lookup
+-- per item in the bags and does not change while a scan is running.
+local function CatalysableSources()
+	if not addon.Profile.MarkCatalysablePieces then return {} end
+	return addon.Catalyst:GetHeldTargets().bySource
+end
+
+--- Every piece of the set, and how many of them the player holds the makings of.
+local function BuildPieceList(instance, setID, hereBySource, catalysable)
+	local pieces, catalysableCount = {}, 0
 	for _, appearance in ipairs(addon.C_TransmogSets.GetSetPrimaryAppearances(setID) or {}) do
 		local sourceID = appearance.appearanceID
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID)
@@ -255,6 +264,8 @@ local function BuildPieceList(instance, setID, hereBySource)
 		-- Stored state can only ever be behind, never ahead, so either source
 		-- saying collected means collected.
 		local collected = (appearance.collected or (sourceInfo and sourceInfo.isCollected)) and true or false
+		local heldFor = not collected and catalysable[sourceID] or nil
+		if heldFor then catalysableCount = catalysableCount + 1 end
 
 		pieces[#pieces + 1] = {
 			sourceID = sourceID,
@@ -264,6 +275,9 @@ local function BuildPieceList(instance, setID, hereBySource)
 			collected = collected,
 			availableHere = drop ~= nil,
 			flashing = IsFlashing(sourceID),
+			-- The item that would become this piece, for a piece the player has not
+			-- collected but already holds the makings of.
+			catalysable = heldFor,
 			hereInstance = drop and instance.name,
 			encounter = drop and drop.encounter,
 			difficultyNote = drop and drop.difficultyNote,
@@ -277,7 +291,7 @@ local function BuildPieceList(instance, setID, hereBySource)
 		if a.sortOrder ~= b.sortOrder then return a.sortOrder < b.sortOrder end
 		return (a.itemID or 0) < (b.itemID or 0)
 	end)
-	return pieces
+	return pieces, catalysableCount
 end
 
 local function NewStats()
@@ -304,6 +318,7 @@ function SetCompletion:Scan(instance, maxMissing)
 	local matches = {}
 	local candidates = CollectCandidates(maxMissing, stats)
 	stats.candidates = #candidates
+	local catalysable = CatalysableSources()
 
 	for _, candidate in ipairs(candidates) do
 		-- Tier pieces are not drops. They are made from a token or the catalyst, so
@@ -350,7 +365,8 @@ function SetCompletion:Scan(instance, maxMissing)
 		if #here > 0 then
 			candidate.here = here
 			candidate.remaining = #candidate.missing - #here
-			candidate.pieces = BuildPieceList(instance, candidate.setID, hereBySource)
+			candidate.pieces, candidate.catalysable =
+				BuildPieceList(instance, candidate.setID, hereBySource, catalysable)
 			candidate.missing = nil
 			matches[#matches + 1] = candidate
 		end
@@ -415,6 +431,9 @@ end
 -- of them before it separates anything: at 4 the borders of two collected pieces
 -- met in the middle.
 local ICON_SIZE, ICON_GAP = 40, 8
+-- Half the icon reads as a stamp on the piece. Much smaller and it is a smudge at
+-- this size; much larger and it is the piece that looks like the decoration.
+local BADGE_SIZE = ICON_SIZE * 0.5
 local MAX_ICONS = 14
 local PADDING = 10
 local HEADER_HEIGHT, SUBTITLE_HEIGHT = 32, 22
@@ -501,14 +520,31 @@ local function QualityColor(itemID)
 	return LuckyUI.C.goldAccent[1], LuckyUI.C.goldAccent[2], LuckyUI.C.goldAccent[3]
 end
 
+-- The game's own catalyst mark, so a stamped piece reads the way the catalyst's
+-- own window does. Checked rather than assumed: an atlas that has been renamed
+-- draws nothing at all, and a blank corner is worse than no stamp.
+local CATALYST_ATLAS = "CreationCatalyst-32x32"
+
+local hasCatalystAtlas
+local function CatalystAtlasExists()
+	if hasCatalystAtlas == nil then
+		hasCatalystAtlas = C_Texture.GetAtlasInfo(CATALYST_ATLAS) ~= nil
+	end
+	return hasCatalystAtlas
+end
+
 -- Colour means one thing only: a piece the player has. Those keep their art and
 -- take a quality border, the way an owned appearance is framed in the journal.
 -- Everything still to find is greyed out, and the two kinds of missing piece are
 -- told apart by weight rather than hue, since a second colour reads as a second
 -- meaning and the hover text says which is which.
+-- A piece the player already holds the makings of is a third thing to say, and it
+-- is said with a corner stamp for the same reason: the piece is still missing and
+-- still reads as missing, with a mark on it rather than a colour of its own.
 local function StyleIcon(button, piece)
 	button.texture:SetTexture(piece.icon or QUESTION_MARK_ICON)
 	button.texture:SetDesaturated(not piece.collected)
+	button.catalyst:SetShown(piece.catalysable ~= nil and CatalystAtlasExists())
 
 	-- Something that just dropped is the one thing on the panel worth looking at,
 	-- so it says so loudly and briefly rather than joining the greyscale.
@@ -634,6 +670,15 @@ local function ShowPieceTooltip(anchor, piece)
 		end
 	end
 
+	-- The stamp says a piece is halfway yours. Only the hover can say what would
+	-- finish the job, and naming the item is the difference between knowing that
+	-- and going looking through the bags for it.
+	if piece.catalysable then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(L["The catalyst would make this from"], 1, 0.82, 0)
+		GameTooltip:AddLine(piece.catalysable, 0.91, 0.86, 0.78)
+	end
+
 	GameTooltip:Show()
 end
 
@@ -666,6 +711,12 @@ local function ShowRowTooltip(row, match)
 	if match.remaining > 0 then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L["Still missing %d pieces from elsewhere"]:format(match.remaining), 0.54, 0.49, 0.42)
+	end
+
+	if match.catalysable and match.catalysable > 0 then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(L["%d you could catalyse from what you are carrying"]:format(match.catalysable),
+			1, 0.82, 0)
 	end
 
 	GameTooltip:AddLine(" ")
@@ -746,6 +797,14 @@ local function CreateRow(parent, index)
 		icon.texture = icon:CreateTexture(nil, "ARTWORK")
 		icon.texture:SetAllPoints()
 		icon.texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+		-- Over the corner of the art rather than inside it, so the stamp is legible
+		-- at this size without covering the piece it is describing.
+		icon.catalyst = icon:CreateTexture(nil, "OVERLAY")
+		icon.catalyst:SetSize(BADGE_SIZE, BADGE_SIZE)
+		icon.catalyst:SetPoint("BOTTOMRIGHT", 3, -3)
+		icon.catalyst:SetAtlas(CATALYST_ATLAS)
+		icon.catalyst:Hide()
 
 		-- Each piece answers for itself on hover, which is the only place there is
 		-- room to name the bosses that drop it.
@@ -1059,6 +1118,14 @@ end
 --- standing in gets changed from inside it as often as anywhere else.
 function SetCompletion:Refresh()
 	self:ForgetWantedPieces()
+	if panel and panel:IsShown() then
+		self:Draw()
+	end
+end
+
+--- Redraw for something that changed outside the collection, like the bags. The
+--- set data is untouched by that, so only what is on screen is rebuilt.
+function SetCompletion:RedrawIfShown()
 	if panel and panel:IsShown() then
 		self:Draw()
 	end

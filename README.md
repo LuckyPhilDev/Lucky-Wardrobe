@@ -26,6 +26,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 
 - **Finish a set here**: Enter a dungeon or raid and a list opens showing the sets you are close to completing whose missing pieces drop there, closest to done first. Each entry names the pieces still to find, and hovering one shows which boss holds each and whether it needs a different difficulty. Click a set to open it in your appearances. Both the standard sets and the Extra sets are covered.
 - **Loot alerts**: Loot a piece of a set you are close to finishing, anywhere in the world, and the addon says so with a sound, a chat line, or both. The piece lights up on the instance list if it is open. Items the catalyst could turn into an appearance you are missing get a quieter alert of their own.
+- **Pieces you already hold the makings of**: A piece you are missing is stamped with a catalyst mark when you are carrying or wearing something the catalyst would turn into it, so a set reads as closer to done than the collected count alone says. Hover the piece to see which item would make it. Requires: Transmog Upgrade Master.
 - **Set how close counts**: Choose how incomplete a set can be and still count, so the list and the alerts stay as narrow or as thorough as you like. Sets from the tier you are currently raiding are left out, since you will finish that one by turning up, and you can ask for them back.
 
 ### Transmog Vendor
@@ -78,7 +79,7 @@ Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Ignore class restrictions on sets and appearances, show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
 - **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
-- **Set Completion**: Choose how many pieces a set can still be missing and count as close to done, and whether to include the tier you are currently raiding, which is left out by default. Set whether the list opens by itself in a dungeon or raid and how long it holds the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
+- **Set Completion**: Choose how many pieces a set can still be missing and count as close to done, and whether to include the tier you are currently raiding, which is left out by default. Turn the catalyst mark on missing pieces on or off. Set whether the list opens by itself in a dungeon or raid and how long it holds the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 
 ## Author
 

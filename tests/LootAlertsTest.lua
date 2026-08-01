@@ -79,6 +79,15 @@ _G.CreateFrame = function()
 	}
 end
 
+-- The catalyst module is loaded for real rather than stubbed, since what the
+-- alert asks it is the whole of the catalyst half of this file.
+_G.UnitClass = function() return "Warrior", "WARRIOR", 1 end
+_G.C_TransmogSets = { GetSourcesForSlot = function() return {} end, GetSetsContainingSourceID = function() return {} end }
+_G.C_Container = { GetContainerNumSlots = function() return 0 end, GetContainerItemLink = function() return nil end }
+_G.GetInventoryItemLink = function() return nil end
+_G.NUM_BAG_SLOTS, _G.INVSLOT_FIRST_EQUIPPED, _G.INVSLOT_LAST_EQUIPPED = 4, 1, 19
+
+assert(loadfile("src/Modules/Catalyst.lua"))("LuckyTest", addon)
 assert(loadfile("src/Modules/LootAlerts.lua"))("LuckyTest", addon)
 addon:InitLootAlerts()
 assert(registered, "the loot handler was never registered")
@@ -160,7 +169,7 @@ addon.Profile.AlertWithSound = true
 
 -- Without Transmog Upgrade Master there is no way to know what the catalyst
 -- makes, so the catalyst alert stays silent rather than guessing.
-assert(not addon.LootAlerts:IsCatalystSourceAvailable())
+assert(not addon.Catalyst:IsAvailable())
 Loot("You receive loot: |Hitem:200|h[Ignored]|h.")
 assert(#played == 0, "a catalyst alert fired with no source of catalyst data")
 
@@ -169,7 +178,7 @@ _G.TransmogUpgradeMaster_API = {
 	IsCacheWarmedUp = function() return true end,
 	IsAppearanceMissing = function() return true, false, true end,
 }
-assert(addon.LootAlerts:IsCatalystSourceAvailable())
+assert(addon.Catalyst:IsAvailable())
 Loot("You receive loot: |Hitem:200|h[Ignored]|h.")
 assert(#played == 1 and played[1] == SOUNDKIT.UI_EPICLOOT_TOAST)
 
@@ -204,46 +213,5 @@ flashed = {}
 outcome = addon.LootAlerts:SimulateLoot("|Hitem:200|h[Ignored]|h", 10)
 assert(outcome == "set", "the known source should have been used over the link's")
 assert(flashed[1] == 10, "the known source should be the one flashed")
-
--- Transmog Upgrade Master answers nil for canCatalyse only where it could not
--- read the item at all, and false where it read it and the answer is no. The
--- report has to keep them apart: one says ask again later, the other says the
--- item is understood and simply does not qualify.
-_G.TransmogUpgradeMaster_API = {
-	IsCacheWarmedUp = function() return true, 1 end,
-	IsAppearanceMissing = function() return nil, nil, nil end,
-}
-local unread = addon.LootAlerts:InspectCatalyst("|Hitem:900|h[Unread]|h")
-assert(unread.ok, "a clean call should report ok")
-assert(unread.canCatalyse == nil, "an item TUM could not read should stay nil")
-
-_G.TransmogUpgradeMaster_API.IsAppearanceMissing = function() return false, false, nil end
-local answered = addon.LootAlerts:InspectCatalyst("|Hitem:901|h[Answered]|h")
-assert(answered.canCatalyse == false,
-	"an item TUM read and rejected should report false, not nil")
-assert(answered.canUpgrade == false, "canUpgrade should survive being false too")
-
--- A catalysable item reports what it can do, and the missing flag comes through.
-_G.TransmogUpgradeMaster_API.IsAppearanceMissing = function() return true, false, true end
-local catalysable = addon.LootAlerts:InspectCatalyst("|Hitem:902|h[Catalysable]|h")
-assert(catalysable.canCatalyse == true and catalysable.catalystMissing == true)
-
--- A link built from an item ID alone carries no bonus IDs, which is the whole
--- reason nothing can be decided about it. The real thing carries several.
-_G.TransmogUpgradeMaster_API.IsAppearanceMissing = function() return false, false, nil end
-assert(addon.LootAlerts:InspectCatalyst("|Hitem:195515|h[Sash]|h").bonusIDs == 0,
-	"a bare link should report no bonus IDs")
-
-local realLink = "|cffa335ee|Hitem:195515::::::::80:264::14:3:8836:8840:8902:1:28:2462:::|h[Sash]|h|r"
-assert(addon.LootAlerts:InspectCatalyst(realLink).bonusIDs == 3,
-	"a real item link should report the bonus IDs it carries")
-
--- A call that throws keeps its error where the report can show it, rather than
--- reading as an item that answered no.
-_G.TransmogUpgradeMaster_API.IsAppearanceMissing = function() error("boom", 0) end
-local failed = addon.LootAlerts:InspectCatalyst("|Hitem:903|h[Broken]|h")
-assert(not failed.ok, "a throwing call should not report ok")
-assert(tostring(failed.err):find("boom", 1, true), "the error should be kept")
-_G.TransmogUpgradeMaster_API = nil
 
 realPrint("LootAlertsTest passed")

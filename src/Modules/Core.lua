@@ -85,6 +85,7 @@ local defaults = {
 		InstanceSetsDwellSeconds = 4,
 		AlertSetPieceLoot = true,
 		AlertCatalystLoot = true,
+		MarkCatalysablePieces = true,
 		AlertWithSound = true,
 		AlertWithChat = true,
 		InstanceSetsFlashSeconds = 12,
@@ -413,6 +414,7 @@ function addon:OnEnable()
 
 	-- Optional features last: a failure here must not cost the vendor and journal UI.
 	InitFeature("tooltips", function() addon:InitTooltips() end)
+	InitFeature("catalyst", function() addon:InitCatalyst() end)
 	InitFeature("instance set completion", function() addon:InitSetCompletion() end)
 	InitFeature("loot alerts", function() addon:InitLootAlerts() end)
 

@@ -293,6 +293,43 @@ for _, piece in ipairs(iconRow.pieces) do
 	end
 end
 
+-- A piece the player is already carrying the makings of is stamped, and carries
+-- the item it would be made from so the hover can name it. Source 5 is already
+-- collected and source 7 is not, so only one of the two is news.
+addon.Catalyst = {
+	GetHeldTargets = function()
+		return { bySource = { [5] = "|Hitem:9|h[Spare]|h", [7] = "|Hitem:9|h[Spare]|h" }, bySet = {}, items = 1 }
+	end,
+}
+addon.Profile.MarkCatalysablePieces = true
+
+local function HalfDonePieces()
+	local found = {}
+	for _, match in ipairs(SetCompletion:Scan(instance)) do
+		if match.name == "Half Done" then
+			for _, piece in ipairs(match.pieces) do found[piece.sourceID] = piece end
+			found.match = match
+		end
+	end
+	return found
+end
+
+local stamped = HalfDonePieces()
+assert(stamped[7].catalysable == "|Hitem:9|h[Spare]|h", "a missing piece held the makings of was not stamped")
+assert(stamped[5].catalysable == nil, "a piece already collected was stamped as catalysable")
+assert(stamped[6].catalysable == nil, "a piece nothing held would make was stamped")
+assert(stamped.match.catalysable == 1, "the row should count one stamped piece")
+
+-- Turning it off stops the panel asking at all, which is what a player without
+-- the catalyst addon, or without the patience for another mark, gets.
+addon.Profile.MarkCatalysablePieces = false
+addon.Catalyst.GetHeldTargets = function() error("the panel asked while the setting was off") end
+local unstamped = HalfDonePieces()
+assert(unstamped[7].catalysable == nil, "a stamp survived the setting being turned off")
+assert(unstamped.match.catalysable == 0)
+addon.Profile.MarkCatalysablePieces = true
+addon.Catalyst.GetHeldTargets = function() return { bySource = {}, bySet = {}, items = 0 } end
+
 -- This instance's bosses come first, so the useful line is the one at the top.
 local elsewherePiece
 for _, piece in ipairs(iconRow.pieces) do

@@ -140,6 +140,21 @@ function addon:BuildSettingsPanel()
             end,
         })
 
+        local catalystAvailable = addon.Catalyst and addon.Catalyst:IsAvailable()
+
+        g:Toggle({
+            label    = L["Mark Pieces You Could Catalyse"],
+            desc     = L["Stamps a catalyst mark on a piece you are missing when you are already carrying something the catalyst would turn into it. Hover the piece to see which item."],
+            warning  = not catalystAvailable
+                and L["Needs Transmog Upgrade Master installed. The game gives no way to work out what the catalyst produces."]
+                or nil,
+            checked  = Profile.MarkCatalysablePieces,
+            onToggle = function(v)
+                Profile.MarkCatalysablePieces = v
+                addon.SetCompletion:Refresh()
+            end,
+        })
+
         g:Section(L["In Dungeons and Raids"])
 
         g:Toggle({
@@ -175,7 +190,6 @@ function addon:BuildSettingsPanel()
             onToggle = function(v) Profile.AlertSetPieceLoot = v end,
         })
 
-        local catalystAvailable = addon.LootAlerts and addon.LootAlerts:IsCatalystSourceAvailable()
         g:Toggle({
             label    = L["Alert on Catalyst Upgrades"],
             desc     = L["Speaks up, more quietly, when you loot something the catalyst could turn into an appearance you are missing."],

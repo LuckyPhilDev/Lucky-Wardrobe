@@ -58,88 +58,6 @@ local function IsSelfLoot(message)
 	return false
 end
 
---- Whether the catalyst would turn this item into an appearance the player wants.
--- Transmog Upgrade Master keeps a curated table of which items each season's
--- catalyst produces, per class and slot, because the game exposes no way to ask.
--- Without it there is no honest answer, so the alert stays quiet rather than
--- guessing. This is the only place that knows where the answer comes from.
-local function CatalystWouldTeachAppearance(itemLink)
-	local api = TransmogUpgradeMaster_API
-	if not api then return false end
-
-	-- Its data loads on a delay and it returns nils until that finishes, which
-	-- reads as "no" and would silently swallow the early drops of a run.
-	if api.IsCacheWarmedUp and not api.IsCacheWarmedUp() then return false end
-
-	local ok, canCatalyse, _canUpgrade, catalystMissing = pcall(api.IsAppearanceMissing, itemLink)
-	if not ok then
-		addon.DevLog(("Catalyst lookup failed for %s. %s"):format(itemLink, tostring(canCatalyse)))
-		return false
-	end
-
-	return canCatalyse and catalystMissing or false
-end
-
-function LootAlerts:IsCatalystSourceAvailable()
-	return TransmogUpgradeMaster_API ~= nil
-end
-
--- The season and upgrade track a catalyst answer turns on are read out of an
--- item link's bonus IDs, which sit after the first thirteen fields. A link built
--- from an item ID alone carries none, describing the base item rather than the
--- one in hand, and nothing can be decided from it.
-local BONUS_ID_COUNT_FIELD = 13
-
-local function CountBonusIDs(itemLink)
-	local data = itemLink and itemLink:match("item:([%-%d:]*)")
-	if not data then return 0 end
-
-	local field = 0
-	for part in (data .. ":"):gmatch("([^:]*):") do
-		field = field + 1
-		if field == BONUS_ID_COUNT_FIELD then return tonumber(part) or 0 end
-	end
-	return 0
-end
-
---- The raw answers behind a catalyst decision, so a test can see why it went the
---- way it did rather than only that it did.
-function LootAlerts:InspectCatalyst(itemLink)
-	local api = TransmogUpgradeMaster_API
-	if not api then return { available = false } end
-
-	local warm, progress = true, 1
-	if api.IsCacheWarmedUp then warm, progress = api.IsCacheWarmedUp() end
-
-	-- nil and false are different answers and must stay that way. Transmog Upgrade
-	-- Master returns nil for canCatalyse only where it could not read the item at
-	-- all, and false where it read it and the answer is no. Folding the two
-	-- together leaves this unable to tell "ask again later" from "no".
-	local ok, canCatalyse, canUpgrade, catalystMissing = pcall(api.IsAppearanceMissing, itemLink)
-	if not ok then
-		return { available = true, warm = warm, progress = progress, ok = false, err = canCatalyse }
-	end
-
-	-- What it made of the item, which is the only thing that explains a refusal.
-	local context
-	if api.GetAppearanceMissingData then
-		local gotData, data = pcall(api.GetAppearanceMissingData, itemLink)
-		context = gotData and data and data.contextData or nil
-	end
-
-	return {
-		available = true,
-		warm = warm,
-		progress = progress,
-		ok = true,
-		canCatalyse = canCatalyse,
-		canUpgrade = canUpgrade,
-		catalystMissing = catalystMissing,
-		bonusIDs = CountBonusIDs(itemLink),
-		context = context,
-	}
-end
-
 --- The set a dropped item would finish, and the piece of it that was matched, or
 --- nil if it finishes nothing tracked. The piece is what the panel lights up.
 -- knownSourceID exists for simulated drops. A real item link carries the bonus
@@ -198,7 +116,7 @@ local function Alert(itemLink, knownSourceID)
 		end
 	end
 
-	if addon.Profile.AlertCatalystLoot and CatalystWouldTeachAppearance(itemLink) then
+	if addon.Profile.AlertCatalystLoot and addon.Catalyst:WouldTeachAppearance(itemLink) then
 		lastAlertAt[itemLink] = now
 		Announce(L["%s can be catalysed into an appearance you are missing"]:format(itemLink))
 		Play(CATALYST_SOUND)

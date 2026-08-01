@@ -877,7 +877,7 @@ end
 --- Item links cannot be passed here: the slash handler splits on spaces and
 --- lowercases, which mangles them, so an item is named by ID.
 commands.alert = function(itemArg)
-	local catalystSource = addon.LootAlerts:IsCatalystSourceAvailable()
+	local catalystSource = addon.Catalyst:IsAvailable()
 	Print("Catalyst data: %s", catalystSource and "Transmog Upgrade Master is loaded"
 		or "|cffff5555none, catalyst alerts stay silent|r")
 	Print("Alerts: set pieces %s, catalyst %s",
@@ -1004,7 +1004,7 @@ commands.catalyst = function(itemArg)
 		for bag = 0, NUM_BAG_SLOTS do
 			for slot = 1, (C_Container.GetContainerNumSlots(bag) or 0) do
 				local link = C_Container.GetContainerItemLink(bag, slot)
-				local found = link and addon.LootAlerts:InspectCatalyst(link)
+				local found = link and addon.Catalyst:Inspect(link)
 				if found and found.canCatalyse and found.catalystMissing then
 					itemLink, origin = link, "your bags"
 					break
@@ -1020,7 +1020,7 @@ commands.catalyst = function(itemArg)
 		return
 	end
 
-	local report = addon.LootAlerts:InspectCatalyst(itemLink)
+	local report = addon.Catalyst:Inspect(itemLink)
 	Print("Catalyst check on %s, from %s", itemLink, origin)
 	if not report.available then
 		Print("  |cffff5555Transmog Upgrade Master is not loaded, so there is nothing to ask.|r")
@@ -1061,6 +1061,54 @@ commands.catalyst = function(itemArg)
 	local outcome = addon.LootAlerts:SimulateLoot(itemLink)
 	Print(outcome == "catalyst" and "|cff69db7cAlerted as catalysable.|r"
 		or ("No catalyst alert: %s"):format(tostring(outcome)))
+end
+
+--- Which pieces the panel would stamp, and what it would stamp them on behalf of.
+-- The alert only needs a yes or no about one item; the stamp needs the piece that
+-- item becomes, which is a longer chain and the part worth seeing spelled out.
+commands.catalysable = function()
+	if not addon.Catalyst:IsAvailable() then
+		Print("|cffff5555Transmog Upgrade Master is not loaded, so nothing can be stamped.|r")
+		return
+	end
+	-- Recent seasons are found through the set table and older ones through the
+	-- catalyst item table, so which of the two is missing decides which seasons go
+	-- unstamped rather than whether any can be.
+	local tum = TransmogUpgradeMaster
+	Print("Lookups: sets %s, catalyst items %s",
+		tum and tum.GetSetsForClass and "ok" or "|cffff5555missing, recent seasons cannot resolve|r",
+		tum and tum.catalystItems and "ok" or "|cffff5555missing, older seasons cannot resolve|r")
+	if not tum or not (tum.GetSetsForClass or tum.catalystItems) then
+		Print("  |cffff5555The alerts still work. The stamp cannot, with neither lookup.|r")
+		return
+	end
+
+	Print("Setting: mark catalysable pieces is %s",
+		addon.Profile.MarkCatalysablePieces and "on" or "|cffff5555off|r")
+
+	addon.Catalyst:ForgetHeldTargets()
+	local targets = addon.Catalyst:GetHeldTargets()
+	Print("Carrying %d item(s) that would catalyse into a piece you are missing.", targets.items)
+
+	local sources = 0
+	for sourceID, itemLink in pairs(targets.bySource) do
+		sources = sources + 1
+		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID)
+		Print("  %s -> %s (source %d)", itemLink,
+			sourceInfo and sourceInfo.name or "|cffff5555unnamed|r", sourceID)
+	end
+	if sources == 0 then
+		Print("  |cffff5555Nothing held maps to a piece. Either nothing qualifies, or the set lookup failed.|r")
+		return
+	end
+
+	for setID, count in pairs(targets.bySet) do
+		local setInfo = C_TransmogSets.GetSetInfo(setID)
+		Print("  set %d (%s): %d piece(s)", setID, setInfo and setInfo.name or "?", count)
+	end
+
+	Print("Sets are only stamped where the panel is showing them, so a set the")
+	Print("instance scan left out will not show a stamp however many you carry.")
 end
 
 local SETINFO_LIMIT = 3
@@ -1246,6 +1294,7 @@ commands.help = function()
 	Print("  replay           open the panel again as if you had just walked in")
 	Print("  alert [itemID]   fake a drop, defaulting to a piece that drops where you are")
 	Print("  catalyst [itemID] fake a catalysable drop, defaulting to one from your bags")
+	Print("  catalysable      which pieces the panel would stamp, and from what")
 	Print("  setinfo <name>   one set's pieces and the drop data behind each of them")
 	Print("  loot [name]      what the Encounter Journal says drops here, with sources")
 	Print("Situations:")
@@ -1277,6 +1326,7 @@ local SITUATION_FREE_COMMANDS = {
 	replay = true,
 	alert = true,
 	catalyst = true,
+	catalysable = true,
 	setinfo = true,
 	loot = true,
 }
