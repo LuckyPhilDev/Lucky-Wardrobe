@@ -84,11 +84,10 @@ local defaults = {
 		InstanceSetsPosition = {},
 		InstanceSetsDwellSeconds = 4,
 		AlertSetPieceLoot = true,
-		AlertCatalystLoot = true,
-		MarkCatalysablePieces = true,
+		AlertCatalystLoot = TransmogUpgradeMaster_API ~= nil,
+		MarkCatalysablePieces = TransmogUpgradeMaster_API ~= nil,
 		AlertWithSound = true,
 		AlertWithChat = true,
-		InstanceSetsFlashSeconds = 12,
 	}
 }
 local DB_Defaults = {

@@ -109,14 +109,16 @@ function addon:BuildSettingsPanel()
     end
 
     ---------------------------------------------------------------------------
-    -- Set Completion
+    -- Set Tracker
     --
     -- The instance list and the loot alerts are two sides of one feature and
     -- share the threshold that decides what counts as close to finishing, so the
     -- threshold leads and neither side owns it.
     ---------------------------------------------------------------------------
     do
-        local g = panel:Group(L["Set Completion"])
+        local g = panel:Group(L["Set Tracker"])
+
+        g:Section(L["What to Track"])
 
         g:Slider({
             label     = L["Pieces Missing At Most"],
@@ -145,9 +147,8 @@ function addon:BuildSettingsPanel()
         g:Toggle({
             label    = L["Mark Pieces You Could Catalyse"],
             desc     = L["Stamps a catalyst mark on a piece you are missing when you are already carrying something the catalyst would turn into it. Hover the piece to see which item."],
-            warning  = not catalystAvailable
-                and L["Needs Transmog Upgrade Master installed. The game gives no way to work out what the catalyst produces."]
-                or nil,
+            requires = { addon = "TransmogUpgradeMaster" },
+            disabled = not catalystAvailable,
             checked  = Profile.MarkCatalysablePieces,
             onToggle = function(v)
                 Profile.MarkCatalysablePieces = v
@@ -193,9 +194,8 @@ function addon:BuildSettingsPanel()
         g:Toggle({
             label    = L["Alert on Catalyst Upgrades"],
             desc     = L["Speaks up, more quietly, when you loot something the catalyst could turn into an appearance you are missing."],
-            warning  = not catalystAvailable
-                and L["Needs Transmog Upgrade Master installed. The game gives no way to work out what the catalyst produces."]
-                or nil,
+            requires = { addon = "TransmogUpgradeMaster" },
+            disabled = not catalystAvailable,
             checked  = Profile.AlertCatalystLoot,
             onToggle = function(v) Profile.AlertCatalystLoot = v end,
         })
@@ -209,16 +209,6 @@ function addon:BuildSettingsPanel()
             },
             isChecked = function(key) return Profile[key] and true or false end,
             onToggle  = function(key, checked) Profile[key] = checked end,
-        })
-
-        g:Slider({
-            label     = L["Highlight Lasts"],
-            desc      = L["How long the piece that just dropped keeps glowing on the instance list, when the list is open."],
-            min       = 3,
-            max       = 30,
-            suffix    = "s",
-            value     = Profile.InstanceSetsFlashSeconds,
-            onChanged = function(v) Profile.InstanceSetsFlashSeconds = v end,
         })
     end
 

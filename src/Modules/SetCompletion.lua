@@ -215,10 +215,7 @@ end
 -- Which pieces are currently drawing attention to themselves. Kept out here
 -- rather than on the piece because the panel rebuilds its data on every redraw.
 local flashUntil = {}
-
-local function FlashSeconds()
-	return addon.Profile.InstanceSetsFlashSeconds
-end
+local FLASH_SECONDS = 10
 
 local function IsFlashing(sourceID)
 	local expiry = flashUntil[sourceID]
@@ -1139,7 +1136,7 @@ function SetCompletion:FlashPiece(sourceID)
 		return
 	end
 
-	local seconds = FlashSeconds()
+	local seconds = FLASH_SECONDS
 	flashUntil[sourceID] = GetTime() + seconds
 	if not (panel and panel:IsShown()) then
 		addon.DevLog(("Flagged source %d, but the panel is not open to show it")
