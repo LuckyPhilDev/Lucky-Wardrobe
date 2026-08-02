@@ -441,15 +441,12 @@ function preview:ShowPreview(itemLink, parent)
 	end
 
 	if addon.Profile.ShowOwnedItemTooltips and not found_systemTooltip then
-		local apperanceKnownText, canTransmog
-		local GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
-		local itemID = GetItemInfoInstant(itemLink)
-		if itemID then
-			canTransmog = select(3, C_Transmog.CanTransmogItem(itemID))
-		end
+		local apperanceKnownText
+		-- Nil means the item has no appearance at all, which is distinct from
+		-- having one the player has not collected.
 		local collected, altCollected = IsAppearanceCollected(itemLink)
 
-		if not canTransmog then
+		if collected == nil then
 			apperanceKnownText = "|c00ffff00" .. TRANSMOGRIFY_INVALID_DESTINATION
 		else
 			local check = "Ready"
