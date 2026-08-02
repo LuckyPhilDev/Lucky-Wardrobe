@@ -119,17 +119,21 @@ function addon:BuildSettingsPanel()
         local g = panel:Group(L["Tooltips"])
 
         g:Toggle({
-            label   = L["Show Appearance Status"],
-            desc    = L["Adds a line to item tooltips showing whether you have already collected that item's appearance."],
-            checked = Profile.ShowOwnedItemTooltips,
-            onToggle = function(v) Profile.ShowOwnedItemTooltips = v end,
+            label     = L["Show Appearance Status"],
+            desc      = L["Adds a line to item tooltips showing whether you have already collected that item's appearance."],
+            image     = "tooltips/show-appearance-status",
+            imageSize = { 501, 203 },
+            checked   = Profile.ShowOwnedItemTooltips,
+            onToggle  = function(v) Profile.ShowOwnedItemTooltips = v end,
         })
 
         g:Toggle({
-            label   = L["Show Set Membership"],
-            desc    = L["Lists the sets an item belongs to, with how many pieces of each you have collected."],
-            checked = Profile.ShowSetTooltips,
-            onToggle = function(v) Profile.ShowSetTooltips = v end,
+            label     = L["Show Set Membership"],
+            desc      = L["Lists the sets an item belongs to, with how many pieces of each you have collected."],
+            image     = "tooltips/show-set-membership",
+            imageSize = { 493, 160 },
+            checked   = Profile.ShowSetTooltips,
+            onToggle  = function(v) Profile.ShowSetTooltips = v end,
         })
 
         g:Toggle({
