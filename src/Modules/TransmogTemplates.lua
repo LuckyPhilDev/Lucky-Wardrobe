@@ -1795,7 +1795,8 @@ function TransmogCustomSetModelMixin:OnMouseUp(button)
 				local data = { name = name, customSetID = self.elementData.customSetID, itemTransmogInfoList = itemTransmogInfoList };
 				StaticPopup_Show("TRANSMOG_CUSTOM_SET_NAME", nil, nil, data);
 			else
-				local name = addon.OutfitDB.char.outfits[self.elementData.customSetID];
+				local outfit = addon.OutfitDB.char.outfits[self.elementData.customSetID];
+				local name = outfit and outfit.name or "";
 				local data = { name = name, customSetID = self.elementData.customSetID, itemTransmogInfoList = itemTransmogInfoList };
 				StaticPopup_Show("BW_TRANSMOG_CUSTOM_SET_NAME", nil, nil, data);
 			end
@@ -1913,8 +1914,14 @@ function TransmogCustomSetModelMixin:RefreshTooltip()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local name, _icon = C_TransmogCollection.GetCustomSetInfo(self.elementData.customSetID);
-	GameTooltip:SetText(name);
+	local name;
+	if self.elementData.setType == "Blizzard" then
+		name = C_TransmogCollection.GetCustomSetInfo(self.elementData.customSetID);
+	else
+		local outfit = addon.OutfitDB.char.outfits[self.elementData.customSetID];
+		name = outfit and outfit.name;
+	end
+	GameTooltip:SetText(name or UNKNOWN);
 
 	if self.elementData.isCollected then
 		GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_CUSTOM_SET_COMPLETE);

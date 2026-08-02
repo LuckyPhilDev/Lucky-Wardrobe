@@ -908,7 +908,7 @@ end
 -- customSetID - Set if editing an existing custom set, nil if new custom set flow.
 -- itemTransmogInfoList - Transmog info list to populate any custom set with (overriding existing or adding a new custom set).
 StaticPopupDialogs["BW_TRANSMOG_CUSTOM_SET_NAME"] = {
-	text = TRANSMOG_CUSTOM_SET_NAME.."!",
+	text = TRANSMOG_CUSTOM_SET_NAME,
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
@@ -930,7 +930,7 @@ StaticPopupDialogs["BW_TRANSMOG_CUSTOM_SET_NAME"] = {
 
 		if data then
 			WardrobeCustomSetManager:SetItemTransmogInfoList(data.itemTransmogInfoList);
-			dialog:GetEditBox():SetText(data.name.name);
+			dialog:GetEditBox():SetText(data.name);
 		end
 	end,
 	OnHide = function(dialog, data)
