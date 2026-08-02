@@ -127,6 +127,13 @@ function addon:BuildSettingsPanel()
             checked = Profile.ShowSetTooltips,
             onToggle = function(v) Profile.ShowSetTooltips = v end,
         })
+
+        g:Toggle({
+            label   = L["Show Model Preview"],
+            desc    = L["Shows a model wearing the item beside its tooltip."],
+            checked = Profile.TooltipPreview_Show,
+            onToggle = function(v) Profile.TooltipPreview_Show = v end,
+        })
     end
 
     ---------------------------------------------------------------------------
