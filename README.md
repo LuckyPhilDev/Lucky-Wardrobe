@@ -20,7 +20,6 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Shopping list**: Shift-click the Collection List icon for a breakdown of every item that unlocks each tracked appearance and how to get it. With TradeSkillMaster installed, vendor, profession, and world drop items show prices.
 - **TSM group export**: Turn the shopping list into a TradeSkillMaster group, sorted by appearance.
 - **Item substitution**: Swap any piece in a set for a different appearance, useful when an item has left the game or you simply prefer another look.
-- **Other armour types and classes**: View sets outside your own armour weight or class, with clear indicators on sets flagged for someone else.
 
 ### Set Tracker
 
@@ -42,8 +41,10 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 
 ### Tooltips
 
-- **Set completion**: Item tooltips show which set an item belongs to and how much of that set you've collected, with a full piece list or just the pieces you're missing.
-- **Appearance preview**: A model preview of the item, with an option to keep it rotating.
+- **Appearance status**: Item tooltips tell you whether you have already collected that item's appearance.
+- **Set completion**: Tooltips show which sets an item belongs to and how much of each you've collected, with a full piece list or just the pieces you're missing.
+- **Appearance preview**: A model wearing the item beside its tooltip, with an option to keep it rotating.
+- **Turn off what you don't want**: Each of the three has its own setting.
 
 ## Installation
 
@@ -79,6 +80,7 @@ Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
 - **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
+- **Tooltips**: Choose what item tooltips add: whether you have collected the appearance, which sets the item belongs to, and a model preview of the item.
 - **Set Tracker**: Choose how many pieces a set can still be missing and count as close to done, whether to include the tier you are currently raiding, which is left out by default, and whether missing pieces carry the catalyst mark. Set whether the list opens by itself in a dungeon or raid and how long it holds the middle of the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 
 ## Author
