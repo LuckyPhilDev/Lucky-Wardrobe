@@ -34,6 +34,9 @@ function addon:BuildSettingsPanel()
     do
         local g = panel:Group(L["General Options"])
 
+        -- ponytail: the class restriction override is off for everyone while its
+        -- filtering gets a proper look. Kept here for when it comes back.
+--[[
         g:Toggle({
             label   = L["Ignore Class Restriction Filter"],
             desc    = "Show sets and appearances your class normally cannot use.",
@@ -43,6 +46,7 @@ function addon:BuildSettingsPanel()
                 addon.Init:InitDB()
             end,
         })
+]]--
 
         g:Toggle({
             label   = L["Minimap Button"],

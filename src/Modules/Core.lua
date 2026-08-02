@@ -251,6 +251,10 @@ end
 function addon:RefreshConfig()
 	addon.Profile = self.db.profile
 	Profile = addon.Profile
+
+	-- ponytail: the class restriction override is withdrawn while its filtering
+	-- gets a proper look. Clearing it here also settles profiles that had it on.
+	Profile.IgnoreClassRestrictions = false
 end
 
 ---Updates Profile after changes
@@ -388,8 +392,7 @@ end
 local initialize
 function addon:OnEnable()
 	_,playerClass, classID = UnitClass("player")
-	addon.Profile = self.db.profile
-	Profile = addon.Profile
+	addon:RefreshConfig()
 
 	InitFeature("settings panel", function() addon:BuildSettingsPanel() end)
 	InitFeature("minimap button", function() addon:CreateMinimapButton() end)

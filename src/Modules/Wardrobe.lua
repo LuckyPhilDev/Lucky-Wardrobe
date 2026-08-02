@@ -428,6 +428,9 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 		RefreshLists();
 	end
 
+	-- ponytail: the class restriction override is off for everyone while its
+	-- filtering gets a proper look. Kept here for when it comes back.
+--[[
 	local function ShowIgnoreClassRestrictions()
 		return addon.Profile.IgnoreClassRestrictions;
 	end
@@ -436,8 +439,8 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 		addon.Profile.IgnoreClassRestrictions = not addon.Profile.IgnoreClassRestrictions;
 		addon.Init:InitDB();
 		RefreshLists();
-		 	
-		if (addon.Profile.IgnoreClassRestrictions and addon.GetTab() ~= 1)  then 
+
+		if (addon.Profile.IgnoreClassRestrictions and addon.GetTab() ~= 1)  then
 			WardrobeCollectionFrame.ClassDropdown:SetDefaultText(armorTypes[addon.armorTypeFilter])
 		else
 			local classfilter = C_TransmogSets.GetTransmogSetsClassFilter();
@@ -454,6 +457,8 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 
 		WardrobeCollectionFrame.ClassDropdown:Update()
 	end
+]]--
+
 	local function ShowFactionOnly()
 		return addon.Profile.CurrentFactionSets;
 	end
@@ -678,7 +683,7 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 
 			end, 6);
 ]]--
-			submenu:CreateCheckbox(L["Ignore Class Restriction Filter"], ShowIgnoreClassRestrictions, setIgnoreClassRestrictions, 5);
+			--submenu:CreateCheckbox(L["Ignore Class Restriction Filter"], ShowIgnoreClassRestrictions, setIgnoreClassRestrictions, 5);
 
 	end);
 end

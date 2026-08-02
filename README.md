@@ -77,7 +77,7 @@ A minimap button opens your appearances with a left-click, the sets you can fini
 
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
-- **General**: Ignore class restrictions on sets and appearances, show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
+- **General**: Show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
 - **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
 - **Set Tracker**: Choose how many pieces a set can still be missing and count as close to done, whether to include the tier you are currently raiding, which is left out by default, and whether missing pieces carry the catalyst mark. Set whether the list opens by itself in a dungeon or raid and how long it holds the middle of the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 

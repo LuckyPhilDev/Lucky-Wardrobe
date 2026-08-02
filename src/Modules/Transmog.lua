@@ -2186,7 +2186,10 @@ function TransmogWardrobeSetsMixin:InitFilterButton()
 			end,
 		1);
 
-		rootDescription:CreateCheckbox(L["Ignore Class Restriction Filter"], function() return addon.Profile.IgnoreClassRestrictions; end, 
+		-- ponytail: the class restriction override is off for everyone while its
+		-- filtering gets a proper look. Kept here for when it comes back.
+--[[
+		rootDescription:CreateCheckbox(L["Ignore Class Restriction Filter"], function() return addon.Profile.IgnoreClassRestrictions; end,
 			function()
 				addon.Profile.IgnoreClassRestrictions = not addon.Profile.IgnoreClassRestrictions;
 				addon.Init:InitDB()
@@ -2194,6 +2197,7 @@ function TransmogWardrobeSetsMixin:InitFilterButton()
 				self:RefreshCollectionEntries()
 			end,
 		1);
+]]--
 
 		rootDescription:CreateDivider();
 
