@@ -304,10 +304,6 @@ local function addLine(tooltip, text)
 	tooltip:AddLine(text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true)
 end
 
-local function addDivider()
-	GameTooltip:AddTexture("Interface\\DialogFrame\\UI-DialogBox-Divider.blp",{width = GameTooltip:GetWidth() + 25, height = 15})
-end
-
 function preview:GetSlotFacing(slot)
 	if tContains ( weaponSlots, slot) then 
 		return 1.5
@@ -478,12 +474,12 @@ function preview:ShowPreview(itemLink, parent)
 
 	if addon.Profile.ShowTooltips and not found_tooltipinfo and sourceID then
 		local addHeader = false
-		-- One divider opens the whole block, whichever section gets there first.
+		-- The coloured headings separate the sections well enough on their own,
+		-- so this is only a blank line to lift the block off Blizzard's text.
 		local function startBlock()
 			if addHeader then return end
 			addHeader = true
 			addLine(GameTooltip, " ")
-			addDivider()
 		end
 
 		local inList, count = addon.CollectionList:IsInList(appearanceID, "item", true)
