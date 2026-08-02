@@ -94,6 +94,8 @@ L["Shows an outfit's full situation list, with the values selected in each categ
 L["Tooltips"] = true
 L["Show Appearance Status"] = true
 L["Adds a line to item tooltips showing whether you have already collected that item's appearance."] = true
+L["Show Set Membership"] = true
+L["Lists the sets an item belongs to, with how many pieces of each you have collected."] = true
 L["Set Tracker"] = true
 L["What to Track"] = true
 L["Pieces Missing At Most"] = true

@@ -120,6 +120,13 @@ function addon:BuildSettingsPanel()
             checked = Profile.ShowOwnedItemTooltips,
             onToggle = function(v) Profile.ShowOwnedItemTooltips = v end,
         })
+
+        g:Toggle({
+            label   = L["Show Set Membership"],
+            desc    = L["Lists the sets an item belongs to, with how many pieces of each you have collected."],
+            checked = Profile.ShowSetTooltips,
+            onToggle = function(v) Profile.ShowSetTooltips = v end,
+        })
     end
 
     ---------------------------------------------------------------------------
