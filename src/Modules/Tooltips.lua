@@ -473,26 +473,15 @@ function preview:ShowPreview(itemLink, parent)
 	end
 
 	if addon.Profile.ShowTooltips and not found_tooltipinfo and sourceID then
-		local addHeader = false
-		-- The coloured headings separate the sections well enough on their own,
-		-- so this is only a blank line to lift the block off Blizzard's text.
-		local function startBlock()
-			if addHeader then return end
-			addHeader = true
-			addLine(GameTooltip, " ")
-		end
-
 		local inList, count = addon.CollectionList:IsInList(appearanceID, "item", true)
 
 		if addon.Profile.ShowCollectionListTooltips and inList then
-			startBlock()
 			addDoubleLine (GameTooltip,"|cff87aaff"..L["-Appearance in %d Collection List-"]:format(count), " ")
 		end
 		
 		local setIDs = C_TransmogSets.GetSetsContainingSourceID(sourceID)
 		local shownSetNames = {}
 		if addon.Profile.ShowSetTooltips and #setIDs > 0 then
-			startBlock()
 			addDoubleLine (GameTooltip,"|cffffd100"..L["Part of Set:"], " ")
 
 			for i, setID in pairs(setIDs) do
@@ -524,7 +513,6 @@ function preview:ShowPreview(itemLink, parent)
 
 		 local setData = addon.IsSetItem(itemLink)
 		if addon.Profile.ShowExtraSetsTooltips and setData then
-			startBlock()
 			addDoubleLine (GameTooltip,"|cffffd100"..L["Part of Extra Set:"], " ")
 			for _, data in pairs(setData) do
 				--if not shownSetNames[data.name] then 
