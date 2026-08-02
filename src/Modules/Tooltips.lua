@@ -478,41 +478,36 @@ function preview:ShowPreview(itemLink, parent)
 
 	if addon.Profile.ShowTooltips and not found_tooltipinfo and sourceID then
 		local addHeader = false
+		-- One divider opens the whole block, whichever section gets there first.
+		local function startBlock()
+			if addHeader then return end
+			addHeader = true
+			addLine(GameTooltip, " ")
+			addDivider()
+		end
+
 		local inList, count = addon.CollectionList:IsInList(appearanceID, "item", true)
 
 		if addon.Profile.ShowCollectionListTooltips and inList then
-			if not addHeader then
-				addHeader = true
-				--addLine(self, L["HEADERTEXT"])
-				addLine(GameTooltip, " ")
-				GameTooltip:AddTexture("Interface\\DialogFrame\\UI-DialogBox-Divider.blp", {width = GameTooltip:GetWidth() + 25, height = 15})
-			end
-
+			startBlock()
 			addDoubleLine (GameTooltip,"|cff87aaff"..L["-Appearance in %d Collection List-"]:format(count), " ")
 		end
 		
 		local setIDs = C_TransmogSets.GetSetsContainingSourceID(sourceID)
 		local shownSetNames = {}
 		if addon.Profile.ShowSetTooltips and #setIDs > 0 then
-			if not addHeader then
-				addHeader = true
-				--addLine(self, L["HEADERTEXT"])
-				addLine(GameTooltip, " ")
-				
-				GameTooltip:AddTexture("Interface\\DialogFrame\\UI-DialogBox-Divider.blp", {width = GameTooltip:GetWidth() + 25, height = 15})
-				--GameTooltip:AddTexture("Interface\\QUESTFRAME\\UI-HorizontalBreak.blp",{width = self:GetWidth()-10, height = 15})
-			end
+			startBlock()
+			addDoubleLine (GameTooltip,"|cffffd100"..L["Part of Set:"], " ")
 
 			for i, setID in pairs(setIDs) do
 				local setInfo = C_TransmogSets.GetSetInfo(setID)
-				addDoubleLine (GameTooltip,"|cffffd100"..L["Part of Set:"], " ")
 				local collected, total = addon.SetsDataProvider:GetSetSourceCounts(setID)
 				local color = YELLOW_FONT_COLOR_CODE
 				if collected == total then
 					color = GREEN_FONT_COLOR_CODE
 				end
 
-				addDoubleLine (GameTooltip," ",L["-%s %s(%d/%d)"]:format(setInfo.name or "", color, collected, total))
+				addDoubleLine (GameTooltip,"   "..(setInfo.name or ""), ("%s%d/%d"):format(color, collected, total))
 				shownSetNames[setInfo.name] = true
 
 				if addon.Profile.ShowDetailedListTooltips then
@@ -533,13 +528,7 @@ function preview:ShowPreview(itemLink, parent)
 
 		 local setData = addon.IsSetItem(itemLink)
 		if addon.Profile.ShowExtraSetsTooltips and setData then
-			if not addHeader then
-				addHeader = true
-				--addLine(self, L["HEADERTEXT"])
-				addLine(GameTooltip, " ")
-				GameTooltip:AddTexture("Interface\\DialogFrame\\UI-DialogBox-Divider.blp", {width = GameTooltip:GetWidth() + 25, height = 15})
-			end
-
+			startBlock()
 			addDoubleLine (GameTooltip,"|cffffd100"..L["Part of Extra Set:"], " ")
 			for _, data in pairs(setData) do
 				--if not shownSetNames[data.name] then 
@@ -549,7 +538,7 @@ function preview:ShowPreview(itemLink, parent)
 						color = GREEN_FONT_COLOR_CODE
 					end
 
-					addDoubleLine (GameTooltip," ",L["-%s %s(%d/%d)"]:format(data.name or "", color, collected, total))
+					addDoubleLine (GameTooltip,"   "..(data.name or ""), ("%s%d/%d"):format(color, collected, total))
 
 					if addon.Profile.ShowDetailedListTooltips then
 						local sources = addon.GetSetSources(data.setID)
@@ -566,12 +555,6 @@ function preview:ShowPreview(itemLink, parent)
 					end
 				--end
 			end
-		end
-
-		if addHeader then
-			--addLine(self, L["HEADERTEXT"])
-			addLine(GameTooltip, " ")
-			GameTooltip:AddTexture("Interface\\DialogFrame\\UI-DialogBox-Divider.blp", {width = GameTooltip:GetWidth() + 25, height = 15})
 		end
 
 		--GameTooltip:Show()
