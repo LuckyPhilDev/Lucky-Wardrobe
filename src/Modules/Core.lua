@@ -57,6 +57,7 @@ local defaults = {
 		TooltipPreview_Width = 300,
 		TooltipPreview_Height = 300,
 		ShowItemIDTooltips = false,
+		ShowOwnedItemTooltips = true,
 		TooltipPreview_Show = false,
 		TooltipPreview_Anchor = "horizontal",
 		TooltipPreviewRotate = false,

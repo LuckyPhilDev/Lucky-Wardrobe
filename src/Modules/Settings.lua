@@ -109,6 +109,20 @@ function addon:BuildSettingsPanel()
     end
 
     ---------------------------------------------------------------------------
+    -- Tooltips
+    ---------------------------------------------------------------------------
+    do
+        local g = panel:Group(L["Tooltips"])
+
+        g:Toggle({
+            label   = L["Show Appearance Status"],
+            desc    = L["Adds a line to item tooltips showing whether you have already collected that item's appearance."],
+            checked = Profile.ShowOwnedItemTooltips,
+            onToggle = function(v) Profile.ShowOwnedItemTooltips = v end,
+        })
+    end
+
+    ---------------------------------------------------------------------------
     -- Set Tracker
     --
     -- The instance list and the loot alerts are two sides of one feature and
