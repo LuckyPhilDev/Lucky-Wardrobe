@@ -83,6 +83,10 @@ Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 - **Tooltips**: Choose what item tooltips add: whether you have collected the appearance, which sets the item belongs to, and a model preview of the item.
 - **Set Tracker**: Choose how many pieces a set can still be missing and count as close to done, whether to include the tier you are currently raiding, which is left out by default, and whether missing pieces carry the catalyst mark. Set whether the list opens by itself in a dungeon or raid and how long it holds the middle of the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 
+## A note on AI
+
+My addons are made by one person who plays the game and wants them to work properly. I use AI tools to move faster, mostly on code, bug hunting, and docs, but every change is reviewed and tested in game before release. If a feature feels off or something breaks, that's mine to fix, and the Discord is the fastest way to reach me.
+
 ## Author
 
 Lucky Phil
