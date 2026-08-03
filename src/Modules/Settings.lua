@@ -95,6 +95,13 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
+            label   = L["Track Sets on Shift-Click"],
+            desc    = L["Shift-click a set to start tracking every appearance you are still missing from it, the way shift-clicking an item on the Items tab tracks that one. Shift-clicking a single piece in the set details tracks just that piece."],
+            checked = Profile.TrackSetsOnShiftClick,
+            onToggle = function(v) Profile.TrackSetsOnShiftClick = v end,
+        })
+
+        g:Toggle({
             label     = L["Show Situation Values"],
             desc      = L["Shows the selected situation values on outfit entries instead of just the category names."],
             image     = "transmog-window/show-situation-values",
