@@ -1452,10 +1452,7 @@ function WardrobeSetsDetailsItemMixin:OnLeave()
 end
 
 function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
-	-- Shift is the chat-link modifier and CHATLINK does not care which button is
-	-- held, so shift-right-click belongs to the Wowhead link only once it stops
-	-- posting the item to chat on the way down.
-	if ( button == "RightButton" and IsShiftKeyDown() ) then
+	if ( addon.WowheadLink:HandlesClick(button) ) then
 		return;
 	end
 
@@ -1482,7 +1479,7 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 end
 
 function WardrobeSetsDetailsItemMixin:OnMouseUp(button)
-	if button == "RightButton" and IsShiftKeyDown() then
+	if addon.WowheadLink:HandlesClick(button) then
 		addon.WowheadLink:ShowForSource(self.sourceID);
 		return;
 	end

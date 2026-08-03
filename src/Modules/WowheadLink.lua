@@ -58,6 +58,15 @@ StaticPopupDialogs[POPUP] = {
 	end,
 }
 
+-- Shift is the chat-link modifier and the collection's mouse-down handlers do not
+-- care which button is held, so a click this claims has to be taken off them
+-- before it posts the item to chat underneath the popup. Both halves of that ask
+-- the same question here, which is also where turning the feature off hands
+-- shift-right-click back to whatever the player had it doing.
+function WowheadLink:HandlesClick(button)
+	return button == "RightButton" and IsShiftKeyDown() and addon.Profile.WowheadLinks
+end
+
 function WowheadLink:ShowForItem(itemID)
 	if not itemID then
 		return false

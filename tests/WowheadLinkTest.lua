@@ -1,8 +1,9 @@
 -- The address that lands in the popup is the whole feature, so these go through
 -- the popup rather than at the string building underneath it.
 
-local addon = {}
+local addon = { Profile = { WowheadLinks = true } }
 local locale = "enUS"
+local shiftDown = true
 local sources = {}
 
 _G.LibStub = function(name)
@@ -18,6 +19,7 @@ _G.StaticPopupDialogs = {}
 _G.CLOSE = "Close"
 _G.format = string.format
 _G.GetLocale = function() return locale end
+_G.IsShiftKeyDown = function() return shiftDown end
 _G.C_TransmogCollection = { GetSourceInfo = function(sourceID) return sources[sourceID] end }
 
 local popupsShown = 0
@@ -46,6 +48,19 @@ end
 local HELM_SOURCE, ITEMLESS_SOURCE = 10, 11
 sources[HELM_SOURCE] = { itemID = 5678 }
 sources[ITEMLESS_SOURCE] = {}
+
+-- Only shift-right-click is claimed, and turning the feature off hands even that
+-- back to whatever the player had it doing.
+assert(WowheadLink:HandlesClick("RightButton"))
+assert(not WowheadLink:HandlesClick("LeftButton"))
+
+shiftDown = false
+assert(not WowheadLink:HandlesClick("RightButton"))
+shiftDown = true
+
+addon.Profile.WowheadLinks = false
+assert(not WowheadLink:HandlesClick("RightButton"))
+addon.Profile.WowheadLinks = true
 
 assert(WowheadLink:ShowForSource(HELM_SOURCE))
 assert(ShowPopup():GetText() == "https://www.wowhead.com/item=5678")
