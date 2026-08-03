@@ -4,7 +4,8 @@
 
 ### Added
 
-- Shift-right-click an appearance for its Wowhead address, in a box ready to copy into your browser. The pieces listed on a set work too, as do appearances you have not collected yet. (Thanks for the suggestion Rubyurek)
+- Shift-right-click an appearance for its Wowhead address, in a box ready to copy into your browser. The pieces listed on a set work too, as do appearances you have not collected yet. If you use shift-right-click for something else, switch it off under General. (Thanks for the suggestion Rubyurek)
+- Shift-click a set to start tracking every appearance you are still missing from it, the way shift-clicking an item on the Items tab tracks that one. Works on the set lists, on the set grid at the transmog vendor, and on single pieces in the set details. Switch it off under Transmog Window.
 
 ## 1.4.0
 

@@ -1,6 +1,6 @@
 ﻿## Interface: 120007
 ## Title: Lucky's Better Wardrobe Source Data
-## Version: 1.4.0
+## Version: 1.4.1
 ## Author: SLOKnightfall
 ## Notes: 
 ## Category: Transmog
