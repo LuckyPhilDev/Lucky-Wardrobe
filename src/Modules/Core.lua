@@ -71,6 +71,7 @@ local defaults = {
 		IgnoreClassRestrictions = false,
 		WowheadLinks = true,
 		KeepTransmogTab = false,
+		TrackSetsOnShiftClick = true,
 		ShowSituationValues = true,
 		ShowSituationTooltips = true,
 		DevMode = false,

@@ -57,6 +57,7 @@ Modules\Tooltips.lua
 Modules\WowheadLink.lua
 Modules\Catalyst.lua
 Modules\SetCompletion.lua
+Modules\SetTracking.lua
 Modules\LootAlerts.lua
 
 Modules\ArtifactAppearances.lua

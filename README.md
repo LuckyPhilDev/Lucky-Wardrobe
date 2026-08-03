@@ -21,6 +21,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Shopping list**: Shift-click the Collection List icon for a breakdown of every item that unlocks each tracked appearance and how to get it. With TradeSkillMaster installed, vendor, profession, and world drop items show prices.
 - **TSM group export**: Turn the shopping list into a TradeSkillMaster group, sorted by appearance.
 - **Item substitution**: Swap any piece in a set for a different appearance, useful when an item has left the game or you simply prefer another look.
+- **Track a whole set**: Shift-click a set to start tracking every appearance you're still missing from it, the way shift-clicking an item on the Items tab tracks that one. Works on the set lists, on the set grid at the transmog vendor, and on single pieces in the set details. Where a piece can't be tracked from the source the set names, another source of the same look is used instead.
 
 ### Set Tracker
 
@@ -80,7 +81,7 @@ A minimap button opens your appearances with a left-click, the sets you can fini
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
 - **General**: Show or hide the minimap button, switch Wowhead links on or off, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
-- **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
+- **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, choose how much situation detail appears on saved outfits, and turn shift-click set tracking on or off.
 - **Tooltips**: Choose what item tooltips add: whether you have collected the appearance, which sets the item belongs to, and a model preview of the item.
 - **Set Tracker**: Choose how many pieces a set can still be missing and count as close to done, whether to include the tier you are currently raiding, which is left out by default, and whether missing pieces carry the catalyst mark. Set whether the list opens by itself in a dungeon or raid and how long it holds the middle of the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
 

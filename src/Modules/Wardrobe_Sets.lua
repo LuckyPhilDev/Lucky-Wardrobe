@@ -1075,6 +1075,11 @@ function WardrobeSetsScrollFrameButtonMixin:OnClick(buttonName, down)
 			g_selectionBehavior:Select(self);
 		end
 	else
+		if addon.SetTracking:WantsTracking(buttonName) then
+			addon.SetTracking:TrackSetRow(self.setID);
+			return;
+		end
+
 		if ( buttonName == "LeftButton" ) then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			g_selectionBehavior:Select(self);
@@ -1453,6 +1458,13 @@ end
 
 function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 	if ( addon.WowheadLink:HandlesClick(button) ) then
+		return;
+	end
+
+	-- Shift-click here is stock's chat link. Tracking takes it over, except with a
+	-- chat box already open, where linking is plainly what was meant.
+	if addon.SetTracking:WantsTracking(button) and self.sourceID and not ChatEdit_GetActiveWindow() then
+		addon.SetTracking:TrackPiece(self.sourceID, self.collected);
 		return;
 	end
 

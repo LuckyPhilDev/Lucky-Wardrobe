@@ -1462,6 +1462,11 @@ function TransmogSetModelMixin:OnMouseDown(button)
 		return;
 	end
 
+	if addon.SetTracking:WantsTracking(button) then
+		addon.SetTracking:TrackSetTile(self.elementData);
+		return;
+	end
+
 	if button == "LeftButton" then
 		local sources = getSourceSlots(self.elementData.sourceData.primaryAppearances, self.elementData.setID)
 		ApplyOutfit(sources)
