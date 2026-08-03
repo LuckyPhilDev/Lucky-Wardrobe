@@ -54,6 +54,7 @@ Data\COSMETIC.lua
 Data\SetOverrides.lua
 
 Modules\Tooltips.lua
+Modules\WowheadLink.lua
 Modules\Catalyst.lua
 Modules\SetCompletion.lua
 Modules\LootAlerts.lua

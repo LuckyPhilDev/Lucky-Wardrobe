@@ -2044,6 +2044,13 @@ BetterWardrobeItemModelMixin = WardrobeItemModelMixin
 
 -- Overridden.
 function WardrobeItemModelMixin:OnMouseDown(button)
+	-- Shift is the chat-link modifier and the base handler does not care which
+	-- button is held, so shift-right-click belongs to the Wowhead link only once
+	-- it stops posting the item to chat on the way down.
+	if button == "RightButton" and IsShiftKeyDown() then
+		return;
+	end
+
 	ItemModelBaseMixin.OnMouseDown(self, button);
 
 	local appearanceInfo = self:GetAppearanceInfo();
@@ -2208,6 +2215,11 @@ end
 
 
 function WardrobeItemModelMixin:OnMouseUp(button)
+	if button == "RightButton" and IsShiftKeyDown() then
+		addon.WowheadLink:ShowForAppearanceModel(self);
+		return;
+	end
+
 	if button == "RightButton" then
 		local itemsCollectionFrame = self:GetParent();
 		if ( not self.visualInfo.isCollected or self.visualInfo.isHideVisual or itemsCollectionFrame.transmogLocation:IsIllusion() ) then
