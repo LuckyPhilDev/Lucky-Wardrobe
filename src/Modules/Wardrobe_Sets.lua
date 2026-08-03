@@ -1452,6 +1452,10 @@ function WardrobeSetsDetailsItemMixin:OnLeave()
 end
 
 function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
+	if ( addon.WowheadLink:HandlesClick(button) ) then
+		return;
+	end
+
 	if ( IsModifiedClick("CHATLINK") ) then
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
 		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
@@ -1475,6 +1479,11 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 end
 
 function WardrobeSetsDetailsItemMixin:OnMouseUp(button)
+	if addon.WowheadLink:HandlesClick(button) then
+		addon.WowheadLink:ShowForSource(self.sourceID);
+		return;
+	end
+
 	if button == "RightButton" then
 		if not self.collected then
 			return;

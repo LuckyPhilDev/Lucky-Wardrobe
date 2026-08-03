@@ -56,6 +56,13 @@ function addon:BuildSettingsPanel()
         })
 
         g:Toggle({
+            label   = L["Wowhead Links"],
+            desc    = L["Shift-right-click an appearance for its Wowhead address, ready to copy into your browser. Turn this off if you use shift-right-click for something else."],
+            checked = Profile.WowheadLinks,
+            onToggle = function(v) Profile.WowheadLinks = v end,
+        })
+
+        g:Toggle({
             label   = L["Dev Mode"],
             desc    = "Development logging and diagnostics. Has no visible effect for regular users.",
             checked = Profile.DevMode,

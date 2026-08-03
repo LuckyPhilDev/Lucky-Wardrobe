@@ -69,6 +69,7 @@ local defaults = {
 		TooltipPreview_CustomGender = 0,
 		TooltipPreview_DressingDummy = false,
 		IgnoreClassRestrictions = false,
+		WowheadLinks = true,
 		KeepTransmogTab = false,
 		ShowSituationValues = true,
 		ShowSituationTooltips = true,

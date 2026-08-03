@@ -2044,6 +2044,10 @@ BetterWardrobeItemModelMixin = WardrobeItemModelMixin
 
 -- Overridden.
 function WardrobeItemModelMixin:OnMouseDown(button)
+	if addon.WowheadLink:HandlesClick(button) then
+		return;
+	end
+
 	ItemModelBaseMixin.OnMouseDown(self, button);
 
 	local appearanceInfo = self:GetAppearanceInfo();
@@ -2208,6 +2212,11 @@ end
 
 
 function WardrobeItemModelMixin:OnMouseUp(button)
+	if addon.WowheadLink:HandlesClick(button) then
+		addon.WowheadLink:ShowForAppearanceModel(self);
+		return;
+	end
+
 	if button == "RightButton" then
 		local itemsCollectionFrame = self:GetParent();
 		if ( not self.visualInfo.isCollected or self.visualInfo.isHideVisual or itemsCollectionFrame.transmogLocation:IsIllusion() ) then

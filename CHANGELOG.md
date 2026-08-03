@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+### Added
+
+- Shift-right-click an appearance for its Wowhead address, in a box ready to copy into your browser. The pieces listed on a set work too, as do appearances you have not collected yet. (Thanks for the suggestion Rubyurek)
+
 ## 1.4.0
 
 ### Added

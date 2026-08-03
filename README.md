@@ -16,6 +16,7 @@ A continuation of Better Wardrobe and Transmog by SLOKnightfall.
 - **Sorting**: Use Filter to sort the Sets and Extra Sets lists by completion in ascending or descending order. Ascending completion focuses on the closest sets first, with larger sets first when they need the same number of pieces.
 - **Filter by source**: Under Filter > Sources, narrow either set list to where the sets actually come from. Sets covers raid, PvP, covenant, heritage, cosmetic, dungeon, and trading post, while Extra Sets covers classic, quest, dungeon, recolor, garrison, island expedition, warfronts, holiday, and trading post. Cosmetic gathers the outfit collections any class can wear, so you can browse class armour without them in the way.
 - **Hide what you don't want**: Right-click any appearance or set to hide it. Hidden lists are per character and can be copied between characters or reset in one click.
+- **Wowhead links**: Shift-right-click an appearance, either in the grid or on a set's piece list, for its Wowhead address in a box ready to copy and paste into your browser. Works on appearances you haven't collected, and points at your own language's Wowhead where there is one. Turn it off in settings if you use shift-right-click for something else.
 - **Collection List**: Build a running list of appearances you're chasing. Tracked appearances get a book icon in the journal, and a check mark once you learn them.
 - **Shopping list**: Shift-click the Collection List icon for a breakdown of every item that unlocks each tracked appearance and how to get it. With TradeSkillMaster installed, vendor, profession, and world drop items show prices.
 - **TSM group export**: Turn the shopping list into a TradeSkillMaster group, sorted by appearance.
@@ -78,7 +79,7 @@ A minimap button opens your appearances with a left-click, the sets you can fini
 
 Open settings with `/bw` or **Options > AddOns > Lucky's Better Wardrobe**.
 
-- **General**: Show or hide the minimap button, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
+- **General**: Show or hide the minimap button, switch Wowhead links on or off, and turn on dev mode for troubleshooting. Also shows version info and links to Lucky Phil's other addons.
 - **Transmog Window**: Keep your active tab at the transmog NPC when switching outfits, and choose how much situation detail appears on saved outfits.
 - **Tooltips**: Choose what item tooltips add: whether you have collected the appearance, which sets the item belongs to, and a model preview of the item.
 - **Set Tracker**: Choose how many pieces a set can still be missing and count as close to done, whether to include the tier you are currently raiding, which is left out by default, and whether missing pieces carry the catalyst mark. Set whether the list opens by itself in a dungeon or raid and how long it holds the middle of the screen, and whether looting a piece alerts you with a sound, a chat line, or both.
